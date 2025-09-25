@@ -1,6 +1,6 @@
 const { useState, useEffect } = React;
 
-// Список товаров
+// Товары
 const products = [
   {
     id: 1,
@@ -48,6 +48,21 @@ const products = [
   }
 ];
 
+// Цветовая тема
+const theme = {
+  background: "#0B0F1A",
+  cardBg: "#111625",
+  cardShadow: "0 2px 10px rgba(0,0,0,0.5)",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#A0A0A0",
+  buttonBg: "#00CFFF",
+  buttonHover: "#009FCC",
+  tag: "#00CFFF",
+  newLabel: "#FF3B30",
+  inputBg: "#1A1F33",
+  inputBorder: "#333A50"
+};
+
 const App = () => {
   const [tg, setTg] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -82,13 +97,12 @@ const App = () => {
     } else {
       alert(`Купить: ${product.name} за ${product.price} TON`);
     }
-    // Для MVP: сохраняем в локальный массив myPurchases
     if (!myPurchases.includes(product.id)) setMyPurchases([...myPurchases, product.id]);
   };
 
   return (
-    React.createElement("div", { style: { maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Roboto, sans-serif" } },
-      React.createElement("header", { style: { textAlign: "center", marginBottom: 20 } },
+    React.createElement("div", { style: { maxWidth: 900, margin: "auto", padding: 20, fontFamily: "Roboto, sans-serif", backgroundColor: theme.background, minHeight: "100vh" } },
+      React.createElement("header", { style: { textAlign: "center", marginBottom: 20, color: theme.textPrimary } },
         React.createElement("h1", null, "TONFiles Market"),
         React.createElement("p", null, "Маркетплейс мануалов и гайдов за TON")
       ),
@@ -102,8 +116,9 @@ const App = () => {
               margin: "0 5px",
               padding: "5px 10px",
               borderRadius: 5,
-              border: selectedCategory===cat ? "2px solid #0066ff" : "1px solid #ccc",
-              background: "white",
+              border: selectedCategory===cat ? `2px solid ${theme.buttonBg}` : `1px solid ${theme.inputBorder}`,
+              background: theme.cardBg,
+              color: theme.textPrimary,
               cursor: "pointer"
             }
           }, cat)
@@ -111,7 +126,7 @@ const App = () => {
         // Мои покупки
         React.createElement("button", {
           onClick: () => setViewMyPurchases(!viewMyPurchases),
-          style: { marginLeft: 10, padding: "5px 10px", borderRadius: 5, border: "1px solid #ccc", cursor: "pointer" }
+          style: { marginLeft: 10, padding: "5px 10px", borderRadius: 5, border: `1px solid ${theme.inputBorder}`, background: theme.cardBg, color: theme.textPrimary, cursor: "pointer" }
         }, viewMyPurchases ? "Все товары" : "Мои покупки")
       ),
       // Поиск
@@ -120,12 +135,24 @@ const App = () => {
           type: "text",
           placeholder: "Поиск по названию...",
           onChange: e => setSearch(e.target.value),
-          style: { padding: 5, width: "80%", maxWidth: 400, borderRadius: 5, border: "1px solid #ccc" }
+          style: {
+            padding: 8,
+            width: "80%",
+            maxWidth: 400,
+            borderRadius: 5,
+            border: `1px solid ${theme.inputBorder}`,
+            backgroundColor: theme.inputBg,
+            color: theme.textPrimary
+          }
         })
       ),
       // Сортировка
       React.createElement("div", { style: { textAlign: "center", marginBottom: 15 } },
-        React.createElement("select", { onChange: e => setSortType(e.target.value), value: sortType, style: { padding: 5, borderRadius: 5 } },
+        React.createElement("select", {
+          onChange: e => setSortType(e.target.value),
+          value: sortType,
+          style: { padding: 5, borderRadius: 5, backgroundColor: theme.inputBg, color: theme.textPrimary, border: `1px solid ${theme.inputBorder}` }
+        },
           React.createElement("option", { value: "default" }, "Сортировка по умолчанию"),
           React.createElement("option", { value: "priceAsc" }, "По цене ↑"),
           React.createElement("option", { value: "priceDesc" }, "По цене ↓")
@@ -137,44 +164,56 @@ const App = () => {
           React.createElement("div", {
             key: p.id,
             style: {
-              background: "white",
+              position: "relative",
+              background: theme.cardBg,
               borderRadius: 10,
               padding: 15,
               width: 250,
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+              boxShadow: theme.cardShadow,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               transition: "0.2s",
-              cursor: "pointer"
             }
           },
-            p.isNew && React.createElement("span", { style: { color: "white", backgroundColor: "#ff0000", padding: "2px 5px", borderRadius: 3, position: "absolute", marginTop: "-100px" } }, "NEW"),
+            // NEW метка
+            p.isNew && React.createElement("span", {
+              style: {
+                position: "absolute",
+                top: 10,
+                right: 10,
+                backgroundColor: theme.newLabel,
+                color: "#fff",
+                padding: "2px 5px",
+                borderRadius: 3,
+                fontSize: 12
+              }
+            }, "NEW"),
             React.createElement("img", { src: p.image, alt: p.name, style: { width: 150, height: 150, objectFit: "cover", borderRadius: 8, marginBottom: 10 } }),
-            React.createElement("h3", { style: { textAlign: "center" } }, p.name),
-            React.createElement("p", { style: { textAlign: "center" } }, p.description),
-            React.createElement("p", { style: { textAlign: "center", fontWeight: "bold" } }, `${p.price} TON`),
-            React.createElement("div", { style: { marginBottom: 5 } }, p.tags.map(tag => React.createElement("span", {
-              key: tag,
-              style: { marginRight: 5, fontSize: 12, color: "#0066ff" }
-            }, tag))),
+            React.createElement("h3", { style: { textAlign: "center", color: theme.textPrimary } }, p.name),
+            React.createElement("p", { style: { textAlign: "center", color: theme.textSecondary, fontSize: 14 } }, p.description),
+            React.createElement("p", { style: { textAlign: "center", fontWeight: "bold", color: theme.textPrimary } }, `${p.price} TON`),
+            React.createElement("div", { style: { marginBottom: 5 } }, p.tags.map(tag =>
+              React.createElement("span", { key: tag, style: { marginRight: 5, fontSize: 12, color: theme.tag } }, tag)
+            )),
             React.createElement("button", {
               onClick: () => handleBuy(p),
+              onMouseEnter: e => e.target.style.backgroundColor = theme.buttonHover,
+              onMouseLeave: e => e.target.style.backgroundColor = theme.buttonBg,
               style: {
                 marginTop: 10,
                 padding: "8px 15px",
                 border: "none",
                 borderRadius: 5,
-                backgroundColor: "#0066ff",
-                color: "white",
+                backgroundColor: theme.buttonBg,
+                color: "#000",
                 cursor: "pointer"
               }
             }, "Купить")
           )
         )
       ),
-      // Инструкция если нет товаров
-      displayedProducts.length === 0 && React.createElement("p", { style: { textAlign: "center", marginTop: 20 } }, "Товары не найдены")
+      displayedProducts.length === 0 && React.createElement("p", { style: { textAlign: "center", marginTop: 20, color: theme.textSecondary } }, "Товары не найдены")
     )
   );
 };
