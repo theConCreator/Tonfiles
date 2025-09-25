@@ -1,0 +1,14 @@
+{
+  "name": "tonfiles-market-webapp",
+  "version": "1.0.0",
+  "description": "WebApp для TONFiles Market",
+  "main": "src/App.js",
+  "scripts": {
+    "start": "parcel public/index.html --port 1234",
+    "build": "parcel build public/index.html --public-url ./"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "parcel": "^2.9.3"
+  }
+}
