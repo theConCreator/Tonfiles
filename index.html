@@ -1,216 +1,908 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TONFiles Market</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TONFiles Market — локальный маркетплейс</title>
+
+<!-- =========================
+     СТИЛИ — компактный, современный тёмный UI
+     Используем CSS variables для быстрой кастомизации темы
+     ========================= -->
 <style>
-:root {
-  --bg:#0e1117; --card:#161b22; --accent:#0088cc; --accent-hover:#0099ee;
-  --text:#e6edf3; --muted:#8b949e; --radius:12px;
+:root{
+  --bg: #071026;           /* фон страницы */
+  --surface: #0f1724;      /* карточки / панели */
+  --card: #111827;         /* альтернативный фон карточки */
+  --muted: #98a0b3;        /* второстепенный текст */
+  --text: #e7f0fb;         /* основной текст */
+  --accent: #00cfff;       /* фирменный TON цвет */
+  --accent-2: #009fcc;     /* hover accent */
+  --danger: #ff5b5b;       /* ошибки / удаление */
+  --radius: 12px;
+  --shadow: 0 10px 30px rgba(2,6,23,0.6);
+  --glass: rgba(255,255,255,0.03);
+  --maxWidth: 1200px;
+  --gap: 16px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
-body{margin:0;font-family:"Segoe UI",sans-serif;background:var(--bg);color:var(--text);}
-header{padding:1rem 2rem;background:var(--card);display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
-header h1{margin:0;font-size:1.2rem;}
-nav{display:flex;gap:1rem;}
-nav button{background:none;border:none;color:var(--text);cursor:pointer;font-size:0.9rem;}
-nav button.active{color:var(--accent);font-weight:600;}
-main{padding:1rem;}
-.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
-.card{background:var(--card);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,0.3);transition:transform 0.15s;}
-.card:hover{transform:translateY(-3px);}
-.card img{max-width:100%;border-radius:var(--radius);margin-bottom:0.5rem;}
-.title{font-weight:600;margin:0.3rem 0;}
-.desc{font-size:0.9rem;color:var(--muted);flex-grow:1;}
-.price{font-weight:bold;margin:0.5rem 0;}
-.btn{background:var(--accent);border:none;color:white;padding:0.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;transition:opacity 0.2s;}
-.btn:hover{opacity:0.85;background:var(--accent-hover);}
-#cartBtn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;font-size:22px;font-weight:700;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.25);z-index:999;text-decoration:none;}
-#cartBtn span{font-size:14px;background:#ff4444;border-radius:50%;padding:2px 6px;margin-left:4px;}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:100;}
-.modal-content{background:var(--card);padding:1.5rem;border-radius:var(--radius);max-width:400px;width:90%;text-align:center;position:relative;}
-.modal h2{margin-top:0;}
-.close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;color:var(--muted);cursor:pointer;}
-input, select, textarea{width:100%;padding:0.5rem;margin:0.3rem 0;border-radius:var(--radius);border:none;background:#1b1f2d;color:var(--text);resize:none;}
-@media (max-width:600px){.products{grid-template-columns:1fr;}}
+
+/* Базовые сбросы */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#051225);color:var(--text)}
+a{color:var(--accent);text-decoration:none}
+button{font-family:inherit}
+
+/* Контейнер */
+.app{
+  max-width:var(--maxWidth);margin:28px auto;padding:18px;display:flex;flex-direction:column;gap:18px;
+}
+
+/* Header */
+.header{
+  display:flex;align-items:center;gap:12px;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#00222a;font-size:18px;box-shadow:var(--shadow);
+}
+.title{font-size:18px;font-weight:700}
+.subtitle{color:var(--muted);font-size:13px}
+
+/* Controls row */
+.controls{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+}
+.search {
+  flex:1;min-width:200px;max-width:540px;display:flex;gap:8px;align-items:center;background:var(--glass);padding:8px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)
+}
+.search input{
+  flex:1;background:transparent;border:0;outline:none;color:var(--text);padding:6px 0;font-size:14px;
+}
+.select, .sort{
+  background:var(--surface);border-radius:10px;padding:8px;border:1px solid rgba(255,255,255,0.02);color:var(--text)
+}
+.action-buttons{display:flex;gap:10px;align-items:center}
+
+/* Main layout: left = filters+grid, right = side panel (cart / favorites / add form) */
+.layout{display:grid;grid-template-columns:1fr 360px;gap:var(--gap)}
+@media (max-width:1000px){ .layout{grid-template-columns:1fr} }
+
+/* Left panel (catalog) */
+.panel{
+  background:linear-gradient(180deg,var(--surface), rgba(255,255,255,0.01));padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,0.02);
+  box-shadow:0 8px 24px rgba(2,6,23,0.5);
+}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filter-btn{padding:8px 10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--text);cursor:pointer}
+.filter-btn.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#00222a;font-weight:700;box-shadow:0 6px 18px rgba(0,204,255,0.05)}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+
+/* Card */
+.card{
+  background:var(--card);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;border:1px solid rgba(255,255,255,0.02);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s;
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 48px rgba(2,6,23,0.6);border-color:rgba(0,204,255,0.08)}
+.thumb{height:140px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#0c1220,#101426);display:flex;align-items:center;justify-content:center}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.card .title{font-size:15px;font-weight:700}
+.card .desc{color:var(--muted);font-size:13px;min-height:38px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.price{font-weight:800;color:var(--accent)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);color:var(--accent);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+
+/* Card actions */
+.actions{display:flex;gap:8px;align-items:center}
+.btn{padding:8px 10px;border-radius:10px;border:none;background:var(--accent);color:#00222a;font-weight:700;cursor:pointer}
+.btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--text);font-weight:600}
+.btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.03);color:var(--muted)}
+
+/* Side panel (cart & add form) */
+.side{
+  display:flex;flex-direction:column;gap:12px;
+}
+.panel.small{padding:12px}
+.cart-item{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01)}
+.cart-item img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+.cart-item .meta{flex:1}
+.cart-total{font-weight:800;color:var(--accent);font-size:16px}
+
+/* Add product form (side) */
+.form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.input{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);background:transparent;color:var(--text)}
+
+/* Modal preview */
+.modal{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:9999;padding:20px
+}
+.modal .box{background:var(--surface);border-radius:12px;padding:14px;max-width:1100px;width:100%;max-height:90vh;overflow:auto}
+.modal .close{position:absolute;right:24px;top:24px;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
+
+/* Toast */
+.toast-wrap{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:10010}
+.toast{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#00222a;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(2,6,23,0.5);transform:translateX(20px);opacity:0;transition:all .25s}
+.toast.show{transform:translateX(0);opacity:1}
+
+/* Footer small hint */
+.hint{color:var(--muted);font-size:13px;text-align:center;padding:8px}
 </style>
 </head>
 <body>
-<header>
-  <h1>TONFiles Market</h1>
-  <nav>
-    <button onclick="showSection('market')" class="active" id="navMarket">Маркет</button>
-    <button onclick="showSection('add')">Добавить товар</button>
-    <button onclick="showSection('cart')">Корзина <span id="cartCount">0</span></button>
-  </nav>
-</header>
 
-<main>
-  <div id="marketSection">
-    <div style="margin-bottom:1rem;">
-      <label>Категория:
-        <select id="categoryFilter" onchange="renderProducts()">
-          <option value="all">Все</option>
-        </select>
-      </label>
-      <label>Сортировать:
-        <select id="sortFilter" onchange="renderProducts()">
-          <option value="newest">Новизна</option>
-          <option value="priceAsc">Цена ↑</option>
-          <option value="priceDesc">Цена ↓</option>
-        </select>
-      </label>
-      <input type="text" id="searchInput" placeholder="Поиск товаров..." oninput="renderProducts()">
+<!-- =========================
+     HTML-структура приложения
+     ========================= -->
+<div class="app" id="app">
+
+  <!-- Header: логотип, название, быстрые action -->
+  <div class="header">
+    <div class="brand">
+      <div class="logo">TF</div>
+      <div>
+        <div class="title">TONFiles Market</div>
+        <div class="subtitle">Маркетплейс мануалов и файлов за TON</div>
+      </div>
     </div>
-    <div class="products" id="products"></div>
+
+    <!-- Поиск, кнопки -->
+    <div class="controls" role="region" aria-label="Управление">
+      <div class="search" role="search" title="Поиск">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z" stroke="#cfefff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21l-4.35-4.35" stroke="#cfefff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="searchInput" placeholder="Поиск по названию, описанию или тегу" aria-label="Поиск"/>
+      </div>
+
+      <select id="sortSelect" class="select" title="Сортировка">
+        <option value="newest">Сортировка: по новизне</option>
+        <option value="popular">По популярности</option>
+        <option value="priceAsc">По цене ↑</option>
+        <option value="priceDesc">По цене ↓</option>
+      </select>
+
+      <div class="action-buttons">
+        <button id="btnFav" class="btn secondary" title="Избранное">Избранное</button>
+        <button id="btnCart" class="btn" title="Корзина">Корзина (<span id="cartCount">0</span>)</button>
+      </div>
+    </div>
   </div>
 
-  <div id="addSection" style="display:none;">
-    <h2>Добавить новый товар</h2>
-    <form id="addForm">
-      <input type="text" id="addTitle" placeholder="Название" required>
-      <textarea id="addDesc" placeholder="Описание"></textarea>
-      <input type="number" id="addPrice" placeholder="Цена (TON)" required>
-      <input type="text" id="addCategory" placeholder="Категория" required>
-      <input type="text" id="addPreview" placeholder="Ссылка на превью">
-      <button class="btn" type="submit">Добавить</button>
-    </form>
+  <!-- Основная сетка: каталог + side (корзина/форма) -->
+  <div class="layout">
+
+    <!-- Левая часть: каталог -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="display:flex;flex-direction:column">
+          <div style="font-weight:700">Каталог</div>
+          <div style="color:var(--muted);font-size:13px">Выберите категорию или используйте поиск</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="btnRefresh" class="btn secondary" title="Сброс">Сброс</button>
+          <button id="btnAddView" class="btn secondary" title="Переключить форму">Добавить товар</button>
+        </div>
+      </div>
+
+      <!-- Фильтры категорий -->
+      <div class="filters" id="categoriesContainer" aria-label="Категории"></div>
+
+      <!-- Grid товаров -->
+      <div class="grid" id="grid"></div>
+
+      <div class="hint">Товары хранятся локально (localStorage). Позже можно подключить бекенд.</div>
+    </div>
+
+    <!-- Правая часть: side panel — корзина + форма добавления -->
+    <div class="side">
+      <!-- Cart panel -->
+      <div class="panel small" id="cartPanel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-weight:700">Корзина</div>
+          <div id="cartSummary" class="cart-total">0 TON</div>
+        </div>
+        <div id="cartList" style="display:flex;flex-direction:column;gap:8px;min-height:60px"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn" id="checkoutBtn">Оплатить (имитация)</button>
+          <button class="btn secondary" id="clearCartBtn">Очистить</button>
+        </div>
+      </div>
+
+      <!-- Add product panel -->
+      <div class="panel small" id="addPanel" aria-live="polite">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div style="font-weight:700">Добавить товар</div>
+          <div style="font-size:13px;color:var(--muted)">Поля сохраняются локально</div>
+        </div>
+
+        <!-- Улучшенная форма добавления товара -->
+        <form id="addForm" style="display:flex;flex-direction:column;gap:8px">
+          <div class="form-row">
+            <label style="font-size:13px;color:var(--muted)">Название</label>
+            <input id="prodTitle" class="input" placeholder="Короткое название" required>
+          </div>
+
+          <div class="form-row">
+            <label style="font-size:13px;color:var(--muted)">Описание</label>
+            <textarea id="prodDesc" class="input" rows="3" placeholder="Короткое описание продукта"></textarea>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <input id="prodPrice" class="input" type="number" step="0.01" placeholder="Цена (TON)" style="flex:1" required>
+            <input id="prodCategory" class="input" placeholder="Категория (например: Гайды)" style="flex:1">
+          </div>
+
+          <div class="form-row">
+            <label style="font-size:13px;color:var(--muted)">Превью (URL или загрузка)</label>
+            <input id="prodPreviewUrl" class="input" placeholder="https://... (изображение для карточки)"/>
+            <!-- Файловая загрузка: используем dataURL и сохраняем в localStorage -->
+            <input id="prodPreviewFile" class="input" type="file" accept="image/*">
+            <div id="previewPreview" style="height:90px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#0a1119,#0e1420);display:flex;align-items:center;justify-content:center;color:var(--muted)">Превью не загружено</div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <input id="prodTags" class="input" placeholder="#tag1, #tag2 (через запятую)" />
+            <label style="display:flex;align-items:center;gap:8px;color:var(--muted)"><input id="prodVip" type="checkbox"/> VIP</label>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn" type="submit">Добавить товар</button>
+            <button class="btn secondary" type="button" id="clearAdd">Очистить</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
   </div>
 
-  <div id="cartSection" style="display:none;">
-    <h2>Корзина</h2>
-    <div id="cartItems"></div>
-    <button class="btn" onclick="checkout()">Оплатить</button>
+  <!-- Preview modal -->
+  <div class="modal" id="previewModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="box" style="position:relative">
+      <button class="close" id="closePreview">✕</button>
+      <div id="previewContent"></div>
+    </div>
   </div>
-</main>
 
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <button class="close" onclick="closeModal()">×</button>
-    <h2>Информация</h2>
-    <div id="modalText"></div>
-    <button class="btn" onclick="closeModal()">Ок</button>
-  </div>
+  <!-- Toasts -->
+  <div class="toast-wrap" id="toasts"></div>
+
 </div>
 
+<!-- =========================
+     JavaScript — логика приложения
+     Комментарии в коде объясняют каждую часть
+     ========================= -->
 <script>
-// ====== Данные ======
-let products = JSON.parse(localStorage.getItem("products")||"[]");
-let cart = JSON.parse(localStorage.getItem("cart")||"[]");
+/* =========================
+   Helper / Storage utilities
+   ========================= */
 
-// Пример товаров, если пусто
-if(products.length===0){
-  products = [
-    {id:1,title:"Гайд по TON",description:"Подробный мануал",price:15,category:"Гайды",preview:"https://via.placeholder.com/300x200.png?text=Guide"},
-    {id:2,title:"Скрипт автоторговли",description:"Python скрипт",price:50,category:"Скрипты",preview:"https://via.placeholder.com/300x200.png?text=Script"},
-    {id:3,title:"Коллекция эмодзи",description:"Эксклюзивные эмодзи",price:7,category:"Эмодзи",preview:"https://via.placeholder.com/300x200.png?text=Emoji"}
-  ];
-  localStorage.setItem("products", JSON.stringify(products));
+/*
+ Structure in localStorage:
+ - products: array of product objects
+ - cart: array of product ids
+ - purchases: array of purchase records
+ - favorites: array of product ids
+*/
+
+const LS_KEYS = {
+  PRODUCTS: "tf_products_v1",
+  CART: "tf_cart_v1",
+  PURCHASES: "tf_purchases_v1",
+  FAVORITES: "tf_favs_v1"
+};
+
+// Готовые примерные товары для первого запуска (если localStorage пуст)
+const SAMPLE_PRODUCTS = [
+  { id: 1, title: "TON Trading Guide", description: "Полный гайд по торговле на TON — стратегии, примеры.", price: 5, category:"Гайды", preview:"https://via.placeholder.com/640x360.png?text=TON+Trading+Guide", tags:["#trading","#guide"], vip:false, popularity:120, createdAt: Date.now() - 1000*60*60*24*10 },
+  { id: 2, title: "NFT Basics", description: "Введение в NFT на TON. Быстрый старт.", price: 3, category:"Гайды", preview:"https://via.placeholder.com/640x360.png?text=NFT+Basics", tags:["#nft","#basics"], vip:false, popularity:85, createdAt: Date.now() - 1000*60*60*24*20 },
+  { id: 3, title: "Crypto Bot Tutorial", description: "Примеры интеграции с CryptoBot API.", price: 4, category:"Скрипты", preview:"https://via.placeholder.com/640x360.png?text=Crypto+Bot+Tutorial", tags:["#cryptobot","#tutorial"], vip:false, popularity:200, createdAt: Date.now() - 1000*60*60*24*5 },
+  { id: 4, title: "Emoji Pack", description: "Набор авторских эмодзи и аватарок.", price: 7, category:"Эмодзи", preview:"https://via.placeholder.com/640x360.png?text=Emoji+Pack", tags:["#emoji","#pack"], vip:false, popularity:40, createdAt: Date.now() - 1000*60*60*24*2 }
+];
+
+// Read/write helpers
+function readLS(key){ try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null } }
+function writeLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+/* Инициализация данных (если ещё нет) */
+let products = readLS(LS_KEYS.PRODUCTS);
+if(!Array.isArray(products) || products.length===0){
+  products = SAMPLE_PRODUCTS.slice();
+  writeLS(LS_KEYS.PRODUCTS, products);
 }
+let cart = readLS(LS_KEYS.CART) || [];
+let purchases = readLS(LS_KEYS.PURCHASES) || [];
+let favorites = readLS(LS_KEYS.FAVORITES) || [];
 
-// ====== UI функции ======
-function showSection(sec){
-  ["marketSection","addSection","cartSection"].forEach(s=>document.getElementById(s).style.display="none");
-  document.getElementById(sec+"Section").style.display="block";
-  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
-  if(sec==="market") document.getElementById("navMarket").classList.add("active");
-  updateCartCount();
-}
+/* =========================
+   UI references
+   ========================= */
+const gridEl = document.getElementById("grid");
+const categoriesContainer = document.getElementById("categoriesContainer");
+const searchInput = document.getElementById("searchInput");
+const sortSelect = document.getElementById("sortSelect");
+const cartCountEl = document.getElementById("cartCount");
+const cartListEl = document.getElementById("cartList");
+const cartSummaryEl = document.getElementById("cartSummary");
+const toastsWrap = document.getElementById("toasts");
+const previewModal = document.getElementById("previewModal");
+const previewContent = document.getElementById("previewContent");
 
-function renderProducts(){
-  const container = document.getElementById("products");
-  const search = document.getElementById("searchInput").value.toLowerCase();
-  const category = document.getElementById("categoryFilter").value;
-  const sort = document.getElementById("sortFilter").value;
-  let filtered = products.filter(p=>p.title.toLowerCase().includes(search)||p.description.toLowerCase().includes(search));
-  if(category!=="all") filtered = filtered.filter(p=>p.category===category);
-  if(sort==="priceAsc") filtered.sort((a,b)=>a.price-b.price);
-  if(sort==="priceDesc") filtered.sort((a,b)=>b.price-a.price);
-  if(sort==="newest") filtered.sort((a,b)=>b.id-b.id);
-  container.innerHTML="";
-  filtered.forEach(p=>{
-    const card = document.createElement("div"); card.className="card";
-    card.innerHTML=`
-      ${p.preview?`<img src="${p.preview}">`:""}
-      <div class="title">${p.title}</div>
-      <div class="desc">${p.description}</div>
-      <div class="price">${p.price} TON</div>
-      <button class="btn" onclick="addToCart(${p.id})">Купить</button>
-    `;
-    container.appendChild(card);
-  });
+/* =========================
+   Rendering functions
+   ========================= */
+
+/* Рендер каталога: фильтрация, поиск, сортировка */
+function renderCatalog(){
+  // Считываем критерии
+  const q = (searchInput.value || "").trim().toLowerCase();
+  const sort = sortSelect.value;
+  // Создаём фильтрованный список
+  let list = products.slice();
+
+  // Search: title / description / tags
+  if(q){
+    list = list.filter(p=>{
+      const hay = (p.title + " " + (p.description||"") + " " + (p.tags||[]).join(" ")).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+  }
+
+  // Category buttons: build from products
   populateCategories();
-}
 
-function populateCategories(){
-  const sel = document.getElementById("categoryFilter");
-  const cats = Array.from(new Set(products.map(p=>p.category)));
-  sel.innerHTML='<option value="all">Все</option>';
-  cats.forEach(c=>sel.innerHTML+=`<option value="${c}">${c}</option>`);
-}
+  // Sort
+  if(sort === "priceAsc") list.sort((a,b)=>a.price-b.price);
+  else if(sort === "priceDesc") list.sort((a,b)=>b.price-a.price);
+  else if(sort === "popular") list.sort((a,b)=>b.popularity - a.popularity);
+  else if(sort === "newest") list.sort((a,b)=>b.createdAt - a.createdAt);
 
-function addToCart(id){
-  const item = products.find(p=>p.id===id);
-  if(!item) return;
-  if(!cart.find(c=>c.id===id)) cart.push(item);
-  localStorage.setItem("cart",JSON.stringify(cart));
-  updateCartCount();
-  showModal(`Товар <b>${item.title}</b> добавлен в корзину`);
-}
+  // Render grid
+  gridEl.innerHTML = "";
+  if(list.length === 0){
+    gridEl.innerHTML = `<div style="padding:28px;color:var(--muted)">Товары не найдены — измените фильтр или добавьте новый товар.</div>`;
+    return;
+  }
 
-function updateCartCount(){document.getElementById("cartCount").textContent=cart.length;}
+  list.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    // шаблон карточки. Для каждого элемента — превью, title, desc, tags, price и кнопки
+    card.innerHTML = `
+      <div class="thumb" data-id="${p.id}">
+        <img loading="lazy" src="${p.preview || ''}" alt="${escapeHtml(p.title)}" onerror="this.style.display='none'">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="title">${escapeHtml(p.title)}</div>
+        <div class="desc">${escapeHtml(p.description || '')}</div>
+        <div class="row" style="align-items:center">
+          <div class="tags">${(p.tags||[]).map(t=>`<span class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`).join("")}</div>
+          <div class="price">${p.price} TON</div>
+        </div>
+        <div class="actions" style="margin-top:6px">
+          <button class="btn" data-buy="${p.id}">${cart.find(c=>c.id===p.id)? "В корзине" : "Купить"}</button>
+          <button class="btn secondary" data-preview="${p.id}">Preview</button>
+          <button class="btn ghost" data-fav="${p.id}">${favorites.includes(p.id)? "★" : "☆"}</button>
+        </div>
+      </div>
+    `;
+    // Delegation: add listeners for buttons
+    gridEl.appendChild(card);
+  });
 
-function renderCart(){
-  const container = document.getElementById("cartItems");
-  container.innerHTML="";
-  if(cart.length===0){container.innerHTML="<p>Корзина пуста</p>"; return;}
-  cart.forEach(c=>{
-    const div=document.createElement("div");
-    div.innerHTML=`${c.title} - ${c.price} TON <button class="btn" onclick="removeFromCart(${c.id})">Удалить</button>`;
-    container.appendChild(div);
+  // attach listeners (delegation style)
+  // Buy buttons
+  gridEl.querySelectorAll('[data-buy]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = Number(e.currentTarget.getAttribute('data-buy'));
+      addToCartById(id);
+    };
+  });
+  // Preview buttons
+  gridEl.querySelectorAll('[data-preview]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = Number(e.currentTarget.getAttribute('data-preview'));
+      openPreviewById(id);
+    };
+  });
+  // Fav buttons
+  gridEl.querySelectorAll('[data-fav]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = Number(e.currentTarget.getAttribute('data-fav'));
+      toggleFavorite(id);
+      renderCatalog(); // refresh to update star
+    };
+  });
+  // Tag click
+  gridEl.querySelectorAll('.tag').forEach(el=>{
+    el.onclick = (ev)=>{
+      const tag = ev.currentTarget.getAttribute('data-tag');
+      searchInput.value = tag.replace(/^#/, ''); // set search by tag
+      renderCatalog();
+      flash(`Фильтр по тегу ${tag}`);
+    };
   });
 }
 
-function removeFromCart(id){
-  cart=cart.filter(c=>c.id!==id);
-  localStorage.setItem("cart",JSON.stringify(cart));
+/* Populate categories as filter buttons */
+function populateCategories(){
+  const container = categoriesContainer;
+  const cats = Array.from(new Set(products.map(p=>p.category || "Без категории")));
+  container.innerHTML = '';
+  // "Все" button
+  const allBtn = document.createElement("button");
+  allBtn.className = "filter-btn active";
+  allBtn.textContent = "Все";
+  allBtn.dataset.cat = "all";
+  allBtn.onclick = ()=>{ setActiveCategory('all'); };
+  container.appendChild(allBtn);
+
+  cats.forEach(cat=>{
+    const btn = document.createElement("button");
+    btn.className = "filter-btn";
+    btn.textContent = cat;
+    btn.dataset.cat = cat;
+    btn.onclick = ()=>{ setActiveCategory(cat); };
+    container.appendChild(btn);
+  });
+
+  // reflect active category
+  const active = document.querySelector('.filter-btn[data-cat].active');
+  // if none active, keep All active
+}
+
+/* Set active category filter */
+let ACTIVE_CATEGORY = 'all';
+function setActiveCategory(cat){
+  ACTIVE_CATEGORY = cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  const el = Array.from(document.querySelectorAll('.filter-btn')).find(b=>b.dataset.cat === cat);
+  if(el) el.classList.add('active');
+  // perform filtering: update search to include category
+  // We'll filter by category in renderCatalog
+  // so modify renderCatalog to respect ACTIVE_CATEGORY
+  renderCatalogWithCategory();
+}
+
+/* Modified render that takes category into account */
+function renderCatalogWithCategory(){
+  const q = (searchInput.value || "").trim().toLowerCase();
+  const sort = sortSelect.value;
+  let list = products.slice();
+
+  // Category filter
+  if(ACTIVE_CATEGORY && ACTIVE_CATEGORY !== 'all'){
+    list = list.filter(p=> (p.category || "Без категории") === ACTIVE_CATEGORY);
+  }
+
+  // Search
+  if(q){
+    list = list.filter(p=>{
+      const hay = (p.title + " " + (p.description||"") + " " + (p.tags||[]).join(" ")).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+  }
+
+  // Sort
+  if(sort === "priceAsc") list.sort((a,b)=>a.price-b.price);
+  else if(sort === "priceDesc") list.sort((a,b)=>b.price-a.price);
+  else if(sort === "popular") list.sort((a,b)=>b.popularity - a.popularity);
+  else if(sort === "newest") list.sort((a,b)=>b.createdAt - a.createdAt);
+
+  // Render
+  gridEl.innerHTML = "";
+  if(list.length === 0){
+    gridEl.innerHTML = `<div style="padding:28px;color:var(--muted)">Товары не найдены</div>`;
+    return;
+  }
+  list.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="thumb" data-id="${p.id}">
+        <img loading="lazy" src="${p.preview || ''}" alt="${escapeHtml(p.title)}" onerror="this.style.display='none'">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="title">${escapeHtml(p.title)}</div>
+        <div class="desc">${escapeHtml(p.description || '')}</div>
+        <div class="row" style="align-items:center">
+          <div class="tags">${(p.tags||[]).map(t=>`<span class="tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</span>`).join("")}</div>
+          <div class="price">${p.price} TON</div>
+        </div>
+        <div class="actions" style="margin-top:6px">
+          <button class="btn" data-buy="${p.id}">${cart.find(c=>c.id===p.id)? "В корзине" : "Купить"}</button>
+          <button class="btn secondary" data-preview="${p.id}">Preview</button>
+          <button class="btn ghost" data-fav="${p.id}">${favorites.includes(p.id)? "★" : "☆"}</button>
+        </div>
+      </div>
+    `;
+    gridEl.appendChild(card);
+  });
+
+  // Attach listeners as before
+  gridEl.querySelectorAll('[data-buy]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = Number(e.currentTarget.getAttribute('data-buy'));
+      addToCartById(id);
+    };
+  });
+  gridEl.querySelectorAll('[data-preview]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = Number(e.currentTarget.getAttribute('data-preview'));
+      openPreviewById(id);
+    };
+  });
+  gridEl.querySelectorAll('[data-fav]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      const id = Number(e.currentTarget.getAttribute('data-fav'));
+      toggleFavorite(id);
+      renderCatalogWithCategory();
+    };
+  });
+  gridEl.querySelectorAll('.tag').forEach(el=>{
+    el.onclick = (ev)=>{
+      const tag = ev.currentTarget.getAttribute('data-tag');
+      searchInput.value = tag.replace(/^#/, '');
+      renderCatalogWithCategory();
+      flash(`Фильтр по тегу ${tag}`);
+    };
+  });
+}
+
+/* =========================
+   Cart functions
+   ========================= */
+
+/* Add product to cart by id */
+function addToCartById(id){
+  const p = products.find(x=>x.id===id);
+  if(!p) return flash('Товар не найден','danger');
+  if(cart.find(c=>c.id===id)) {
+    flash('Товар уже в корзине');
+    return;
+  }
+  cart.push({ id: p.id, title: p.title, price: p.price, preview: p.preview });
+  writeCart();
+  flash(`Добавлено в корзину: ${p.title}`);
   renderCart();
-  updateCartCount();
+  renderCatalogWithCategory();
 }
 
+function writeCart(){
+  writeLS(LS_KEYS.CART, cart);
+  updateCartUI();
+}
+
+/* Remove from cart */
+function removeFromCart(id){
+  cart = cart.filter(c=>c.id!==id);
+  writeCart();
+  renderCart();
+  flash('Удалено из корзины');
+}
+
+/* Render cart list and summary */
+function renderCart(){
+  const el = cartListEl;
+  el.innerHTML = '';
+  if(cart.length === 0){
+    el.innerHTML = `<div style="color:var(--muted)">Корзина пуста</div>`;
+    cartSummaryEl.textContent = '0 TON';
+    updateCartUI();
+    return;
+  }
+  cart.forEach(item=>{
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <img src="${item.preview || ''}" onerror="this.style.display='none'"/>
+      <div class="meta">
+        <div style="font-weight:700">${escapeHtml(item.title)}</div>
+        <div style="color:var(--muted);font-size:13px">${item.price} TON</div>
+      </div>
+      <div>
+        <button class="btn ghost" data-remove="${item.id}">Удалить</button>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+  el.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.onclick = (e)=> removeFromCart(Number(e.currentTarget.getAttribute('data-remove')));
+  });
+  const total = cart.reduce((s,i)=>s + Number(i.price || 0), 0);
+  cartSummaryEl.textContent = `${total} TON`;
+  updateCartUI();
+}
+
+/* Checkout (fake) */
 function checkout(){
-  if(cart.length===0){showModal("Корзина пуста");return;}
-  let total = cart.reduce((a,b)=>a+b.price,0);
-  showModal(`Фейковая оплата: ${total} TON. После оплаты товары будут доступны для скачивания.`);
-  cart=[]; localStorage.setItem("cart",JSON.stringify(cart)); renderCart(); updateCartCount();
+  if(cart.length === 0){ flash('Корзина пуста'); return; }
+  // Simulate a purchase record: save to purchases and clear cart
+  const total = cart.reduce((s,i)=>s + Number(i.price || 0), 0);
+  const rec = {
+    id: Date.now(),
+    items: cart.map(c=>({ id:c.id, title:c.title, price:c.price })),
+    total,
+    paidAt: new Date().toISOString()
+  };
+  purchases.push(rec);
+  writeLS(LS_KEYS.PURCHASES, purchases);
+  cart = [];
+  writeCart();
+  renderCart();
+  flash(`Оплата имитирована: ${total} TON — товары сохранены в "Мои покупки"`);
 }
 
-// ====== Добавление товара ======
-document.getElementById("addForm").addEventListener("submit",e=>{
-  e.preventDefault();
-  const id=products.length?products[products.length-1].id+1:1;
-  const title=document.getElementById("addTitle").value;
-  const desc=document.getElementById("addDesc").value;
-  const price=Number(document.getElementById("addPrice").value);
-  const category=document.getElementById("addCategory").value;
-  const preview=document.getElementById("addPreview").value;
-  const item={id,title,description:desc,price,category,preview};
-  products.push(item);
-  localStorage.setItem("products",JSON.stringify(products));
-  renderProducts();
-  showSection("market");
-  showModal(`Товар <b>${title}</b> добавлен`);
-  document.getElementById("addForm").reset();
+/* UI updates for cart count */
+function updateCartUI(){
+  const count = cart.length;
+  cartCountEl.textContent = count;
+}
+
+/* Clear cart */
+function clearCart(){
+  cart = [];
+  writeCart();
+  renderCart();
+  flash('Корзина очищена');
+}
+
+/* =========================
+   Favorites
+   ========================= */
+function toggleFavorite(id){
+  if(favorites.includes(id)){
+    favorites = favorites.filter(x=>x!==id);
+  } else {
+    favorites.push(id);
+  }
+  writeLS(LS_KEYS.FAVORITES, favorites);
+  flash(favorites.includes(id) ? 'Добавлено в избранное' : 'Удалено из избранного');
+}
+
+/* =========================
+   Preview modal
+   ========================= */
+function openPreviewById(id){
+  const p = products.find(x=>x.id===id);
+  if(!p) return;
+  previewContent.innerHTML = `
+    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:320px">
+        ${p.preview ? `<img src="${p.preview}" style="max-width:100%;border-radius:8px" alt="${escapeHtml(p.title)}">` : `<div style="padding:40px;border-radius:8px;background:var(--card);color:var(--muted)">Превью недоступно</div>`}
+      </div>
+      <div style="flex:1;min-width:260px">
+        <h2 style="margin-top:0">${escapeHtml(p.title)}</h2>
+        <div style="color:var(--muted);margin-bottom:12px">${escapeHtml(p.description||'')}</div>
+        <div style="font-weight:800;margin-bottom:8px">${p.price} TON</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="addToCartById(${p.id}); closePreview();">Купить</button>
+          <button class="btn secondary" onclick="toggleFavorite(${p.id}); renderCatalogWithCategory();">В избранное</button>
+        </div>
+      </div>
+    </div>
+  `;
+  previewModal.style.display = 'flex';
+  previewModal.setAttribute('aria-hidden', 'false');
+}
+function closePreview(){ previewModal.style.display = 'none'; previewModal.setAttribute('aria-hidden','true'); }
+
+/* =========================
+   Add product form (improved UX)
+   - supports URL preview or file upload
+   - validates fields minimally
+   - stores preview images as dataURL (for local demo)
+   ========================= */
+const addForm = document.getElementById('addForm');
+const prodPreviewFile = document.getElementById('prodPreviewFile');
+const prodPreviewUrl = document.getElementById('prodPreviewUrl');
+const previewPreview = document.getElementById('previewPreview');
+
+let stagedPreviewData = null; // dataURL or url
+
+// File upload: read as dataURL
+prodPreviewFile.addEventListener('change', async (e)=>{
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  if(!f.type.startsWith('image/')){ flash('Только изображения допустимы'); return; }
+  const dataUrl = await readFileAsDataURL(f);
+  stagedPreviewData = dataUrl;
+  previewPreview.innerHTML = `<img src="${dataUrl}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
+  prodPreviewUrl.value = ''; // clear URL if file provided
 });
 
-// ====== Модал ======
-function showModal(html){document.getElementById("modalText").innerHTML=html; document.getElementById("modal").style.display="flex";}
-function closeModal(){document.getElementById("modal").style.display="none";}
+// URL preview: set stagedPreviewData to url if valid
+prodPreviewUrl.addEventListener('change', (e)=>{
+  const v = e.target.value.trim();
+  if(!v){ stagedPreviewData = null; previewPreview.innerHTML = 'Превью не загружено'; return; }
+  // quick validation: starts with http(s)
+  if(!/^https?:\/\/.+\.(png|jpg|jpeg|webp|gif|svg)$/i.test(v)){
+    // still allow non-image URLs but warn
+    stagedPreviewData = v;
+    previewPreview.innerHTML = `<div style="padding:12px;color:var(--muted)">URL сохранён (не проверено). Превью может быть недоступно.</div>`;
+    return;
+  }
+  stagedPreviewData = v;
+  previewPreview.innerHTML = `<img src="${v}" alt="preview" style="width:100%;height:100%;object-fit:cover">`;
+});
 
-// ====== Инициализация ======
-renderProducts();
+// Add product submit
+addForm.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  const title = document.getElementById('prodTitle').value.trim();
+  const desc = document.getElementById('prodDesc').value.trim();
+  const price = Number(document.getElementById('prodPrice').value);
+  const category = document.getElementById('prodCategory').value.trim() || 'Без категории';
+  const tagsRaw = document.getElementById('prodTags').value.trim();
+  const tags = tagsRaw ? tagsRaw.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const vip = document.getElementById('prodVip').checked;
+
+  // validation
+  if(!title){ flash('Введите название'); return; }
+  if(!price || price <= 0){ flash('Введите корректную цену'); return; }
+
+  const id = (products.length? Math.max(...products.map(p=>p.id)) : 0) + 1;
+  const newProd = {
+    id,
+    title,
+    description: desc,
+    price,
+    category,
+    tags,
+    preview: stagedPreviewData || '', // might be null or URL
+    vip: !!vip,
+    popularity: 0,
+    createdAt: Date.now()
+  };
+  products.push(newProd);
+  writeLS(LS_KEYS.PRODUCTS, products);
+  // reset form
+  addForm.reset();
+  stagedPreviewData = null;
+  previewPreview.innerHTML = 'Превью не загружено';
+  flash('Товар добавлен');
+  renderCatalogWithCategory();
+});
+
+/* Clear add form */
+document.getElementById('clearAdd').addEventListener('click', ()=>{
+  addForm.reset(); stagedPreviewData = null; previewPreview.innerHTML = 'Превью не загружено';
+});
+
+/* Quick helper to read file as dataURL */
+function readFileAsDataURL(file){
+  return new Promise((res, rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result);
+    r.onerror = ()=>rej();
+    r.readAsDataURL(file);
+  });
+}
+
+/* =========================
+   Utility UI: toasts, flash messages
+   ========================= */
+function flash(message, type='info', timeout=2200){
+  const node = document.createElement('div');
+  node.className = 'toast';
+  node.innerHTML = message;
+  toastsWrap.appendChild(node);
+  setTimeout(()=>node.classList.add('show'),20);
+  setTimeout(()=>{ node.classList.remove('show'); setTimeout(()=>node.remove(),300) }, timeout);
+}
+
+/* =========================
+   Helpers
+   ========================= */
+function escapeHtml(s){
+  if(!s) return '';
+  return s.replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* =========================
+   Events and initial rendering
+   ========================= */
+document.getElementById('btnRefresh').addEventListener('click', ()=>{
+  // Reset filters and rerender
+  searchInput.value = '';
+  sortSelect.value = 'newest';
+  setActiveCategory('all');
+  renderCatalogWithCategory();
+  flash('Фильтры сброшены');
+});
+
+document.getElementById('btnAddView').addEventListener('click', ()=>{
+  // Scroll to add panel for convenience on small screens
+  document.getElementById('prodTitle').focus();
+  flash('Заполните поля и нажмите "Добавить товар"');
+});
+
+document.getElementById('btnCart').addEventListener('click', ()=>{
+  // Scroll to cart panel
+  const el = document.getElementById('cartPanel');
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+document.getElementById('checkoutBtn').addEventListener('click', ()=> checkout());
+document.getElementById('clearCartBtn').addEventListener('click', ()=> clearCart());
+document.getElementById('btnFav').addEventListener('click', ()=>{
+  // show favorites in search
+  if(favorites.length === 0){ flash('Избранных нет'); return; }
+  // filter products to favorites
+  searchInput.value = '';
+  setActiveCategory('all');
+  // show only favorites by temporarily filtering products
+  gridEl.innerHTML = "";
+  const favProds = products.filter(p=>favorites.includes(p.id));
+  favProds.forEach(p=>{
+    // reuse simple card rendering to show favorites
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `
+      <div class="thumb"><img src="${p.preview || ''}" onerror="this.style.display='none'"/></div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="title">${escapeHtml(p.title)}</div>
+        <div class="desc">${escapeHtml(p.description||'')}</div>
+        <div class="row" style="align-items:center">
+          <div class="tags">${(p.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+          <div class="price">${p.price} TON</div>
+        </div>
+        <div class="actions" style="margin-top:6px">
+          <button class="btn" data-buy="${p.id}">${cart.find(c=>c.id===p.id)? "В корзине" : "Купить"}</button>
+          <button class="btn secondary" data-preview="${p.id}">Preview</button>
+          <button class="btn ghost" data-fav="${p.id}">${favorites.includes(p.id)? "★" : "☆"}</button>
+        </div>
+      </div>
+    `;
+    gridEl.appendChild(card);
+  });
+  // attach handlers minimal
+  gridEl.querySelectorAll('[data-buy]').forEach(btn=> btn.onclick = (e)=> addToCartById(Number(e.currentTarget.dataset.buy)));
+  gridEl.querySelectorAll('[data-preview]').forEach(btn=> btn.onclick = (e)=> openPreviewById(Number(e.currentTarget.dataset.preview)));
+});
+
+searchInput.addEventListener('input', ()=> renderCatalogWithCategory());
+sortSelect.addEventListener('change', ()=> renderCatalogWithCategory());
+
+// Close preview modal
+document.getElementById('closePreview').addEventListener('click', closePreview);
+previewModal.addEventListener('click', (e)=>{ if(e.target === previewModal) closePreview(); });
+
+// Initial render
+renderCatalogWithCategory();
 renderCart();
-showSection("market");
+updateCartUI();
+
+/* =========================
+   Small utility functions for working with LS after updates
+   ========================= */
+function persistProducts(){ writeLS(LS_KEYS.PRODUCTS, products); }
+function persistCart(){ writeLS(LS_KEYS.CART, cart); }
+function persistPurchases(){ writeLS(LS_KEYS.PURCHASES, purchases); }
+function persistFavorites(){ writeLS(LS_KEYS.FAVORITES, favorites); }
+
+/* Ensure cart writes update UI */
+function writeCart(){ persistCart(); updateCartUI(); }
+
+/* initial write to ensure keys exist */
+writeLS(LS_KEYS.PRODUCTS, products);
+writeLS(LS_KEYS.CART, cart);
+writeLS(LS_KEYS.PURCHASES, purchases);
+writeLS(LS_KEYS.FAVORITES, favorites);
+
+/* =========================
+   Small helper: flash on load to explain features
+   ========================= */
+setTimeout(()=> flash('Готово — добавляй товары, оформляй корзину. Всё хранится локально.'), 600);
+
+/* =========================
+   End of script
+   ========================= */
 </script>
+
 </body>
 </html>
