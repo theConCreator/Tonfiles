@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TONFiles Market</title>
+<title>Маркетплейс</title>
 <style>
 :root {
   --bg:#0d111c; --card:#171c2c; --text:#e6eaff;
@@ -13,14 +13,13 @@
 }
 *{box-sizing:border-box;}
 body{margin:0;font-family:sans-serif;background:var(--bg);color:var(--text);}
-header{padding:16px;text-align:center;font-size:22px;font-weight:700;}
-main{padding:16px;min-height:calc(100vh - 70px);}
+main{padding:16px;min-height:calc(100vh - 60px);}
 h2{margin:0 0 12px;}
 
-input,select,textarea,button{
+input,textarea,button{
   font:inherit;padding:12px;border-radius:14px;border:none;
 }
-input,select,textarea{background:#1e2438;color:var(--text);width:100%;}
+input,textarea{background:#1e2438;color:var(--text);width:100%;}
 button{
   cursor:pointer;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
@@ -40,7 +39,6 @@ button:hover{opacity:0.9;}
 .card:hover{transform:scale(1.03);}
 .card img{max-width:100%;border-radius:var(--radius);}
 .price{font-weight:700;color:var(--accent);}
-.tags{font-size:13px;color:var(--muted);}
 .review{background:#1e2438;padding:6px 8px;border-radius:8px;font-size:13px;margin:4px 0;}
 
 .fav-btn{
@@ -63,25 +61,14 @@ button:hover{opacity:0.9;}
 
 .hidden{display:none;}
 .cart-item{background:var(--card);padding:12px;border-radius:14px;margin-bottom:10px;}
-.notice{font-size:13px;color:var(--muted);margin-top:12px;}
 </style>
 </head>
 <body>
-<header>TONFiles Market</header>
 
 <main>
   <!-- Главная -->
   <section id="market">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-      <select id="filterCategory">
-        <option value="all">Все категории</option>
-        <option value="guides">Гайды</option>
-        <option value="scripts">Скрипты</option>
-        <option value="files">Файлы</option>
-      </select>
-      <select id="filterSeller">
-        <option value="all">Все продавцы</option>
-      </select>
       <input type="text" id="searchInput" placeholder="🔍 Поиск..." style="flex:1;min-width:120px;">
     </div>
     <div class="grid" id="productsGrid"></div>
@@ -102,14 +89,7 @@ button:hover{opacity:0.9;}
       <input type="text" id="addTitle" placeholder="Название" required>
       <textarea id="addDesc" placeholder="Описание" required></textarea>
       <input type="number" id="addPrice" placeholder="Цена (TON)" required>
-      <select id="addCategory" required>
-        <option value="guides">Гайды</option>
-        <option value="scripts">Скрипты</option>
-        <option value="files">Файлы</option>
-      </select>
-      <input type="text" id="addTags" placeholder="Теги (через запятую)">
-      <input type="text" id="addSeller" placeholder="Ваше имя / ник" required>
-      <input type="url" id="addImage" placeholder="Ссылка на картинку (опционально)">
+      <input type="file" id="addImage" accept="image/*">
       <button type="submit">Опубликовать</button>
     </form>
   </section>
@@ -138,16 +118,10 @@ function showSection(id){
 function renderProducts(){
   const grid=document.getElementById("productsGrid");
   const query=document.getElementById("searchInput").value.toLowerCase();
-  const cat=document.getElementById("filterCategory").value;
-  const seller=document.getElementById("filterSeller").value;
   let filtered=products.filter(p=>
-    (cat==="all"||p.category===cat) &&
-    (seller==="all"||p.seller===seller) &&
-    (p.title.toLowerCase().includes(query)||p.description.toLowerCase().includes(query)||p.tags.join(",").toLowerCase().includes(query))
+    p.title.toLowerCase().includes(query)||
+    p.description.toLowerCase().includes(query)
   );
-  const sellers=[...new Set(products.map(p=>p.seller))];
-  const sellerSel=document.getElementById("filterSeller");
-  sellerSel.innerHTML='<option value="all">Все продавцы</option>'+sellers.map(s=>`<option value="${s}">${s}</option>`).join("");
 
   grid.innerHTML=filtered.slice(0,visibleCount).map(p=>`
     <div class="card">
@@ -156,8 +130,6 @@ function renderProducts(){
       <b>${p.title}</b>
       <div class="price">${p.price} TON</div>
       <div>${p.description}</div>
-      <div class="tags">Категория: ${p.category} | Теги: ${p.tags.join(", ")||"—"}</div>
-      <small>Продавец: ${p.seller}</small>
       <button onclick="addToCart(${p.id})">В корзину</button>
       <div>${p.reviews.map(r=>`<div class="review">⭐${r.rating} ${r.text}</div>`).join("")}</div>
       <button onclick="addReview(${p.id})">Оставить отзыв</button>
@@ -167,8 +139,6 @@ function renderProducts(){
 }
 document.getElementById("loadMoreBtn").onclick=()=>{visibleCount+=6;renderProducts();}
 document.getElementById("searchInput").oninput=renderProducts;
-document.getElementById("filterCategory").onchange=renderProducts;
-document.getElementById("filterSeller").onchange=renderProducts;
 
 function addToCart(id){
   const item=products.find(p=>p.id===id);
@@ -204,23 +174,25 @@ function addReview(id){
 
 document.getElementById("addForm").onsubmit=e=>{
   e.preventDefault();
-  const id=products.length?products[products.length-1].id+1:1;
-  const item={
-    id,
-    title:document.getElementById("addTitle").value,
-    description:document.getElementById("addDesc").value,
-    price:+document.getElementById("addPrice").value,
-    category:document.getElementById("addCategory").value,
-    tags:document.getElementById("addTags").value.split(",").map(t=>t.trim()).filter(Boolean),
-    seller:document.getElementById("addSeller").value,
-    image:document.getElementById("addImage").value,
-    reviews:[]
-  };
-  products.push(item);
-  localStorage.setItem("products",JSON.stringify(products));
-  renderProducts();
-  showSection("market");
-  e.target.reset();
+  const file=document.getElementById("addImage").files[0];
+  const reader=new FileReader();
+  reader.onload=function(){
+    const id=products.length?products[products.length-1].id+1:1;
+    const item={
+      id,
+      title:document.getElementById("addTitle").value,
+      description:document.getElementById("addDesc").value,
+      price:+document.getElementById("addPrice").value,
+      image:file?reader.result:"",
+      reviews:[]
+    };
+    products.push(item);
+    localStorage.setItem("products",JSON.stringify(products));
+    renderProducts();
+    showSection("market");
+    e.target.reset();
+  }
+  if(file) reader.readAsDataURL(file); else reader.onload();
 }
 
 renderProducts();updateCartCount();
