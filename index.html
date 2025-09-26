@@ -6,151 +6,125 @@
 <title>TONFiles Market</title>
 <style>
 :root {
-  --bg:#0b0f1a; --card:#111625; --text:#ffffff; --muted:#9aa3c7;
-  --accent:#00cfff; --btn:#1a2335; --btn-hover:#009fcc;
-  --shadow:0 10px 30px rgba(0,0,0,0.25); --radius:16px;
+  --bg:#0f1220; --card:#171a2a; --text:#e8ebff; --muted:#9aa3c7;
+  --accent:#6ea8ff; --accent-2:#7b6cff; --btn:#2a2f45; --btn-hover:#343a55;
+  --shadow:0 10px 30px rgba(0,0,0,0.25); --radius:18px;
 }
 body{margin:0; font-family:sans-serif; background:var(--bg); color:var(--text);}
-.wrap{max-width:1200px; margin:0 auto; padding:16px;}
-header{display:flex; justify-content:center; align-items:center; padding:20px;}
-h1{font-size:22px; margin:0;}
-.search-box{margin:0 0 20px;}
-.search-box input{
-  width:100%; padding:12px 16px; border-radius:12px; border:none; outline:none;
-  background:#1a1f2e; color:var(--text); font-size:15px;
-  box-shadow:inset 0 2px 6px rgba(0,0,0,0.25); box-sizing:border-box;
-}
-.grid{display:grid; grid-template-columns:repeat(1,1fr); gap:18px;}
-@media (min-width:768px){.grid{grid-template-columns:repeat(2,1fr);}}
-@media (min-width:1024px){.grid{grid-template-columns:repeat(3,1fr);}}
-@media (min-width:1400px){.grid{grid-template-columns:repeat(4,1fr);}}
-.card{
-  background:var(--card); border-radius:var(--radius); padding:16px;
-  box-shadow:var(--shadow); display:flex; flex-direction:column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover{transform: scale(1.03); box-shadow: 0 15px 35px rgba(0,0,0,0.35);}
-.card h3{margin:10px 0 6px; font-size:16px;}
-.card p{margin:0 0 10px; font-size:14px; color:var(--muted);}
-.price{font-weight:700; margin-bottom:10px;}
-.tags span{
-  margin-right:6px; font-size:12px; color:var(--accent); cursor:pointer;
-}
-.actions{display:flex; gap:8px; margin-top:auto;}
-.btn{
-  flex:1; padding:10px; border-radius:10px; border:none; cursor:pointer;
-  background:var(--btn); color:var(--text); font-weight:600; transition:0.2s;
-}
-.btn:hover{background:var(--btn-hover);}
-.btn-accent{background:var(--accent); color:#000;}
-.btn-accent:hover{background:#00a0cc;}
-.fav{background:#222; color:#ffcc00;}
-.fav.active{background:#ffcc00; color:#000;}
-.rating{margin:8px 0; font-size:14px; color:#ffcc00;}
-.notice{margin-top:24px; font-size:14px; color:var(--muted); text-align:center;}
-/* Modal */
-.modal{
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center;
-}
-.modal-content{
-  background:var(--card); padding:20px; border-radius:var(--radius);
-  max-width:90%; max-height:90%; overflow:auto;
-}
-.modal iframe, .modal img{width:100%; height:70vh; border:none; border-radius:10px;}
-.modal-close{margin-top:10px; padding:8px 14px; background:var(--accent); border:none; border-radius:8px; cursor:pointer;}
+.wrap{max-width:1100px; margin:0 auto; padding:16px;}
+header{display:flex; justify-content:space-between; align-items:center; padding:16px;}
+h1{font-size:20px;}
+/* Фильтры и сортировка */
+.controls{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
+.filter-btn{padding:8px 14px; border-radius:12px; background:var(--btn); color:var(--text); border:none; cursor:pointer;}
+.filter-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+.sort-select{padding:8px 14px; border-radius:12px; border:none; background:var(--btn); color:var(--text);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;
+  text-align:center;align-items:center;transition:.2s;}
+.card:hover{transform:scale(1.03);box-shadow:0 15px 35px rgba(0,0,0,0.35);}
+.name{font-size:15px;font-weight:600;}
+.price{color:var(--accent);font-weight:700;}
+.btn{margin-top:8px;padding:10px 12px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:white;border:none;font-weight:700;cursor:pointer;box-shadow:var(--shadow);}
+.floating-cart{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  color:#fff;border:none;border-radius:50%;width:60px;height:60px;
+  display:flex;justify-content:center;align-items:center;font-size:22px;font-weight:700;
+  box-shadow:var(--shadow);cursor:pointer;z-index:999;text-decoration:none;}
+.floating-cart span{font-size:14px;background:#ff4444;border-radius:50%;padding:2px 6px;margin-left:4px;}
+/* Toaster */
+#toaster{position:fixed;top:20px;right:20px;z-index:1000;}
+.toast{background:var(--card);padding:12px 18px;margin-top:10px;border-radius:12px;box-shadow:var(--shadow);opacity:0;transform:translateX(100%);transition:.3s;}
+.toast.show{opacity:1;transform:translateX(0);}
 </style>
 </head>
 <body>
 <header class="wrap">
-  <h1>TONFiles Market</h1>
+  <h1>💎 TONFiles Market</h1>
 </header>
 
 <main class="wrap">
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или тегам...">
+  <div class="controls">
+    <button class="filter-btn active" data-category="all">Все</button>
+    <button class="filter-btn" data-category="guides">Гайды</button>
+    <button class="filter-btn" data-category="scripts">Скрипты</button>
+    <button class="filter-btn" data-category="files">Файлы</button>
+    <select class="sort-select" id="sortSelect">
+      <option value="popular">По популярности</option>
+      <option value="price-asc">По цене (↑)</option>
+      <option value="price-desc">По цене (↓)</option>
+    </select>
   </div>
+
   <div class="grid" id="grid"></div>
-  <p class="notice">Маркетплейс мануалов и файлов за TON. Поддержка: <a href="https://t.me/theConCreator" target="_blank">@theConCreator</a></p>
 </main>
 
-<!-- Modal Preview -->
-<div class="modal" id="previewModal">
-  <div class="modal-content">
-    <div id="previewBox"></div>
-    <button class="modal-close" onclick="closePreview()">Закрыть</button>
-  </div>
-</div>
+<a href="#" class="floating-cart" id="cartBtn">🛒<span id="cartCount">0</span></a>
+<div id="toaster"></div>
 
 <script>
 const products = [
-  {id:1,name:"TON Trading Guide",price:5,desc:"Полный гайд по торговле на TON.",tags:["#Trading","#Guide"],file:"guide.pdf",preview:"preview1.png",rating:4},
-  {id:2,name:"NFT Basics",price:3,desc:"Введение в NFT на TON.",tags:["#NFT","#Basics"],file:"nft.pdf",preview:"preview2.png",rating:5},
-  {id:3,name:"Crypto Bot Tutorial",price:4,desc:"Интеграция с CryptoBot API.",tags:["#CryptoBot","#Tutorial"],file:"crypto_tutorial.pdf",preview:"preview3.png",rating:3},
-  {id:4,name:"Advanced NFT Strategies",price:6,desc:"Продвинутые стратегии NFT.",tags:["#NFT","#Advanced"],file:"advanced_nft.pdf",preview:"preview4.png",rating:4}
+  {id:1,name:"Гайд по TON",price:5,category:"guides",popularity:90},
+  {id:2,name:"Скрипт автоторговли",price:12,category:"scripts",popularity:75},
+  {id:3,name:"Файл с NFT-шаблонами",price:8,category:"files",popularity:60},
+  {id:4,name:"Продвинутый гайд",price:15,category:"guides",popularity:95},
+  {id:5,name:"Скрипт-библиотека",price:20,category:"scripts",popularity:40},
 ];
 
-let favorites = JSON.parse(localStorage.getItem("favorites")||"[]");
-let purchases = JSON.parse(localStorage.getItem("purchases")||"[]");
+function getCart(){return JSON.parse(localStorage.getItem("cart")||"[]");}
+function saveCart(c){localStorage.setItem("cart",JSON.stringify(c));updateCartCount();}
 
+function toggleCart(p){
+  let cart=getCart();
+  const exists=cart.find(c=>c.id===p.id);
+  if(exists){cart=cart.filter(c=>c.id!==p.id);showToast("❌ Удалено из корзины");}
+  else{cart.push(p);showToast("✅ Добавлено в корзину");}
+  saveCart(cart);render();
+}
+function updateCartCount(){document.getElementById("cartCount").textContent=getCart().length;}
+
+// Toaster
+function showToast(msg){
+  const t=document.createElement("div");
+  t.className="toast";t.innerText=msg;
+  document.getElementById("toaster").appendChild(t);
+  setTimeout(()=>t.classList.add("show"),50);
+  setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),300);},2000);
+}
+
+let currentCategory="all";
 function render(){
-  const q=document.getElementById("searchInput").value.toLowerCase();
-  const filtered=products.filter(p=>
-    p.name.toLowerCase().includes(q) || p.tags.some(t=>t.toLowerCase().includes(q))
-  );
+  let sorted=[...products];
+  const sort=document.getElementById("sortSelect").value;
+  if(sort==="price-asc")sorted.sort((a,b)=>a.price-b.price);
+  else if(sort==="price-desc")sorted.sort((a,b)=>b.price-a.price);
+  else if(sort==="popular")sorted.sort((a,b)=>b.popularity-a.popularity);
+
+  let filtered=sorted.filter(p=>currentCategory==="all"||p.category===currentCategory);
+  const cart=getCart();
   document.getElementById("grid").innerHTML=filtered.map(p=>{
-    const favActive = favorites.includes(p.id)?"active":"";
-    const bought = purchases.includes(p.id);
-    return `
-      <div class="card">
-        <h3>${p.name}</h3>
-        <p>${p.desc}</p>
-        <div class="price">${p.price} TON</div>
-        <div class="tags">${p.tags.map(t=>`<span onclick="filterTag('${t}')">${t}</span>`).join("")}</div>
-        <div class="rating">⭐ ${p.rating}/5</div>
-        <div class="actions">
-          <button class="btn btn-accent" onclick="buy(${p.id})">${bought?"Скачать":"Купить"}</button>
-          <button class="btn" onclick="preview(${p.id})">Preview</button>
-          <button class="btn fav ${favActive}" onclick="toggleFav(${p.id})">★</button>
-        </div>
-      </div>
-    `;
+    const inCart=cart.some(c=>c.id===p.id);
+    return `<div class="card">
+      <div class="name">${p.name}</div>
+      <div class="price">${p.price} TON</div>
+      <button class="btn" onclick='toggleCart(${JSON.stringify(p)})'>
+        ${inCart?"Убрать":"Добавить"}
+      </button>
+    </div>`;
   }).join("");
+  updateCartCount();
 }
 
-function buy(id){
-  if(!purchases.includes(id)) purchases.push(id);
-  localStorage.setItem("purchases",JSON.stringify(purchases));
-  alert("Покупка завершена! (имитация)");
-  render();
-}
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");currentCategory=btn.dataset.category;render();
+  });
+});
+document.getElementById("sortSelect").addEventListener("change",render);
 
-function preview(id){
-  const p=products.find(x=>x.id===id);
-  const box=document.getElementById("previewBox");
-  if(p.file.endsWith(".pdf")){
-    box.innerHTML=`<iframe src="${p.file}"></iframe>`;
-  }else{
-    box.innerHTML=`<img src="${p.preview}" alt="preview">`;
-  }
-  document.getElementById("previewModal").style.display="flex";
-}
-
-function closePreview(){ document.getElementById("previewModal").style.display="none"; }
-
-function toggleFav(id){
-  if(favorites.includes(id)) favorites=favorites.filter(x=>x!==id);
-  else favorites.push(id);
-  localStorage.setItem("favorites",JSON.stringify(favorites));
-  render();
-}
-
-function filterTag(tag){
-  document.getElementById("searchInput").value=tag;
-  render();
-}
-
-document.getElementById("searchInput").addEventListener("input",render);
 render();
 </script>
 </body>
