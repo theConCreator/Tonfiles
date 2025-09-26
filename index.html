@@ -102,6 +102,7 @@
       max-width: 400px;
       width: 90%;
       text-align: center;
+      position: relative;
     }
     .modal h2 { margin-top: 0; }
     .close {
@@ -136,20 +137,39 @@
   </div>
 
   <script>
-    const API = "http://localhost:8000"; // поменяй на свой backend URL (Render/сервер)
-    const tg = window.Telegram?.WebApp; // Telegram WebApp SDK
-    const buyer_tg_id = tg?.initDataUnsafe?.user?.id || null;
+    // Пример товаров (пока локально)
+    const products = [
+      {
+        id: 1,
+        title: "Гайд: как заработать 100 TON",
+        description: "Подробный мануал для новичков.",
+        price: 15,
+        preview: "https://via.placeholder.com/300x200.png?text=Guide"
+      },
+      {
+        id: 2,
+        title: "Скрипт автоторговли",
+        description: "Готовый Python-скрипт для работы с TON DEX.",
+        price: 50,
+        preview: "https://via.placeholder.com/300x200.png?text=Script"
+      },
+      {
+        id: 3,
+        title: "Коллекция эмодзи",
+        description: "Эксклюзивный пак эмодзи в стиле TON.",
+        price: 7,
+        preview: "https://via.placeholder.com/300x200.png?text=Emoji+Pack"
+      }
+    ];
 
-    async function loadProducts() {
-      const res = await fetch(`${API}/products`);
-      const data = await res.json();
+    function loadProducts() {
       const container = document.getElementById("products");
       container.innerHTML = "";
-      data.forEach(p => {
+      products.forEach(p => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          ${p.preview_path ? `<img src="${API}/products/${p.id}/preview" alt="preview">` : ""}
+          ${p.preview ? `<img src="${p.preview}" alt="preview">` : ""}
           <div class="title">${p.title}</div>
           <div class="desc">${p.description || ""}</div>
           <div class="price">${p.price} TON</div>
@@ -159,29 +179,18 @@
       });
     }
 
-    async function buy(product_id) {
-      try {
-        const res = await fetch(`${API}/purchase`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product_id, buyer_tg_id })
-        });
-        const data = await res.json();
-        if (data.status === "ok") {
-          const pay = data.payment;
-          showModal(`
-            Сумма: <b>${pay.amount} ${pay.currency}</b><br>
-            Метод: ${pay.method}<br>
-            Адрес / Invoice ID: <br><code>${pay.payment_address}</code><br><br>
-            После оплаты бот/сайт подтвердит покупку.
-          `);
-        } else {
-          showModal("Ошибка: " + (data.detail || "Не удалось создать покупку"));
-        }
-      } catch (e) {
-        console.error(e);
-        showModal("Ошибка при создании покупки");
-      }
+    function buy(product_id) {
+      const product = products.find(p => p.id === product_id);
+      if (!product) return;
+
+      // Фейковая инструкция к оплате
+      const payInstruction = `
+        Сумма: <b>${product.price} TON</b><br>
+        Метод: TON Wallet<br>
+        Адрес: <code>EQDUMMYTONADDRESS123</code><br><br>
+        После оплаты свяжитесь с продавцом для получения файла.
+      `;
+      showModal(payInstruction);
     }
 
     function showModal(html) {
