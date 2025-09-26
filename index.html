@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TONFiles Market — локальный маркетплейс</title>
+<title>TONFiles Market — вкладки: Главная / Корзина / Добавить</title>
 <style>
 /* ========= THEME & RESET ========= */
 :root{
@@ -20,6 +20,7 @@
   --glass: rgba(255,255,255,0.03);
   --maxWidth: 1200px;
   --gap: 16px;
+  --tabBarHeight: 72px; /* высота таб-бара внизу */
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
@@ -29,13 +30,13 @@ a{color:var(--accent)}
 button{font-family:inherit}
 
 /* ========= LAYOUT ========= */
-/* Central container: fluid but constrained, no horizontal overflow */
 .app{
   width:100%;
   max-width:var(--maxWidth);
   margin:24px auto;
-  padding-inline:16px; /* responsive horizontal padding */
-  padding-block:18px;
+  padding-inline:16px;
+  padding-top:18px;
+  padding-bottom: calc(var(--tabBarHeight) + 20px); /* чтобы контент не скрывался таб-баром */
   display:flex;
   flex-direction:column;
   gap:18px;
@@ -60,10 +61,8 @@ button{font-family:inherit}
 .search input{flex:1;background:transparent;border:0;outline:none;color:var(--text);padding:6px 0;font-size:14px}
 .select{background:var(--surface);border-radius:10px;padding:8px;border:1px solid rgba(255,255,255,0.02);color:var(--text)}
 
-/* LAYOUT GRID: left + right (side) responsive */
-.layout{display:grid;grid-template-columns:1fr 360px;gap:var(--gap);width:100%}
-/* If viewport narrower, stack columns vertically (prevents horizontal overflow) */
-@media (max-width:1000px){ .layout{grid-template-columns:1fr; } .side{order:2} }
+/* MAIN PANELS (we'll switch visibility between them) */
+.panels{display:flex;flex-direction:column;gap:16px;width:100%}
 
 /* PANEL style */
 .panel{background:linear-gradient(180deg,var(--surface), rgba(255,255,255,0.01));padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,0.02);box-shadow:0 8px 24px rgba(2,6,23,0.5);width:100%;overflow:hidden}
@@ -95,9 +94,7 @@ button{font-family:inherit}
 .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--text);font-weight:600}
 .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.03);color:var(--muted);font-weight:600}
 
-/* SIDE COLUMN (cart + add form) */
-.side{display:flex;flex-direction:column;gap:12px;min-width:0} /* min-width:0 to avoid overflow in flex */
-.panel.small{padding:12px}
+/* SIDE small elements reused inside tabs */
 .cart-item{display:flex;gap:8px;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.01)}
 .cart-item img{width:48px;height:48px;border-radius:8px;object-fit:cover}
 .cart-item .meta{flex:1}
@@ -113,21 +110,31 @@ button{font-family:inherit}
 .modal .close{position:absolute;right:24px;top:24px;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer}
 
 /* TOASTS */
-.toast-wrap{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:10010}
+.toast-wrap{position:fixed;right:20px;bottom:calc(var(--tabBarHeight) + 20px);display:flex;flex-direction:column;gap:8px;z-index:10010}
 .toast{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#00222a;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(2,6,23,0.5);transform:translateX(20px);opacity:0;transition:all .25s}
 .toast.show{transform:translateX(0);opacity:1}
 
-/* small responsive tweaks to ensure no overflow on tiny screens */
+/* BOTTOM TAB BAR */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;height:var(--tabBarHeight);display:flex;align-items:center;justify-content:center;padding:10px;
+  background:linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.3));backdrop-filter: blur(6px);z-index:9998;
+  border-top:1px solid rgba(255,255,255,0.02);
+}
+.tabbar-inner{max-width:var(--maxWidth);width:100%;padding-inline:16px;display:flex;gap:12px;align-items:center;justify-content:space-around}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:10px;background:transparent;border:none;color:var(--muted);cursor:pointer}
+.tab-btn.active{color:var(--accent);font-weight:700}
+.tab-icon{width:22px;height:22px;display:block}
+
+/* Prevent horizontal scroll on tiny devices */
 @media (max-width:420px){
   .logo{width:40px;height:40px;font-size:15px}
-  .search input{font-size:13px}
-  .title{font-size:14px}
   .thumb{height:120px}
   .app{padding-inline:12px}
 }
 </style>
 </head>
 <body>
+
 <div class="app" id="app">
 
   <!-- HEADER -->
@@ -152,19 +159,15 @@ button{font-family:inherit}
         <option value="priceAsc">Цена ↑</option>
         <option value="priceDesc">Цена ↓</option>
       </select>
-
-      <div class="action-buttons" role="toolbar" aria-label="Действия">
-        <button id="btnFav" class="btn secondary" title="Избранное">Избранное</button>
-        <button id="btnCart" class="btn" title="Корзина">Корзина (<span id="cartCount">0</span>)</button>
-      </div>
     </div>
   </div>
 
-  <!-- LAYOUT: CATALOG + SIDE -->
-  <div class="layout">
+  <!-- PANELS: Главная (catalog), Корзина, Добавить.
+       Управление видимостью — через JS (tabs) -->
+  <div class="panels">
 
-    <!-- LEFT: catalog -->
-    <div class="panel" aria-live="polite">
+    <!-- HOME / CATALOG -->
+    <div id="homeSection" class="panel" aria-live="polite">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div>
           <div style="font-weight:700">Каталог</div>
@@ -172,41 +175,43 @@ button{font-family:inherit}
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           <button id="btnRefresh" class="btn secondary" title="Сброс фильтров">Сброс</button>
-          <button id="btnAddView" class="btn secondary" title="Открыть форму добавления">Форма добавления</button>
+          <button id="btnQuickAdd" class="btn secondary" title="Переключиться на вкладку добавления">Добавить</button>
         </div>
       </div>
 
       <div class="filters" id="categoriesContainer" aria-label="Категории"></div>
-
       <div class="grid" id="grid" aria-live="polite"></div>
-
       <div style="margin-top:12px;color:var(--muted);font-size:13px">Товары хранятся локально (localStorage). В будущем подключим backend и оплату TON.</div>
     </div>
 
-    <!-- RIGHT: side -->
-    <div class="side">
-
-      <!-- Cart panel -->
-      <div class="panel small" id="cartPanel" aria-label="Корзина">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:700">Корзина</div>
-          <div id="cartSummary" class="cart-total">0 TON</div>
-        </div>
-        <div id="cartList" style="display:flex;flex-direction:column;gap:8px;min-height:60px"></div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn" id="checkoutBtn">Оплатить (имитация)</button>
-          <button class="btn secondary" id="clearCartBtn">Очистить</button>
-        </div>
+    <!-- CART (full view) -->
+    <div id="cartSection" class="panel" style="display:none" aria-live="polite">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:700">Корзина</div>
+        <div id="cartSummary" class="cart-total">0 TON</div>
+      </div>
+      <div id="cartList" style="display:flex;flex-direction:column;gap:8px;min-height:80px"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn" id="checkoutBtn">Оплатить (имитация)</button>
+        <button class="btn secondary" id="clearCartBtn">Очистить</button>
       </div>
 
-      <!-- Add product panel -->
-      <div class="panel small" id="addPanel" aria-label="Добавить товар">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <div style="font-weight:700">Добавить товар</div>
-          <div style="font-size:13px;color:var(--muted)">Поля сохраняются локально</div>
-        </div>
+      <hr style="margin:14px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
 
-        <form id="addForm" style="display:flex;flex-direction:column;gap:8px">
+      <div>
+        <div style="font-weight:700;margin-bottom:8px">Мои покупки (локально)</div>
+        <div id="purchasesList" style="display:flex;flex-direction:column;gap:8px;min-height:60px"></div>
+      </div>
+    </div>
+
+    <!-- ADD product (full view) -->
+    <div id="addSection" class="panel" style="display:none" aria-live="polite">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div style="font-weight:700">Добавить товар</div>
+        <div style="font-size:13px;color:var(--muted)">Поля сохраняются локально</div>
+      </div>
+
+      <form id="addForm" style="display:flex;flex-direction:column;gap:8px">
           <div class="form-row">
             <label style="font-size:13px;color:var(--muted)">Название</label>
             <input id="prodTitle" class="input" placeholder="Короткое название" required>
@@ -214,7 +219,7 @@ button{font-family:inherit}
 
           <div class="form-row">
             <label style="font-size:13px;color:var(--muted)">Описание</label>
-            <textarea id="prodDesc" class="input" rows="3" placeholder="Короткое описание продукта"></textarea>
+            <textarea id="prodDesc" class="input" rows="4" placeholder="Короткое описание продукта"></textarea>
           </div>
 
           <div style="display:flex;gap:8px">
@@ -226,7 +231,7 @@ button{font-family:inherit}
             <label style="font-size:13px;color:var(--muted)">Превью (URL или загрузка)</label>
             <input id="prodPreviewUrl" class="input" placeholder="https://... (изображение для карточки)"/>
             <input id="prodPreviewFile" class="input" type="file" accept="image/*">
-            <div id="previewPreview" style="height:90px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#0a1119,#0e1420);display:flex;align-items:center;justify-content:center;color:var(--muted)">Превью не загружено</div>
+            <div id="previewPreview" style="height:110px;border-radius:10px;overflow:hidden;background:linear-gradient(180deg,#0a1119,#0e1420);display:flex;align-items:center;justify-content:center;color:var(--muted)">Превью не загружено</div>
           </div>
 
           <div style="display:flex;gap:8px">
@@ -238,23 +243,40 @@ button{font-family:inherit}
             <button class="btn" type="submit">Добавить товар</button>
             <button class="btn secondary" type="button" id="clearAdd">Очистить</button>
           </div>
-        </form>
-      </div>
-
+      </form>
     </div>
+
+  </div> <!-- /panels -->
+
+</div> <!-- /app -->
+
+<!-- PREVIEW MODAL -->
+<div class="modal" id="previewModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="box" style="position:relative">
+    <button class="close" id="closePreview">✕</button>
+    <div id="previewContent"></div>
   </div>
+</div>
 
-  <!-- PREVIEW MODAL -->
-  <div class="modal" id="previewModal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="box" style="position:relative">
-      <button class="close" id="closePreview">✕</button>
-      <div id="previewContent"></div>
-    </div>
+<!-- TOASTS -->
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- BOTTOM TAB BAR -->
+<div class="tabbar" role="navigation" aria-label="Вкладки">
+  <div class="tabbar-inner">
+    <button class="tab-btn active" id="tabHome" data-tab="home" onclick="switchTab('home')" aria-label="Главная">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none"><path d="M3 11.5L12 4l9 7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="font-size:12px">Главная</div>
+    </button>
+    <button class="tab-btn" id="tabCart" data-tab="cart" onclick="switchTab('cart')" aria-label="Корзина">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none"><path d="M6 6h15l-1.5 9h-12L4 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="font-size:12px">Корзина</div>
+    </button>
+    <button class="tab-btn" id="tabAdd" data-tab="add" onclick="switchTab('add')" aria-label="Добавить">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div style="font-size:12px">Добавить</div>
+    </button>
   </div>
-
-  <!-- TOASTS -->
-  <div class="toast-wrap" id="toasts"></div>
-
 </div>
 
 <script>
@@ -289,8 +311,29 @@ const cartSummaryEl = document.getElementById("cartSummary");
 const toastsWrap = document.getElementById("toasts");
 const previewModal = document.getElementById("previewModal");
 const previewContent = document.getElementById("previewContent");
+const purchasesListEl = document.getElementById("purchasesList");
 
-/* ======= Render catalog with category support ======= */
+/* Keep active tab state */
+let ACTIVE_TAB = 'home';
+
+/* ========== Tab switching ========== */
+function switchTab(tab){
+  ACTIVE_TAB = tab;
+  // hide all sections
+  document.getElementById('homeSection').style.display = 'none';
+  document.getElementById('cartSection').style.display = 'none';
+  document.getElementById('addSection').style.display = 'none';
+  // remove active from buttons
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  // show selected and set active button
+  if(tab === 'home'){ document.getElementById('homeSection').style.display = 'block'; document.getElementById('tabHome').classList.add('active'); }
+  if(tab === 'cart'){ document.getElementById('cartSection').style.display = 'block'; document.getElementById('tabCart').classList.add('active'); renderCart(); renderPurchases(); }
+  if(tab === 'add'){ document.getElementById('addSection').style.display = 'block'; document.getElementById('tabAdd').classList.add('active'); document.getElementById('prodTitle').focus(); }
+  // small UX: scroll to top of content area
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ========== Catalog rendering (with category) ========== */
 let ACTIVE_CATEGORY = 'all';
 function renderCatalogWithCategory(){
   const q = (searchInput.value || "").trim().toLowerCase();
@@ -302,7 +345,7 @@ function renderCatalogWithCategory(){
     list = list.filter(p=> (p.category || "Без категории") === ACTIVE_CATEGORY);
   }
 
-  // Search filter
+  // Search
   if(q){
     list = list.filter(p=>{
       const hay = (p.title + " " + (p.description||"") + " " + (p.tags||[]).join(" ")).toLowerCase();
@@ -316,7 +359,7 @@ function renderCatalogWithCategory(){
   else if(sort === "popular") list.sort((a,b)=>b.popularity - a.popularity);
   else if(sort === "newest") list.sort((a,b)=>b.createdAt - a.createdAt);
 
-  // Render
+  // Render grid
   gridEl.innerHTML = "";
   if(list.length === 0){
     gridEl.innerHTML = `<div style="padding:28px;color:var(--muted)">Товары не найдены</div>`;
@@ -384,7 +427,6 @@ function populateCategories(){
   const container = categoriesContainer;
   const cats = Array.from(new Set(products.map(p=>p.category || "Без категории")));
   container.innerHTML = '';
-  // "Все"
   const allBtn = document.createElement('button');
   allBtn.className = 'filter-btn' + (ACTIVE_CATEGORY==='all' ? ' active' : '');
   allBtn.textContent = 'Все';
@@ -411,7 +453,7 @@ function setActiveCategory(cat){
   renderCatalogWithCategory();
 }
 
-/* ========== Cart (local) ========== */
+/* ========== Cart ========== */
 function addToCartById(id){
   const p = products.find(x=>x.id===id);
   if(!p) return flash('Товар не найден', 'danger');
@@ -462,7 +504,21 @@ function checkout(){
   cart = [];
   writeLS(LS_KEYS.CART, cart);
   renderCart();
+  renderPurchases();
   flash(`Оплата имитирована: ${total} TON — товары добавлены в "Мои покупки"`);
+}
+
+/* ========== Purchases rendering ========== */
+function renderPurchases(){
+  const el = purchasesListEl;
+  el.innerHTML = '';
+  if(purchases.length === 0){ el.innerHTML = `<div style="color:var(--muted)">Покупок нет</div>`; return; }
+  purchases.slice().reverse().forEach(rec=>{
+    const div = document.createElement('div');
+    div.style = 'padding:8px;border-radius:8px;background:rgba(255,255,255,0.01);display:flex;justify-content:space-between;align-items:center';
+    div.innerHTML = `<div style="font-weight:700">${rec.items.map(i=>escapeHtml(i.title)).join(', ')}</div><div style="color:var(--muted)">${rec.total} TON</div>`;
+    el.appendChild(div);
+  });
 }
 
 /* ========== Favorites ========== */
@@ -473,7 +529,7 @@ function toggleFavorite(id){
   flash(favorites.includes(id) ? 'Добавлено в избранное' : 'Удалено из избранного');
 }
 
-/* ========== Preview ========== */
+/* ========== Preview modal ========== */
 function openPreviewById(id){
   const p = products.find(x=>x.id===id);
   if(!p) return;
@@ -496,7 +552,7 @@ function openPreviewById(id){
 }
 function closePreview(){ previewModal.style.display = 'none'; previewModal.setAttribute('aria-hidden','true'); }
 
-/* ========== Add product form (improved) ========== */
+/* ========== Add product form ========== */
 const addForm = document.getElementById('addForm');
 const prodPreviewFile = document.getElementById('prodPreviewFile');
 const prodPreviewUrl = document.getElementById('prodPreviewUrl');
@@ -537,6 +593,8 @@ addForm.addEventListener('submit',(e)=>{
   writeLS(LS_KEYS.PRODUCTS, products);
   addForm.reset(); stagedPreviewData = null; previewPreview.innerHTML = 'Превью не загружено';
   flash('Товар добавлен');
+  // after adding, switch to Home to see the product
+  switchTab('home');
   renderCatalogWithCategory();
 });
 
@@ -559,56 +617,32 @@ function flash(message, type='info', timeout=2200){
 /* ========== Utilities ========== */
 function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-/* ========== Small UI wiring ========== */
+/* ========== Small wiring ========== */
 document.getElementById('btnRefresh').addEventListener('click', ()=>{
   searchInput.value = ''; sortSelect.value = 'newest'; setActiveCategory('all'); renderCatalogWithCategory(); flash('Фильтры сброшены');
 });
-document.getElementById('btnAddView').addEventListener('click', ()=>{ document.getElementById('prodTitle').focus(); flash('Заполните форму и нажмите "Добавить товар"'); });
-document.getElementById('btnCart').addEventListener('click', ()=>{ document.getElementById('cartPanel').scrollIntoView({behavior:'smooth', block:'center'}); });
+document.getElementById('btnQuickAdd').addEventListener('click', ()=> switchTab('add'));
+document.getElementById('btnCart').addEventListener('click', ()=> switchTab('cart'));
 document.getElementById('checkoutBtn').addEventListener('click', ()=> checkout());
 document.getElementById('clearCartBtn').addEventListener('click', ()=> clearCart());
-document.getElementById('btnFav').addEventListener('click', ()=> {
-  if(favorites.length === 0){ flash('Избранных нет'); return; }
-  searchInput.value = ''; setActiveCategory('all');
-  gridEl.innerHTML = '';
-  const favProds = products.filter(p=>favorites.includes(p.id));
-  favProds.forEach(p=>{
-    const card = document.createElement('div'); card.className='card';
-    card.innerHTML = `
-      <div class="thumb"><img src="${p.preview||''}" onerror="this.style.display='none'"/></div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <div class="title">${escapeHtml(p.title)}</div>
-        <div class="desc">${escapeHtml(p.description||'')}</div>
-        <div class="row" style="align-items:center">
-          <div class="tags">${(p.tags||[]).map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
-          <div class="price">${p.price} TON</div>
-        </div>
-        <div class="actions" style="margin-top:6px">
-          <button class="btn" data-buy="${p.id}">${cart.find(c=>c.id===p.id)? "В корзине" : "Купить"}</button>
-          <button class="btn secondary" data-preview="${p.id}">Preview</button>
-          <button class="btn ghost" data-fav="${p.id}">${favorites.includes(p.id)? "★" : "☆"}</button>
-        </div>
-      </div>`;
-    gridEl.appendChild(card);
-  });
-  gridEl.querySelectorAll('[data-buy]').forEach(btn=> btn.onclick = (e)=> addToCartById(Number(e.currentTarget.dataset.buy)));
-  gridEl.querySelectorAll('[data-preview]').forEach(btn=> btn.onclick = (e)=> openPreviewById(Number(e.currentTarget.dataset.preview)));
-});
 
-/* Preview modal close handlers */
-document.getElementById('closePreview').addEventListener('click', closePreview);
-previewModal.addEventListener('click', (e)=>{ if(e.target === previewModal) closePreview(); });
-
-/* Search & sort handlers */
+/* Search & sort */
 searchInput.addEventListener('input', ()=> renderCatalogWithCategory());
 sortSelect.addEventListener('change', ()=> renderCatalogWithCategory());
 
-/* Initial render & updates */
-function updateCartUI(){ cartCountEl.textContent = cart.length; }
-renderCatalogWithCategory(); renderCart(); updateCartUI(); writeLS(LS_KEYS.PRODUCTS, products);
+/* Preview close handlers */
+document.getElementById('closePreview').addEventListener('click', closePreview);
+previewModal.addEventListener('click', (e)=>{ if(e.target === previewModal) closePreview(); });
 
-/* Small initial hint */
-setTimeout(()=> flash('Готово — магазин работает локально. Нет горизонтальной прокрутки!'), 700);
+/* Initial render & UI updates */
+function updateCartUI(){ cartCountEl.textContent = cart.length; }
+renderCatalogWithCategory(); renderCart(); renderPurchases(); updateCartUI(); writeLS(LS_KEYS.PRODUCTS, products);
+
+/* Initial active tab */
+switchTab('home');
+
+/* Initial hint */
+setTimeout(()=> flash('Готово — теперь интерфейс с 3 вкладками: Главная, Корзина, Добавить.'), 700);
 </script>
 </body>
 </html>
