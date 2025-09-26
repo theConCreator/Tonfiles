@@ -1,131 +1,198 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TONFiles Market</title>
-<style>
-:root {
-  --bg:#0f1220; --card:#171a2a; --text:#e8ebff; --muted:#9aa3c7;
-  --accent:#6ea8ff; --accent-2:#7b6cff; --btn:#2a2f45; --btn-hover:#343a55;
-  --shadow:0 10px 30px rgba(0,0,0,0.25); --radius:18px;
-}
-body{margin:0; font-family:sans-serif; background:var(--bg); color:var(--text);}
-.wrap{max-width:1100px; margin:0 auto; padding:16px;}
-header{display:flex; justify-content:space-between; align-items:center; padding:16px;}
-h1{font-size:20px;}
-/* Фильтры и сортировка */
-.controls{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
-.filter-btn{padding:8px 14px; border-radius:12px; background:var(--btn); color:var(--text); border:none; cursor:pointer;}
-.filter-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));}
-.sort-select{padding:8px 14px; border-radius:12px; border:none; background:var(--btn); color:var(--text);}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
-.card{background:var(--card);border-radius:var(--radius);padding:14px;
-  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;
-  text-align:center;align-items:center;transition:.2s;}
-.card:hover{transform:scale(1.03);box-shadow:0 15px 35px rgba(0,0,0,0.35);}
-.name{font-size:15px;font-weight:600;}
-.price{color:var(--accent);font-weight:700;}
-.btn{margin-top:8px;padding:10px 12px;border-radius:12px;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:white;border:none;font-weight:700;cursor:pointer;box-shadow:var(--shadow);}
-.floating-cart{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  color:#fff;border:none;border-radius:50%;width:60px;height:60px;
-  display:flex;justify-content:center;align-items:center;font-size:22px;font-weight:700;
-  box-shadow:var(--shadow);cursor:pointer;z-index:999;text-decoration:none;}
-.floating-cart span{font-size:14px;background:#ff4444;border-radius:50%;padding:2px 6px;margin-left:4px;}
-/* Toaster */
-#toaster{position:fixed;top:20px;right:20px;z-index:1000;}
-.toast{background:var(--card);padding:12px 18px;margin-top:10px;border-radius:12px;box-shadow:var(--shadow);opacity:0;transform:translateX(100%);transition:.3s;}
-.toast.show{opacity:1;transform:translateX(0);}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TONFiles Market</title>
+  <style>
+    :root {
+      --bg: #0e1117;
+      --card: #161b22;
+      --accent: #0088cc;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --radius: 12px;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 1rem 2rem;
+      background: var(--card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: transform 0.15s;
+    }
+    .card:hover { transform: translateY(-3px); }
+
+    .card img {
+      max-width: 100%;
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+    }
+
+    .title {
+      font-weight: 600;
+      margin: 0.3rem 0;
+    }
+    .desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      flex-grow: 1;
+    }
+    .price {
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    .btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-content {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    .modal h2 { margin-top: 0; }
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<header class="wrap">
-  <h1>💎 TONFiles Market</h1>
-</header>
+  <header>
+    <h1>TONFiles Market</h1>
+  </header>
 
-<main class="wrap">
-  <div class="controls">
-    <button class="filter-btn active" data-category="all">Все</button>
-    <button class="filter-btn" data-category="guides">Гайды</button>
-    <button class="filter-btn" data-category="scripts">Скрипты</button>
-    <button class="filter-btn" data-category="files">Файлы</button>
-    <select class="sort-select" id="sortSelect">
-      <option value="popular">По популярности</option>
-      <option value="price-asc">По цене (↑)</option>
-      <option value="price-desc">По цене (↓)</option>
-    </select>
+  <main>
+    <div class="products" id="products"></div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="close" onclick="closeModal()">×</button>
+      <h2>Оплата</h2>
+      <p id="modal-text">Загрузка...</p>
+      <button class="btn" onclick="closeModal()">Ок</button>
+    </div>
   </div>
 
-  <div class="grid" id="grid"></div>
-</main>
+  <script>
+    const API = "http://localhost:8000"; // поменяй на свой backend URL (Render/сервер)
+    const tg = window.Telegram?.WebApp; // Telegram WebApp SDK
+    const buyer_tg_id = tg?.initDataUnsafe?.user?.id || null;
 
-<a href="#" class="floating-cart" id="cartBtn">🛒<span id="cartCount">0</span></a>
-<div id="toaster"></div>
+    async function loadProducts() {
+      const res = await fetch(`${API}/products`);
+      const data = await res.json();
+      const container = document.getElementById("products");
+      container.innerHTML = "";
+      data.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          ${p.preview_path ? `<img src="${API}/products/${p.id}/preview" alt="preview">` : ""}
+          <div class="title">${p.title}</div>
+          <div class="desc">${p.description || ""}</div>
+          <div class="price">${p.price} TON</div>
+          <button class="btn" onclick="buy(${p.id})">Купить</button>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-<script>
-const products = [
-  {id:1,name:"Гайд по TON",price:5,category:"guides",popularity:90},
-  {id:2,name:"Скрипт автоторговли",price:12,category:"scripts",popularity:75},
-  {id:3,name:"Файл с NFT-шаблонами",price:8,category:"files",popularity:60},
-  {id:4,name:"Продвинутый гайд",price:15,category:"guides",popularity:95},
-  {id:5,name:"Скрипт-библиотека",price:20,category:"scripts",popularity:40},
-];
+    async function buy(product_id) {
+      try {
+        const res = await fetch(`${API}/purchase`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ product_id, buyer_tg_id })
+        });
+        const data = await res.json();
+        if (data.status === "ok") {
+          const pay = data.payment;
+          showModal(`
+            Сумма: <b>${pay.amount} ${pay.currency}</b><br>
+            Метод: ${pay.method}<br>
+            Адрес / Invoice ID: <br><code>${pay.payment_address}</code><br><br>
+            После оплаты бот/сайт подтвердит покупку.
+          `);
+        } else {
+          showModal("Ошибка: " + (data.detail || "Не удалось создать покупку"));
+        }
+      } catch (e) {
+        console.error(e);
+        showModal("Ошибка при создании покупки");
+      }
+    }
 
-function getCart(){return JSON.parse(localStorage.getItem("cart")||"[]");}
-function saveCart(c){localStorage.setItem("cart",JSON.stringify(c));updateCartCount();}
+    function showModal(html) {
+      document.getElementById("modal-text").innerHTML = html;
+      document.getElementById("modal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
 
-function toggleCart(p){
-  let cart=getCart();
-  const exists=cart.find(c=>c.id===p.id);
-  if(exists){cart=cart.filter(c=>c.id!==p.id);showToast("❌ Удалено из корзины");}
-  else{cart.push(p);showToast("✅ Добавлено в корзину");}
-  saveCart(cart);render();
-}
-function updateCartCount(){document.getElementById("cartCount").textContent=getCart().length;}
-
-// Toaster
-function showToast(msg){
-  const t=document.createElement("div");
-  t.className="toast";t.innerText=msg;
-  document.getElementById("toaster").appendChild(t);
-  setTimeout(()=>t.classList.add("show"),50);
-  setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),300);},2000);
-}
-
-let currentCategory="all";
-function render(){
-  let sorted=[...products];
-  const sort=document.getElementById("sortSelect").value;
-  if(sort==="price-asc")sorted.sort((a,b)=>a.price-b.price);
-  else if(sort==="price-desc")sorted.sort((a,b)=>b.price-a.price);
-  else if(sort==="popular")sorted.sort((a,b)=>b.popularity-a.popularity);
-
-  let filtered=sorted.filter(p=>currentCategory==="all"||p.category===currentCategory);
-  const cart=getCart();
-  document.getElementById("grid").innerHTML=filtered.map(p=>{
-    const inCart=cart.some(c=>c.id===p.id);
-    return `<div class="card">
-      <div class="name">${p.name}</div>
-      <div class="price">${p.price} TON</div>
-      <button class="btn" onclick='toggleCart(${JSON.stringify(p)})'>
-        ${inCart?"Убрать":"Добавить"}
-      </button>
-    </div>`;
-  }).join("");
-  updateCartCount();
-}
-
-document.querySelectorAll(".filter-btn").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");currentCategory=btn.dataset.category;render();
-  });
-});
-document.getElementById("sortSelect").addEventListener("change",render);
-
-render();
-</script>
+    loadProducts();
+  </script>
 </body>
 </html>
