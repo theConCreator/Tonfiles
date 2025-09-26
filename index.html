@@ -10,9 +10,9 @@
   --accent:#3b82f6; --accent-2:#7c3aed;
   --radius:16px; --shadow:0 8px 24px rgba(0,0,0,0.25);
 }
-body{margin:0; font-family:sans-serif; background:var(--bg); color:var(--text);}
+body{margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden;}
 h2{margin:12px 0; font-size:20px;}
-.wrap{max-width:1000px; margin:0 auto; padding:16px;}
+.wrap{max-width:900px; margin:0 auto; padding:16px;}
 .hidden{display:none;}
 /* вкладки */
 .tab-bar{
@@ -24,8 +24,8 @@ h2{margin:12px 0; font-size:20px;}
 .tab-btn.active{color:var(--accent); font-weight:600;}
 /* карточки */
 .grid{display:grid; gap:16px;}
-@media(min-width:768px){.grid{grid-template-columns:repeat(3,1fr);}}
-@media(min-width:1024px){.grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:600px){.grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(3,1fr);}}
 .card{
   background:var(--card); border-radius:var(--radius); padding:14px;
   box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
@@ -33,16 +33,20 @@ h2{margin:12px 0; font-size:20px;}
 }
 .card:hover{transform:scale(1.03);}
 .card img{max-width:100%; border-radius:var(--radius);}
+.card h3{margin:6px 0;font-size:16px;}
+.card p{margin:0;font-size:14px; color:var(--muted);}
+.price{font-weight:600; margin:6px 0;}
 /* кнопки */
 .btn{
   padding:10px 14px; border-radius:12px; border:none; cursor:pointer;
   background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; font-weight:600;
-  box-shadow:var(--shadow);
+  box-shadow:var(--shadow); transition:opacity .2s;
 }
+.btn:hover{opacity:0.9;}
 .btn:disabled{opacity:0.6; cursor:not-allowed;}
 /* форма */
 form{display:flex; flex-direction:column; gap:12px;}
-input,textarea{
+input,textarea,select{
   padding:10px; border-radius:10px; border:none; outline:none;
   background:#1e2235; color:var(--text); font-size:14px;
 }
@@ -53,6 +57,7 @@ textarea{resize:none; min-height:80px;}
   background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:12px;
   box-shadow:var(--shadow);
 }
+ul{padding-left:18px;}
 </style>
 </head>
 <body>
@@ -90,7 +95,7 @@ textarea{resize:none; min-height:80px;}
 <section id="tab-profile" class="wrap hidden">
   <h2>Профиль</h2>
   <div class="stat-box">
-    <strong>Ваш баланс:</strong> <span id="balance">0 TON</span>
+    <strong>Ваш баланс:</strong> <span id="balance">1000 TON</span>
   </div>
   <div class="stat-box">
     <strong>Реферальная ссылка:</strong>
@@ -100,6 +105,10 @@ textarea{resize:none; min-height:80px;}
   <div class="stat-box">
     <strong>Мои товары:</strong>
     <ul id="myProducts"></ul>
+  </div>
+  <div class="stat-box">
+    <strong>История покупок:</strong>
+    <ul id="purchaseHistory"></ul>
   </div>
 </section>
 
@@ -112,7 +121,8 @@ textarea{resize:none; min-height:80px;}
 
 <script>
 let products = JSON.parse(localStorage.getItem("products")||"[]");
-let balance = 0;
+let purchases = JSON.parse(localStorage.getItem("purchases")||"[]");
+let balance = 1000; // тестовый баланс
 
 // вкладки
 document.querySelectorAll(".tab-btn").forEach(btn=>{
@@ -125,7 +135,7 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   });
 });
 
-// отрисовка
+// отрисовка товаров
 function renderProducts(){
   const q=document.getElementById("searchInput").value.toLowerCase();
   const sort=document.getElementById("sortSelect").value;
@@ -137,8 +147,8 @@ function renderProducts(){
     <div class="card">
       ${p.image?`<img src="${p.image}" alt="preview">`:""}
       <h3>${p.title}</h3>
-      <p style="font-size:14px; color:var(--muted);">${p.desc}</p>
-      <strong>${p.price} TON</strong>
+      <p>${p.desc}</p>
+      <div class="price">${p.price} TON</div>
       <button class="btn" onclick="buyProduct(${i})">Купить</button>
     </div>
   `).join("");
@@ -147,10 +157,17 @@ function renderProducts(){
 // покупка
 function buyProduct(i){
   const p=products[i];
-  balance+=p.price;
-  alert("Вы купили: "+p.title+" за "+p.price+" TON");
-  localStorage.setItem("products",JSON.stringify(products));
-  document.getElementById("balance").innerText=balance+" TON";
+  if(balance>=p.price){
+    balance-=p.price;
+    const purchase={title:p.title,price:p.price,date:new Date().toLocaleString()};
+    purchases.push(purchase);
+    localStorage.setItem("purchases",JSON.stringify(purchases));
+    alert("Вы купили: "+p.title+" за "+p.price+" TON");
+    document.getElementById("balance").innerText=balance+" TON";
+    renderProfile();
+  } else {
+    alert("Недостаточно средств!");
+  }
 }
 
 // форма добавления
@@ -174,21 +191,31 @@ imgInput.addEventListener("change",()=>{
 
 form.addEventListener("submit",e=>{
   e.preventDefault();
-  const title=document.getElementById("titleInput").value;
-  const desc=document.getElementById("descInput").value;
+  const title=document.getElementById("titleInput").value.trim();
+  const desc=document.getElementById("descInput").value.trim();
   const price=parseFloat(document.getElementById("priceInput").value);
+  if(!title || !desc || !price){alert("Заполните все поля!");return;}
   products.push({title,desc,price,image:newImage});
   localStorage.setItem("products",JSON.stringify(products));
   form.reset(); preview.classList.add("hidden"); newImage="";
   alert("Товар опубликован!");
   renderProducts();
+  // переключаем на главную
+  document.querySelector("[data-tab='home']").click();
 });
 
 // профиль
 function renderProfile(){
   document.getElementById("balance").innerText=balance+" TON";
   document.getElementById("myProducts").innerHTML=products.map(p=>`<li>${p.title} — ${p.price} TON</li>`).join("");
+  document.getElementById("purchaseHistory").innerHTML=purchases.length
+    ? purchases.map(ph=>`<li>${ph.title} — ${ph.price} TON <small>(${ph.date})</small></li>`).join("")
+    : "<li>Нет покупок</li>";
 }
+
+// фильтры
+document.getElementById("searchInput").addEventListener("input",renderProducts);
+document.getElementById("sortSelect").addEventListener("change",renderProducts);
 
 renderProducts();
 </script>
