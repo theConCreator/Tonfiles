@@ -1,207 +1,216 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TONFiles Market</title>
-  <style>
-    :root {
-      --bg: #0e1117;
-      --card: #161b22;
-      --accent: #0088cc;
-      --text: #e6edf3;
-      --muted: #8b949e;
-      --radius: 12px;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    header {
-      padding: 1rem 2rem;
-      background: var(--card);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 1.2rem;
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      transition: transform 0.15s;
-    }
-    .card:hover { transform: translateY(-3px); }
-
-    .card img {
-      max-width: 100%;
-      border-radius: var(--radius);
-      margin-bottom: 0.5rem;
-    }
-
-    .title {
-      font-weight: 600;
-      margin: 0.3rem 0;
-    }
-    .desc {
-      font-size: 0.9rem;
-      color: var(--muted);
-      flex-grow: 1;
-    }
-    .price {
-      font-weight: bold;
-      margin: 0.5rem 0;
-    }
-    .btn {
-      background: var(--accent);
-      border: none;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius);
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: opacity 0.2s;
-    }
-    .btn:hover { opacity: 0.85; }
-
-    /* Modal */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-    .modal-content {
-      background: var(--card);
-      padding: 1.5rem;
-      border-radius: var(--radius);
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      position: relative;
-    }
-    .modal h2 { margin-top: 0; }
-    .close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: var(--muted);
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TONFiles Market</title>
+<style>
+:root {
+  --bg:#0e1117; --card:#161b22; --accent:#0088cc; --accent-hover:#0099ee;
+  --text:#e6edf3; --muted:#8b949e; --radius:12px;
+}
+body{margin:0;font-family:"Segoe UI",sans-serif;background:var(--bg);color:var(--text);}
+header{padding:1rem 2rem;background:var(--card);display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+header h1{margin:0;font-size:1.2rem;}
+nav{display:flex;gap:1rem;}
+nav button{background:none;border:none;color:var(--text);cursor:pointer;font-size:0.9rem;}
+nav button.active{color:var(--accent);font-weight:600;}
+main{padding:1rem;}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+.card{background:var(--card);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,0.3);transition:transform 0.15s;}
+.card:hover{transform:translateY(-3px);}
+.card img{max-width:100%;border-radius:var(--radius);margin-bottom:0.5rem;}
+.title{font-weight:600;margin:0.3rem 0;}
+.desc{font-size:0.9rem;color:var(--muted);flex-grow:1;}
+.price{font-weight:bold;margin:0.5rem 0;}
+.btn{background:var(--accent);border:none;color:white;padding:0.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;transition:opacity 0.2s;}
+.btn:hover{opacity:0.85;background:var(--accent-hover);}
+#cartBtn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:var(--accent);color:#fff;font-size:22px;font-weight:700;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.25);z-index:999;text-decoration:none;}
+#cartBtn span{font-size:14px;background:#ff4444;border-radius:50%;padding:2px 6px;margin-left:4px;}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;justify-content:center;align-items:center;z-index:100;}
+.modal-content{background:var(--card);padding:1.5rem;border-radius:var(--radius);max-width:400px;width:90%;text-align:center;position:relative;}
+.modal h2{margin-top:0;}
+.close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;color:var(--muted);cursor:pointer;}
+input, select, textarea{width:100%;padding:0.5rem;margin:0.3rem 0;border-radius:var(--radius);border:none;background:#1b1f2d;color:var(--text);resize:none;}
+@media (max-width:600px){.products{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>TONFiles Market</h1>
-  </header>
+<header>
+  <h1>TONFiles Market</h1>
+  <nav>
+    <button onclick="showSection('market')" class="active" id="navMarket">Маркет</button>
+    <button onclick="showSection('add')">Добавить товар</button>
+    <button onclick="showSection('cart')">Корзина <span id="cartCount">0</span></button>
+  </nav>
+</header>
 
-  <main>
-    <div class="products" id="products"></div>
-  </main>
-
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <button class="close" onclick="closeModal()">×</button>
-      <h2>Оплата</h2>
-      <p id="modal-text">Загрузка...</p>
-      <button class="btn" onclick="closeModal()">Ок</button>
+<main>
+  <div id="marketSection">
+    <div style="margin-bottom:1rem;">
+      <label>Категория:
+        <select id="categoryFilter" onchange="renderProducts()">
+          <option value="all">Все</option>
+        </select>
+      </label>
+      <label>Сортировать:
+        <select id="sortFilter" onchange="renderProducts()">
+          <option value="newest">Новизна</option>
+          <option value="priceAsc">Цена ↑</option>
+          <option value="priceDesc">Цена ↓</option>
+        </select>
+      </label>
+      <input type="text" id="searchInput" placeholder="Поиск товаров..." oninput="renderProducts()">
     </div>
+    <div class="products" id="products"></div>
   </div>
 
-  <script>
-    // Пример товаров (пока локально)
-    const products = [
-      {
-        id: 1,
-        title: "Гайд: как заработать 100 TON",
-        description: "Подробный мануал для новичков.",
-        price: 15,
-        preview: "https://via.placeholder.com/300x200.png?text=Guide"
-      },
-      {
-        id: 2,
-        title: "Скрипт автоторговли",
-        description: "Готовый Python-скрипт для работы с TON DEX.",
-        price: 50,
-        preview: "https://via.placeholder.com/300x200.png?text=Script"
-      },
-      {
-        id: 3,
-        title: "Коллекция эмодзи",
-        description: "Эксклюзивный пак эмодзи в стиле TON.",
-        price: 7,
-        preview: "https://via.placeholder.com/300x200.png?text=Emoji+Pack"
-      }
-    ];
+  <div id="addSection" style="display:none;">
+    <h2>Добавить новый товар</h2>
+    <form id="addForm">
+      <input type="text" id="addTitle" placeholder="Название" required>
+      <textarea id="addDesc" placeholder="Описание"></textarea>
+      <input type="number" id="addPrice" placeholder="Цена (TON)" required>
+      <input type="text" id="addCategory" placeholder="Категория" required>
+      <input type="text" id="addPreview" placeholder="Ссылка на превью">
+      <button class="btn" type="submit">Добавить</button>
+    </form>
+  </div>
 
-    function loadProducts() {
-      const container = document.getElementById("products");
-      container.innerHTML = "";
-      products.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          ${p.preview ? `<img src="${p.preview}" alt="preview">` : ""}
-          <div class="title">${p.title}</div>
-          <div class="desc">${p.description || ""}</div>
-          <div class="price">${p.price} TON</div>
-          <button class="btn" onclick="buy(${p.id})">Купить</button>
-        `;
-        container.appendChild(card);
-      });
-    }
+  <div id="cartSection" style="display:none;">
+    <h2>Корзина</h2>
+    <div id="cartItems"></div>
+    <button class="btn" onclick="checkout()">Оплатить</button>
+  </div>
+</main>
 
-    function buy(product_id) {
-      const product = products.find(p => p.id === product_id);
-      if (!product) return;
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal()">×</button>
+    <h2>Информация</h2>
+    <div id="modalText"></div>
+    <button class="btn" onclick="closeModal()">Ок</button>
+  </div>
+</div>
 
-      // Фейковая инструкция к оплате
-      const payInstruction = `
-        Сумма: <b>${product.price} TON</b><br>
-        Метод: TON Wallet<br>
-        Адрес: <code>EQDUMMYTONADDRESS123</code><br><br>
-        После оплаты свяжитесь с продавцом для получения файла.
-      `;
-      showModal(payInstruction);
-    }
+<script>
+// ====== Данные ======
+let products = JSON.parse(localStorage.getItem("products")||"[]");
+let cart = JSON.parse(localStorage.getItem("cart")||"[]");
 
-    function showModal(html) {
-      document.getElementById("modal-text").innerHTML = html;
-      document.getElementById("modal").style.display = "flex";
-    }
-    function closeModal() {
-      document.getElementById("modal").style.display = "none";
-    }
+// Пример товаров, если пусто
+if(products.length===0){
+  products = [
+    {id:1,title:"Гайд по TON",description:"Подробный мануал",price:15,category:"Гайды",preview:"https://via.placeholder.com/300x200.png?text=Guide"},
+    {id:2,title:"Скрипт автоторговли",description:"Python скрипт",price:50,category:"Скрипты",preview:"https://via.placeholder.com/300x200.png?text=Script"},
+    {id:3,title:"Коллекция эмодзи",description:"Эксклюзивные эмодзи",price:7,category:"Эмодзи",preview:"https://via.placeholder.com/300x200.png?text=Emoji"}
+  ];
+  localStorage.setItem("products", JSON.stringify(products));
+}
 
-    loadProducts();
-  </script>
+// ====== UI функции ======
+function showSection(sec){
+  ["marketSection","addSection","cartSection"].forEach(s=>document.getElementById(s).style.display="none");
+  document.getElementById(sec+"Section").style.display="block";
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  if(sec==="market") document.getElementById("navMarket").classList.add("active");
+  updateCartCount();
+}
+
+function renderProducts(){
+  const container = document.getElementById("products");
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const category = document.getElementById("categoryFilter").value;
+  const sort = document.getElementById("sortFilter").value;
+  let filtered = products.filter(p=>p.title.toLowerCase().includes(search)||p.description.toLowerCase().includes(search));
+  if(category!=="all") filtered = filtered.filter(p=>p.category===category);
+  if(sort==="priceAsc") filtered.sort((a,b)=>a.price-b.price);
+  if(sort==="priceDesc") filtered.sort((a,b)=>b.price-a.price);
+  if(sort==="newest") filtered.sort((a,b)=>b.id-b.id);
+  container.innerHTML="";
+  filtered.forEach(p=>{
+    const card = document.createElement("div"); card.className="card";
+    card.innerHTML=`
+      ${p.preview?`<img src="${p.preview}">`:""}
+      <div class="title">${p.title}</div>
+      <div class="desc">${p.description}</div>
+      <div class="price">${p.price} TON</div>
+      <button class="btn" onclick="addToCart(${p.id})">Купить</button>
+    `;
+    container.appendChild(card);
+  });
+  populateCategories();
+}
+
+function populateCategories(){
+  const sel = document.getElementById("categoryFilter");
+  const cats = Array.from(new Set(products.map(p=>p.category)));
+  sel.innerHTML='<option value="all">Все</option>';
+  cats.forEach(c=>sel.innerHTML+=`<option value="${c}">${c}</option>`);
+}
+
+function addToCart(id){
+  const item = products.find(p=>p.id===id);
+  if(!item) return;
+  if(!cart.find(c=>c.id===id)) cart.push(item);
+  localStorage.setItem("cart",JSON.stringify(cart));
+  updateCartCount();
+  showModal(`Товар <b>${item.title}</b> добавлен в корзину`);
+}
+
+function updateCartCount(){document.getElementById("cartCount").textContent=cart.length;}
+
+function renderCart(){
+  const container = document.getElementById("cartItems");
+  container.innerHTML="";
+  if(cart.length===0){container.innerHTML="<p>Корзина пуста</p>"; return;}
+  cart.forEach(c=>{
+    const div=document.createElement("div");
+    div.innerHTML=`${c.title} - ${c.price} TON <button class="btn" onclick="removeFromCart(${c.id})">Удалить</button>`;
+    container.appendChild(div);
+  });
+}
+
+function removeFromCart(id){
+  cart=cart.filter(c=>c.id!==id);
+  localStorage.setItem("cart",JSON.stringify(cart));
+  renderCart();
+  updateCartCount();
+}
+
+function checkout(){
+  if(cart.length===0){showModal("Корзина пуста");return;}
+  let total = cart.reduce((a,b)=>a+b.price,0);
+  showModal(`Фейковая оплата: ${total} TON. После оплаты товары будут доступны для скачивания.`);
+  cart=[]; localStorage.setItem("cart",JSON.stringify(cart)); renderCart(); updateCartCount();
+}
+
+// ====== Добавление товара ======
+document.getElementById("addForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const id=products.length?products[products.length-1].id+1:1;
+  const title=document.getElementById("addTitle").value;
+  const desc=document.getElementById("addDesc").value;
+  const price=Number(document.getElementById("addPrice").value);
+  const category=document.getElementById("addCategory").value;
+  const preview=document.getElementById("addPreview").value;
+  const item={id,title,description:desc,price,category,preview};
+  products.push(item);
+  localStorage.setItem("products",JSON.stringify(products));
+  renderProducts();
+  showSection("market");
+  showModal(`Товар <b>${title}</b> добавлен`);
+  document.getElementById("addForm").reset();
+});
+
+// ====== Модал ======
+function showModal(html){document.getElementById("modalText").innerHTML=html; document.getElementById("modal").style.display="flex";}
+function closeModal(){document.getElementById("modal").style.display="none";}
+
+// ====== Инициализация ======
+renderProducts();
+renderCart();
+showSection("market");
+</script>
 </body>
 </html>
