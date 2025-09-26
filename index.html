@@ -8,12 +8,12 @@
 :root {
   --bg:#0f1220; --card:#171a2a; --text:#e8ebff; --muted:#9aa3c7;
   --accent:#6ea8ff; --accent-2:#7b6cff;
-  --btn:#2a2f45; --btn-hover:#343a55;
   --shadow:0 10px 30px rgba(0,0,0,0.25); --radius:18px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{
-  font-family:sans-serif; background:var(--bg); color:var(--text);
+  font-family: Inter, sans-serif;
+  background:var(--bg); color:var(--text);
   display:flex; flex-direction:column; height:100vh; overflow:hidden;
 }
 header{padding:16px; text-align:center; font-size:20px; font-weight:600;}
@@ -37,10 +37,10 @@ main{flex:1; overflow-y:auto; padding:12px; padding-bottom:80px;}
 .card .category{font-size:13px; color:var(--muted);}
 .card .price{font-size:14px; font-weight:700; color:var(--accent);}
 .btn{
-  padding:8px 10px; border-radius:12px;
+  padding:10px 14px; border-radius:12px;
   background:linear-gradient(135deg,var(--accent),var(--accent-2));
   border:none; color:#fff; cursor:pointer; font-weight:600;
-  transition:0.2s;
+  transition:0.2s; text-align:center;
 }
 .btn:hover{opacity:0.9;}
 /* Bottom nav */
@@ -90,16 +90,19 @@ nav button .badge{
 .close-btn{background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; position:absolute; top:20px; right:20px;}
 /* Form */
 #addForm{
-  display:flex; flex-direction:column; gap:12px;
+  display:flex; flex-direction:column; gap:14px;
   background:var(--card); padding:16px; border-radius:var(--radius);
   box-shadow:var(--shadow);
 }
+.form-group{display:flex; flex-direction:column; gap:6px;}
+.form-group label{font-size:14px; color:var(--muted);}
 #addForm input, #addForm textarea, #addForm select{
   padding:10px; border-radius:12px; border:none;
   background:#1e2235; color:var(--text); font-size:14px;
 }
+#addForm textarea{min-height:70px; resize:vertical;}
 #imagePreview{
-  width:100%; height:160px; border-radius:var(--radius);
+  width:100%; height:180px; border-radius:var(--radius);
   background:#1e2235; display:flex; justify-content:center; align-items:center;
   color:var(--muted); font-size:14px; overflow:hidden;
 }
@@ -141,18 +144,33 @@ nav button .badge{
   <div id="addTab" class="tab">
     <h2>Добавить товар</h2>
     <form id="addForm">
-      <input type="text" id="newName" placeholder="Название" required>
-      <textarea id="newDesc" placeholder="Описание" required></textarea>
-      <select id="newCategory" required>
-        <option value="">Выберите категорию</option>
-        <option value="Гайды">Гайды</option>
-        <option value="Скрипты">Скрипты</option>
-        <option value="Файлы">Файлы</option>
-      </select>
-      <input type="number" id="newPrice" placeholder="Цена (TON)" required>
-      <div id="imagePreview">Предпросмотр изображения</div>
-      <input type="file" id="newImage" accept="image/*">
-      <button class="btn" type="submit">Добавить</button>
+      <div class="form-group">
+        <label for="newName">Название</label>
+        <input type="text" id="newName" placeholder="Введите название" required>
+      </div>
+      <div class="form-group">
+        <label for="newDesc">Описание</label>
+        <textarea id="newDesc" placeholder="Введите описание" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="newCategory">Категория</label>
+        <select id="newCategory" required>
+          <option value="">Выберите категорию</option>
+          <option value="Гайды">Гайды</option>
+          <option value="Скрипты">Скрипты</option>
+          <option value="Файлы">Файлы</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="newPrice">Цена (TON)</label>
+        <input type="number" id="newPrice" placeholder="Укажите цену" required>
+      </div>
+      <div class="form-group">
+        <label for="newImage">Фотография товара</label>
+        <div id="imagePreview">Предпросмотр изображения</div>
+        <input type="file" id="newImage" accept="image/*">
+      </div>
+      <button class="btn" type="submit">✅ Опубликовать товар</button>
     </form>
   </div>
 </main>
