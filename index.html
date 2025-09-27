@@ -133,8 +133,11 @@ textarea{resize:none; min-height:80px;}
 </div>
 
 <script>
-let products = JSON.parse(localStorage.getItem("products")||"[]");
-let purchases = JSON.parse(localStorage.getItem("purchases")||"[]");
+let products = [
+  {title:"Гайд по TON", desc:"Полезный материал", price:50, image:""},
+  {title:"Скрипт-автоматизация", desc:"Ускоряет работу", price:120, image:""}
+]; // теперь не сохраняем локально
+let purchases = [];
 let balance = 1000; // тестовый баланс
 
 // вкладки
@@ -180,12 +183,12 @@ function renderProducts(){
 // покупка
 function buyProduct(i){
   const p=products[i];
-  if(balance>=p.price){
-    balance-=p.price;
-    const purchase={title:p.title,desc:p.desc,price:p.price,image:p.image,date:new Date().toLocaleString()};
+  const price=Number(p.price);
+  if(balance>=price){
+    balance-=price;
+    const purchase={title:p.title,desc:p.desc,price:price,image:p.image,date:new Date().toLocaleString()};
     purchases.push(purchase);
-    localStorage.setItem("purchases",JSON.stringify(purchases));
-    alert("Вы купили: "+p.title+" за "+p.price+" TON");
+    alert("Вы купили: "+p.title+" за "+price+" TON");
     document.getElementById("balance").innerText=balance+" TON";
     renderProfile();
     renderProducts();
@@ -217,10 +220,9 @@ form.addEventListener("submit",e=>{
   e.preventDefault();
   const title=document.getElementById("titleInput").value.trim();
   const desc=document.getElementById("descInput").value.trim();
-  const price=parseFloat(document.getElementById("priceInput").value);
+  const price=Number(document.getElementById("priceInput").value);
   if(!title || !desc || !price){alert("Заполните все поля!");return;}
   products.push({title,desc,price,image:newImage});
-  localStorage.setItem("products",JSON.stringify(products));
   form.reset(); preview.classList.add("hidden"); newImage="";
   alert("Товар опубликован!");
   renderProducts();
