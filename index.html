@@ -1,357 +1,402 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TONFiles Market</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg: #0f1220;
+      --card: #171a2a;
+      --text: #e8ebff;
+      --muted: #9aa3c7;
+      --accent: #6ea8ff;
+      --accent-2: #7b6cff;
+      --btn: #2a2f45;
+      --btn-hover: #343a55;
+      --radius: 14px;
+      --shadow: 0 10px 25px rgba(0,0,0,0.35);
     }
-    html, body {
-      width: 100%;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      background: #0d0f1a;
-      color: #fff;
-      overflow-x: hidden; /* убираем горизонтальный скролл */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
     }
     header {
-      background: #1a1f2e;
-      padding: 15px;
+      padding: 14px;
       text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      border-bottom: 2px solid #2d3650;
-    }
-    main {
-      padding: 15px;
+      font-weight: 700;
+      font-size: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
     .tabs {
       display: flex;
       justify-content: space-around;
+      padding: 12px;
+      background: var(--card);
+      border-top: 1px solid #22263c;
       position: fixed;
       bottom: 0;
       left: 0;
-      width: 100%;
-      background: #1a1f2e;
-      border-top: 2px solid #2d3650;
+      right: 0;
     }
-    .tab-btn {
+    .tab {
       flex: 1;
-      padding: 12px;
       text-align: center;
-      color: #fff;
-      background: none;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background: #2d3650;
-      font-weight: bold;
-    }
-    .tab-content {
-      display: none;
-      margin-bottom: 60px;
-    }
-    .tab-content.active {
-      display: block;
-    }
-
-    /* Фильтры и поиск */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    .controls input, 
-    .controls select, 
-    .controls button {
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-      flex: 1;
-      min-width: 120px;
-    }
-    .controls button {
-      background: #2d7dff;
-      color: #fff;
-      cursor: pointer;
-    }
-    .controls button:hover {
-      background: #1a5edc;
-    }
-
-    /* Сетка товаров */
-    .products {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    .product {
-      background: #1a1f2e;
-      border: 1px solid #2d3650;
-      border-radius: 10px;
       padding: 10px;
-      width: calc(50% - 15px);
-      max-width: 250px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .tab.active {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    main { padding: 16px; padding-bottom: 70px; }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .filters input {
+      flex: 1 1 200px;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: none;
+      background: #1e2235;
+      color: var(--text);
+    }
+    .filters select, .filters button {
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--btn);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .filters button:hover { background: var(--btn-hover); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 8px;
       text-align: center;
+      position: relative;
     }
-    .product img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-    .product h3 {
-      font-size: 16px;
-      margin-bottom: 5px;
-    }
-    .product p {
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-    .product button {
-      background: #2d7dff;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 8px;
-      cursor: pointer;
-      width: 100%;
-    }
-    .product button.bought {
-      background: #2dbf7d;
-      cursor: default;
-    }
-
-    /* Форма добавления */
-    .form-group {
-      margin-bottom: 12px;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    .form-group input, 
-    .form-group textarea {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
-    }
-    .form-group input[type="file"] {
-      background: #fff;
-      color: #000;
-    }
-    .preview {
-      margin-top: 10px;
-      text-align: center;
-    }
-    .preview img {
+    .card img {
       max-width: 100%;
-      max-height: 150px;
+      border-radius: var(--radius);
+      object-fit: cover;
+    }
+    .card .badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: var(--accent-2);
+      color: white;
+      font-size: 11px;
+      padding: 3px 6px;
       border-radius: 8px;
     }
-    .publish-btn {
-      width: 100%;
-      padding: 10px;
-      background: #2d7dff;
+    .btn {
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
       color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      font-weight: 600;
       cursor: pointer;
+      margin-top: auto;
+      width: 100%;
     }
-    .publish-btn:hover {
-      background: #1a5edc;
-    }
-
-    /* История покупок */
-    .history {
+    .btn:hover { opacity: 0.9; }
+    .btn.green { background: #22c55e; }
+    .profile {
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
+      flex-direction: column;
+      gap: 14px;
     }
-    .history .product {
-      width: calc(50% - 15px);
-    }
-
-    /* Баланс */
     .balance {
-      margin-bottom: 15px;
-      font-size: 16px;
-      font-weight: bold;
+      background: var(--card);
+      padding: 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .history, .my-products {
+      background: var(--card);
+      padding: 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .toast.show { opacity: 1; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .modal-content input {
+      width: 100%;
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: var(--radius);
+      border: none;
+      background: #1e2235;
+      color: var(--text);
     }
   </style>
 </head>
 <body>
   <header>TONFiles Market</header>
-  <main>
-    <!-- Главная -->
-    <div id="home" class="tab-content active">
-      <div class="controls">
-        <input type="text" id="search" placeholder="Поиск товара...">
-        <select id="sort">
-          <option value="newest">Сначала новые</option>
-          <option value="cheap">Сначала дешёвые</option>
-          <option value="expensive">Сначала дорогие</option>
-        </select>
-      </div>
-      <div class="products" id="productList"></div>
-    </div>
-
-    <!-- Добавить -->
-    <div id="add" class="tab-content">
-      <div class="form-group">
-        <label>Название товара</label>
-        <input type="text" id="title">
-      </div>
-      <div class="form-group">
-        <label>Описание</label>
-        <textarea id="description"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Цена (TON)</label>
-        <input type="number" id="price" min="1">
-      </div>
-      <div class="form-group">
-        <label>Фото</label>
-        <input type="file" id="image">
-        <div class="preview" id="preview"></div>
-      </div>
-      <button class="publish-btn" onclick="publishProduct()">Опубликовать</button>
-    </div>
-
-    <!-- Профиль -->
-    <div id="profile" class="tab-content">
-      <div class="balance">Баланс: <span id="balance">1000</span> TON</div>
-      <h3>История покупок</h3>
-      <div class="history" id="history"></div>
-    </div>
-  </main>
-
+  <main id="main"></main>
   <div class="tabs">
-    <button class="tab-btn active" onclick="openTab('home', this)">Главная</button>
-    <button class="tab-btn" onclick="openTab('add', this)">Добавить</button>
-    <button class="tab-btn" onclick="openTab('profile', this)">Профиль</button>
+    <div class="tab active" data-tab="home">Главная</div>
+    <div class="tab" data-tab="add">Добавить</div>
+    <div class="tab" data-tab="profile">Профиль</div>
   </div>
-
+  <div class="toast" id="toast"></div>
+  <div class="modal" id="priceModal">
+    <div class="modal-content">
+      <h3>Изменить цену</h3>
+      <input type="number" id="newPrice" placeholder="Новая цена">
+      <button class="btn" onclick="confirmPriceChange()">Сохранить</button>
+    </div>
+  </div>
   <script>
     let balance = 1000;
-    let products = [];
-    let purchased = [];
+    let products = [
+      {id:1, title:"Гайд по TON", price:200, owner:false, bought:false, img:""},
+      {id:2, title:"Скрипт автоторговли", price:500, owner:false, bought:false, img:""},
+      {id:3, title:"Файл ресурсов", price:300, owner:false, bought:false, img:""}
+    ];
+    let purchases = [];
+    let myProducts = [];
+    let editProductId = null;
 
-    function openTab(tabId, el) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      el.classList.add('active');
+    const main = document.getElementById('main');
+    const toast = document.getElementById('toast');
+    const modal = document.getElementById('priceModal');
+    const newPriceInput = document.getElementById('newPrice');
+
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),2000);
     }
 
-    function renderProducts() {
-      const list = document.getElementById('productList');
-      list.innerHTML = '';
+    function switchTab(tab){
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+      if(tab==="home") renderHome();
+      if(tab==="add") renderAdd();
+      if(tab==="profile") renderProfile();
+    }
 
-      let filtered = [...products];
-      const searchVal = document.getElementById('search').value.toLowerCase();
-      if (searchVal) {
-        filtered = filtered.filter(p => p.title.toLowerCase().includes(searchVal));
-      }
+    function renderHome(){
+      main.innerHTML = `
+        <div class="filters">
+          <input type="text" id="search" placeholder="Поиск...">
+          <select id="sort">
+            <option value="default">По умолчанию</option>
+            <option value="cheap">Сначала дешёвые</option>
+            <option value="expensive">Сначала дорогие</option>
+          </select>
+          <select id="filter">
+            <option value="all">Все товары</option>
+            <option value="bought">Купленные</option>
+          </select>
+        </div>
+        <div class="grid">
+          ${products.map(p=>{
+            const badge = p.owner ? '<div class="badge">Мой товар</div>' : '';
+            let btn = `<button class="btn" onclick="buy(${p.id})">Купить за ${p.price} TON</button>`;
+            if(p.bought) btn = `<button class="btn green">Куплено</button>`;
+            return `
+              <div class="card">
+                ${badge}
+                ${p.img?`<img src="${p.img}">`:"<div style='height:120px;width:100%;background:#1e2235;border-radius:var(--radius);'></div>"}
+                <div>${p.title}</div>
+                <div>${p.price} TON</div>
+                ${btn}
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+      document.getElementById('search').addEventListener('input',renderHomeFiltered);
+      document.getElementById('sort').addEventListener('change',renderHomeFiltered);
+      document.getElementById('filter').addEventListener('change',renderHomeFiltered);
+    }
 
-      const sortVal = document.getElementById('sort').value;
-      if (sortVal === 'cheap') filtered.sort((a,b) => a.price - b.price);
-      else if (sortVal === 'expensive') filtered.sort((a,b) => b.price - a.price);
-      else filtered.sort((a,b) => b.id - a.id);
-
-      filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product';
-        card.innerHTML = `
-          <img src="${p.image || 'https://via.placeholder.com/150'}" alt="">
-          <h3>${p.title}</h3>
-          <p>${p.description}</p>
-          <p><b>${p.price} TON</b></p>
-          ${purchased.includes(p.id) 
-            ? `<button class="bought">Куплено</button>` 
-            : `<button onclick="buyProduct(${p.id})">Купить</button>`}
+    function renderHomeFiltered(){
+      const q=document.getElementById('search').value.toLowerCase();
+      const sort=document.getElementById('sort').value;
+      const filter=document.getElementById('filter').value;
+      let list=products.filter(p=>p.title.toLowerCase().includes(q));
+      if(filter==="bought") list=list.filter(p=>p.bought);
+      if(sort==="cheap") list.sort((a,b)=>a.price-b.price);
+      if(sort==="expensive") list.sort((a,b)=>b.price-a.price);
+      const grid=main.querySelector('.grid');
+      grid.innerHTML=list.map(p=>{
+        const badge = p.owner ? '<div class="badge">Мой товар</div>' : '';
+        let btn = `<button class="btn" onclick="buy(${p.id})">Купить за ${p.price} TON</button>`;
+        if(p.bought) btn = `<button class="btn green">Куплено</button>`;
+        return `
+          <div class="card">
+            ${badge}
+            ${p.img?`<img src="${p.img}">`:"<div style='height:120px;width:100%;background:#1e2235;border-radius:var(--radius);'></div>"}
+            <div>${p.title}</div>
+            <div>${p.price} TON</div>
+            ${btn}
+          </div>
         `;
-        list.appendChild(card);
-      });
+      }).join("");
     }
 
-    function publishProduct() {
-      const title = document.getElementById('title').value;
-      const description = document.getElementById('description').value;
-      const price = parseInt(document.getElementById('price').value);
-      const imageFile = document.getElementById('image').files[0];
+    function renderAdd(){
+      main.innerHTML=`
+        <div class="card" style="max-width:400px;margin:0 auto;">
+          <h3>Добавить товар</h3>
+          <input id="title" placeholder="Название">
+          <input id="price" type="number" placeholder="Цена в TON">
+          <input id="img" type="file" accept="image/*">
+          <button class="btn" onclick="addProduct()">Опубликовать</button>
+        </div>
+      `;
+    }
 
-      if (!title || !description || !price) {
-        alert('Заполните все поля!');
-        return;
-      }
+    function renderProfile(){
+      main.innerHTML=`
+        <div class="profile">
+          <div class="balance">Баланс: ${balance} TON</div>
+          <div class="history">
+            <h3>История покупок</h3>
+            <ul>${purchases.map(p=>`<li>${p.title} за ${p.price} TON</li>`).join("")||"<li>Нет покупок</li>"}</ul>
+          </div>
+          <div class="my-products">
+            <h3>Мои товары</h3>
+            <div class="grid">
+              ${myProducts.map(p=>`
+                <div class="card">
+                  ${p.img?`<img src="${p.img}">`:""}
+                  <div>${p.title}</div>
+                  <div>${p.price} TON</div>
+                  <button class="btn" onclick="openEdit(${p.id})">Изменить цену</button>
+                  <button class="btn" onclick="removeProduct(${p.id})">Снять</button>
+                </div>
+              `).join("")||"<p>Вы ещё не добавили товары</p>"}
+            </div>
+          </div>
+        </div>
+      `;
+    }
 
-      const reader = new FileReader();
-      reader.onload = e => {
-        products.push({
-          id: Date.now(),
-          title, description, price,
-          image: e.target.result
-        });
-        renderProducts();
-        document.getElementById('title').value = '';
-        document.getElementById('description').value = '';
-        document.getElementById('price').value = '';
-        document.getElementById('image').value = '';
-        document.getElementById('preview').innerHTML = '';
-        openTab('home', document.querySelectorAll('.tab-btn')[0]);
+    function buy(id){
+      const p=products.find(p=>p.id===id);
+      if(p.bought||p.owner) return;
+      if(balance<p.price){showToast("Недостаточно средств");return;}
+      balance-=p.price;
+      p.bought=true;
+      purchases.push(p);
+      showToast("Товар куплен!");
+      renderHomeFiltered();
+    }
+
+    function addProduct(){
+      const title=document.getElementById('title').value.trim();
+      const price=parseInt(document.getElementById('price').value);
+      const imgInput=document.getElementById('img');
+      if(!title||!price){showToast("Заполните все поля");return;}
+      const id=Date.now();
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const prod={id,title,price,owner:true,bought:false,img:reader.result};
+        products.push(prod);
+        myProducts.push(prod);
+        showToast("Товар добавлен!");
+        switchTab("home");
       };
-      if (imageFile) reader.readAsDataURL(imageFile);
-      else reader.onload({ target: { result: null } });
-    }
-
-    function buyProduct(id) {
-      const product = products.find(p => p.id === id);
-      if (balance < product.price) {
-        alert('Недостаточно средств!');
-        return;
+      if(imgInput.files[0]) reader.readAsDataURL(imgInput.files[0]);
+      else {
+        const prod={id,title,price,owner:true,bought:false,img:""};
+        products.push(prod);
+        myProducts.push(prod);
+        showToast("Товар добавлен!");
+        switchTab("home");
       }
-      balance -= product.price;
-      purchased.push(id);
-      document.getElementById('balance').innerText = balance;
-      renderProducts();
-      renderHistory();
     }
 
-    function renderHistory() {
-      const history = document.getElementById('history');
-      history.innerHTML = '';
-      purchased.forEach(id => {
-        const p = products.find(pr => pr.id === id);
-        if (p) {
-          const card = document.createElement('div');
-          card.className = 'product';
-          card.innerHTML = `
-            <img src="${p.image || 'https://via.placeholder.com/150'}" alt="">
-            <h3>${p.title}</h3>
-            <p>${p.price} TON</p>
-          `;
-          history.appendChild(card);
-        }
-      });
+    function openEdit(id){
+      editProductId=id;
+      modal.classList.add("active");
+    }
+    function confirmPriceChange(){
+      const val=parseInt(newPriceInput.value);
+      if(!val){showToast("Введите цену");return;}
+      const prod=products.find(p=>p.id===editProductId);
+      if(prod){prod.price=val;}
+      const mine=myProducts.find(p=>p.id===editProductId);
+      if(mine){mine.price=val;}
+      showToast("Цена изменена");
+      modal.classList.remove("active");
+      renderProfile();
     }
 
-    document.getElementById('search').addEventListener('input', renderProducts);
-    document.getElementById('sort').addEventListener('change', renderProducts);
+    function removeProduct(id){
+      if(!confirm("Удалить товар?")) return;
+      products=products.filter(p=>p.id!==id);
+      myProducts=myProducts.filter(p=>p.id!==id);
+      showToast("Товар снят");
+      renderProfile();
+    }
 
-    renderProducts();
+    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+    switchTab("home");
   </script>
 </body>
 </html>
