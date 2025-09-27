@@ -7,7 +7,7 @@
 <style>
 :root {
   --bg:#0e111a; --card:#171b26; --text:#e8ebff; --muted:#9aa3c7;
-  --accent:#3b82f6; --accent-2:#7c3aed;
+  --accent:#3b82f6; --accent-2:#7c3aed; --success:#22c55e;
   --radius:16px; --shadow:0 8px 24px rgba(0,0,0,0.25);
 }
 body{margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden;}
@@ -44,6 +44,9 @@ h2{margin:12px 0; font-size:20px;}
 }
 .btn:hover{opacity:0.9;}
 .btn:disabled{opacity:0.6; cursor:not-allowed;}
+.btn.success{
+  background:var(--success); color:white; cursor:default;
+}
 /* форма */
 form{display:flex; flex-direction:column; gap:12px;}
 input,textarea,select{
@@ -57,7 +60,17 @@ textarea{resize:none; min-height:80px;}
   background:var(--card); border-radius:var(--radius); padding:14px; margin-bottom:12px;
   box-shadow:var(--shadow);
 }
-ul{padding-left:18px;}
+.purchase-grid{
+  display:grid; gap:16px;
+  grid-template-columns:repeat(2,1fr);
+}
+.purchase-card{
+  background:var(--card); border-radius:var(--radius); padding:10px;
+  box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+.purchase-card img{max-width:100%; border-radius:var(--radius);}
+.purchase-card h4{margin:6px 0;font-size:15px;}
+.purchase-card p{margin:0;font-size:13px; color:var(--muted);}
 </style>
 </head>
 <body>
@@ -108,7 +121,7 @@ ul{padding-left:18px;}
   </div>
   <div class="stat-box">
     <strong>История покупок:</strong>
-    <ul id="purchaseHistory"></ul>
+    <div class="purchase-grid" id="purchaseHistory"></div>
   </div>
 </section>
 
@@ -135,6 +148,11 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   });
 });
 
+// проверка куплен ли товар
+function isPurchased(title){
+  return purchases.some(ph=>ph.title===title);
+}
+
 // отрисовка товаров
 function renderProducts(){
   const q=document.getElementById("searchInput").value.toLowerCase();
@@ -143,15 +161,20 @@ function renderProducts(){
   if(sort==="cheap") list.sort((a,b)=>a.price-b.price);
   if(sort==="exp") list.sort((a,b)=>b.price-a.price);
   if(sort==="new") list=list.reverse();
-  document.getElementById("productsGrid").innerHTML=list.map((p,i)=>`
+  document.getElementById("productsGrid").innerHTML=list.map((p,i)=>{
+    const bought=isPurchased(p.title);
+    return `
     <div class="card">
       ${p.image?`<img src="${p.image}" alt="preview">`:""}
       <h3>${p.title}</h3>
       <p>${p.desc}</p>
       <div class="price">${p.price} TON</div>
-      <button class="btn" onclick="buyProduct(${i})">Купить</button>
+      ${bought
+        ? `<button class="btn success" disabled>Куплено</button>`
+        : `<button class="btn" onclick="buyProduct(${i})">Купить</button>`}
     </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 // покупка
@@ -159,12 +182,13 @@ function buyProduct(i){
   const p=products[i];
   if(balance>=p.price){
     balance-=p.price;
-    const purchase={title:p.title,price:p.price,date:new Date().toLocaleString()};
+    const purchase={title:p.title,desc:p.desc,price:p.price,image:p.image,date:new Date().toLocaleString()};
     purchases.push(purchase);
     localStorage.setItem("purchases",JSON.stringify(purchases));
     alert("Вы купили: "+p.title+" за "+p.price+" TON");
     document.getElementById("balance").innerText=balance+" TON";
     renderProfile();
+    renderProducts();
   } else {
     alert("Недостаточно средств!");
   }
@@ -200,7 +224,6 @@ form.addEventListener("submit",e=>{
   form.reset(); preview.classList.add("hidden"); newImage="";
   alert("Товар опубликован!");
   renderProducts();
-  // переключаем на главную
   document.querySelector("[data-tab='home']").click();
 });
 
@@ -208,9 +231,17 @@ form.addEventListener("submit",e=>{
 function renderProfile(){
   document.getElementById("balance").innerText=balance+" TON";
   document.getElementById("myProducts").innerHTML=products.map(p=>`<li>${p.title} — ${p.price} TON</li>`).join("");
-  document.getElementById("purchaseHistory").innerHTML=purchases.length
-    ? purchases.map(ph=>`<li>${ph.title} — ${ph.price} TON <small>(${ph.date})</small></li>`).join("")
-    : "<li>Нет покупок</li>";
+  const ph=document.getElementById("purchaseHistory");
+  ph.innerHTML=purchases.length
+    ? purchases.map(p=>`
+      <div class="purchase-card">
+        ${p.image?`<img src="${p.image}" alt="preview">`:""}
+        <h4>${p.title}</h4>
+        <p>${p.price} TON</p>
+        <small>${p.date}</small>
+      </div>
+    `).join("")
+    : "<p>Нет покупок</p>";
 }
 
 // фильтры
