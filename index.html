@@ -14,389 +14,448 @@
       --accent-2: #7b6cff;
       --btn: #2a2f45;
       --btn-hover: #343a55;
-      --radius: 14px;
-      --shadow: 0 10px 25px rgba(0,0,0,0.35);
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.25);
     }
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
     }
     header {
-      padding: 14px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
       background: var(--card);
       box-shadow: var(--shadow);
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 10;
+    }
+    header img {
+      height: 32px;
+    }
+    .balance {
+      font-weight: bold;
+      background: var(--btn);
+      padding: 6px 12px;
+      border-radius: var(--radius);
+    }
+    main {
+      padding: 16px;
     }
     .tabs {
-      display: flex;
-      justify-content: space-around;
-      padding: 12px;
-      background: var(--card);
-      border-top: 1px solid #22263c;
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .tab.active {
-      color: var(--accent);
-      font-weight: 700;
-    }
-    main { padding: 16px; padding-bottom: 70px; }
-    .filters {
+      width: 100%;
+      background: var(--card);
       display: flex;
+      justify-content: space-around;
+      border-top: 1px solid #22263d;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      color: var(--accent);
+    }
+    .hidden {
+      display: none;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 16px;
     }
-    .filters input {
-      flex: 1 1 200px;
-      padding: 10px;
+    .toolbar input {
+      padding: 8px;
       border-radius: var(--radius);
       border: none;
+      outline: none;
       background: #1e2235;
       color: var(--text);
+      flex: 1;
+      min-width: 140px;
     }
-    .filters select, .filters button {
-      padding: 10px 14px;
+    .toolbar select, .toolbar button {
+      padding: 8px 12px;
       border-radius: var(--radius);
       border: none;
       background: var(--btn);
       color: var(--text);
       cursor: pointer;
     }
-    .filters button:hover { background: var(--btn-hover); }
+    .toolbar button:hover {
+      background: var(--btn-hover);
+    }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
     }
     .card {
       background: var(--card);
+      padding: 12px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
       text-align: center;
-      position: relative;
     }
     .card img {
-      max-width: 100%;
-      border-radius: var(--radius);
-      object-fit: cover;
-    }
-    .card .badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: var(--accent-2);
-      color: white;
-      font-size: 11px;
-      padding: 3px 6px;
-      border-radius: 8px;
-    }
-    .btn {
-      background: linear-gradient(135deg,var(--accent),var(--accent-2));
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      padding: 8px 14px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: auto;
       width: 100%;
+      max-height: 150px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 8px;
     }
-    .btn:hover { opacity: 0.9; }
-    .btn.green { background: #22c55e; }
-    .profile {
+    .card h3 {
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    .card .price {
+      font-weight: bold;
+      margin: 4px 0;
+    }
+    .card button {
+      margin-top: 6px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .card button:disabled {
+      background: #2c3148;
+      cursor: default;
+    }
+    .favorite {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .favorite.active {
+      color: gold;
+    }
+    .rating {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    .rating span {
+      font-size: 18px;
+      color: var(--muted);
+    }
+    .rating span.active {
+      color: gold;
+    }
+    .form {
+      max-width: 400px;
+      margin: auto;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-    }
-    .balance {
+      gap: 12px;
       background: var(--card);
       padding: 16px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
-    .history, .my-products {
-      background: var(--card);
-      padding: 16px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .toast {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--accent);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-    }
-    .toast.show { opacity: 1; }
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1001;
-    }
-    .modal.active { display: flex; }
-    .modal-content {
-      background: var(--card);
-      padding: 20px;
-      border-radius: var(--radius);
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .modal-content input {
-      width: 100%;
-      margin: 12px 0;
+    .form input[type="text"],
+    .form input[type="number"],
+    .form input[type="file"] {
       padding: 10px;
       border-radius: var(--radius);
       border: none;
       background: #1e2235;
       color: var(--text);
     }
+    .form button {
+      padding: 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .commission {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .profile-section {
+      margin-top: 24px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: none;
+      z-index: 20;
+    }
   </style>
 </head>
 <body>
-  <header>TONFiles Market</header>
-  <main id="main"></main>
+  <header>
+    <img src="tonfiles.svg" alt="logo">
+    <div class="balance">Баланс: <span id="balance">1000</span> TON</div>
+  </header>
+
+  <main>
+    <!-- Главная -->
+    <section id="home" class="tab">
+      <div class="toolbar">
+        <input type="text" id="search" placeholder="Поиск...">
+        <select id="sort">
+          <option value="new">Новые</option>
+          <option value="cheap">Сначала дешёвые</option>
+          <option value="expensive">Сначала дорогие</option>
+        </select>
+        <button id="filterFavorites">⭐ Избранное</button>
+      </div>
+      <div class="grid" id="products"></div>
+    </section>
+
+    <!-- Добавить -->
+    <section id="add" class="tab hidden">
+      <form id="addForm" class="form">
+        <input type="text" id="title" placeholder="Название" required>
+        <input type="number" id="price" placeholder="Цена (TON)" required>
+        <div class="commission">Вы получите: <span id="netAmount">0</span> TON</div>
+        <input type="file" id="image" accept="image/*">
+        <button type="submit">Опубликовать</button>
+      </form>
+    </section>
+
+    <!-- Профиль -->
+    <section id="profile" class="tab hidden">
+      <h2>История покупок</h2>
+      <div class="grid" id="purchases"></div>
+
+      <div class="profile-section">
+        <h2>Мои товары</h2>
+        <div class="grid" id="myProducts"></div>
+      </div>
+    </section>
+  </main>
+
   <div class="tabs">
-    <div class="tab active" data-tab="home">Главная</div>
-    <div class="tab" data-tab="add">Добавить</div>
-    <div class="tab" data-tab="profile">Профиль</div>
+    <button data-tab="home" class="active">Главная</button>
+    <button data-tab="add">Добавить</button>
+    <button data-tab="profile">Профиль</button>
   </div>
+
   <div class="toast" id="toast"></div>
-  <div class="modal" id="priceModal">
-    <div class="modal-content">
-      <h3>Изменить цену</h3>
-      <input type="number" id="newPrice" placeholder="Новая цена">
-      <button class="btn" onclick="confirmPriceChange()">Сохранить</button>
-    </div>
-  </div>
+
   <script>
     let balance = 1000;
-    let products = [
-      {id:1, title:"Гайд по TON", price:200, owner:false, bought:false, img:""},
-      {id:2, title:"Скрипт автоторговли", price:500, owner:false, bought:false, img:""},
-      {id:3, title:"Файл ресурсов", price:300, owner:false, bought:false, img:""}
-    ];
+    let products = [];
     let purchases = [];
     let myProducts = [];
-    let editProductId = null;
+    let favorites = new Set();
 
-    const main = document.getElementById('main');
-    const toast = document.getElementById('toast');
-    const modal = document.getElementById('priceModal');
-    const newPriceInput = document.getElementById('newPrice');
+    const balanceEl = document.getElementById("balance");
+    const productsEl = document.getElementById("products");
+    const purchasesEl = document.getElementById("purchases");
+    const myProductsEl = document.getElementById("myProducts");
+    const toast = document.getElementById("toast");
 
-    function showToast(msg){
+    function showToast(msg) {
       toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(()=>toast.classList.remove('show'),2000);
+      toast.style.display = "block";
+      setTimeout(()=>toast.style.display="none",2000);
     }
 
-    function switchTab(tab){
-      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-      document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-      if(tab==="home") renderHome();
-      if(tab==="add") renderAdd();
-      if(tab==="profile") renderProfile();
-    }
+    function renderProducts(list = products) {
+      productsEl.innerHTML = "";
+      const search = document.getElementById("search").value.toLowerCase();
+      const sort = document.getElementById("sort").value;
+      let filtered = list.filter(p => p.title.toLowerCase().includes(search));
+      if (sort === "cheap") filtered.sort((a,b)=>a.price-b.price);
+      else if (sort === "expensive") filtered.sort((a,b)=>b.price-a.price);
+      else filtered = filtered.reverse();
 
-    function renderHome(){
-      main.innerHTML = `
-        <div class="filters">
-          <input type="text" id="search" placeholder="Поиск...">
-          <select id="sort">
-            <option value="default">По умолчанию</option>
-            <option value="cheap">Сначала дешёвые</option>
-            <option value="expensive">Сначала дорогие</option>
-          </select>
-          <select id="filter">
-            <option value="all">Все товары</option>
-            <option value="bought">Купленные</option>
-          </select>
-        </div>
-        <div class="grid">
-          ${products.map(p=>{
-            const badge = p.owner ? '<div class="badge">Мой товар</div>' : '';
-            let btn = `<button class="btn" onclick="buy(${p.id})">Купить за ${p.price} TON</button>`;
-            if(p.bought) btn = `<button class="btn green">Куплено</button>`;
-            return `
-              <div class="card">
-                ${badge}
-                ${p.img?`<img src="${p.img}">`:"<div style='height:120px;width:100%;background:#1e2235;border-radius:var(--radius);'></div>"}
-                <div>${p.title}</div>
-                <div>${p.price} TON</div>
-                ${btn}
-              </div>
-            `;
-          }).join("")}
-        </div>
-      `;
-      document.getElementById('search').addEventListener('input',renderHomeFiltered);
-      document.getElementById('sort').addEventListener('change',renderHomeFiltered);
-      document.getElementById('filter').addEventListener('change',renderHomeFiltered);
-    }
-
-    function renderHomeFiltered(){
-      const q=document.getElementById('search').value.toLowerCase();
-      const sort=document.getElementById('sort').value;
-      const filter=document.getElementById('filter').value;
-      let list=products.filter(p=>p.title.toLowerCase().includes(q));
-      if(filter==="bought") list=list.filter(p=>p.bought);
-      if(sort==="cheap") list.sort((a,b)=>a.price-b.price);
-      if(sort==="expensive") list.sort((a,b)=>b.price-a.price);
-      const grid=main.querySelector('.grid');
-      grid.innerHTML=list.map(p=>{
-        const badge = p.owner ? '<div class="badge">Мой товар</div>' : '';
-        let btn = `<button class="btn" onclick="buy(${p.id})">Купить за ${p.price} TON</button>`;
-        if(p.bought) btn = `<button class="btn green">Куплено</button>`;
-        return `
-          <div class="card">
-            ${badge}
-            ${p.img?`<img src="${p.img}">`:"<div style='height:120px;width:100%;background:#1e2235;border-radius:var(--radius);'></div>"}
-            <div>${p.title}</div>
-            <div>${p.price} TON</div>
-            ${btn}
-          </div>
+      filtered.forEach((p,i)=>{
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="favorite ${favorites.has(p.id)?"active":""}" onclick="toggleFavorite('${p.id}')">★</div>
+          ${p.image?`<img src="${p.image}">`:""}
+          <h3>${p.title}</h3>
+          <div class="price">${p.price} TON</div>
+          <div class="rating">${renderStars(p)}</div>
+          <button onclick="buyProduct('${p.id}')" ${purchased(p.id)?"disabled":""}>
+            ${purchased(p.id)?"Куплено":"Купить"}
+          </button>
         `;
-      }).join("");
+        productsEl.appendChild(card);
+      });
     }
 
-    function renderAdd(){
-      main.innerHTML=`
-        <div class="card" style="max-width:400px;margin:0 auto;">
-          <h3>Добавить товар</h3>
-          <input id="title" placeholder="Название">
-          <input id="price" type="number" placeholder="Цена в TON">
-          <input id="img" type="file" accept="image/*">
-          <button class="btn" onclick="addProduct()">Опубликовать</button>
-        </div>
-      `;
+    function renderStars(p) {
+      let stars="";
+      for (let i=1;i<=5;i++) {
+        stars+=`<span class="${p.rating>=i?"active":""}" onclick="rateProduct('${p.id}',${i})">★</span>`;
+      }
+      return stars;
     }
 
-    function renderProfile(){
-      main.innerHTML=`
-        <div class="profile">
-          <div class="balance">Баланс: ${balance} TON</div>
-          <div class="history">
-            <h3>История покупок</h3>
-            <ul>${purchases.map(p=>`<li>${p.title} за ${p.price} TON</li>`).join("")||"<li>Нет покупок</li>"}</ul>
-          </div>
-          <div class="my-products">
-            <h3>Мои товары</h3>
-            <div class="grid">
-              ${myProducts.map(p=>`
-                <div class="card">
-                  ${p.img?`<img src="${p.img}">`:""}
-                  <div>${p.title}</div>
-                  <div>${p.price} TON</div>
-                  <button class="btn" onclick="openEdit(${p.id})">Изменить цену</button>
-                  <button class="btn" onclick="removeProduct(${p.id})">Снять</button>
-                </div>
-              `).join("")||"<p>Вы ещё не добавили товары</p>"}
-            </div>
-          </div>
-        </div>
-      `;
+    function renderPurchases() {
+      purchasesEl.innerHTML="";
+      purchases.forEach(p=>{
+        const card=document.createElement("div");
+        card.className="card";
+        card.innerHTML=`
+          ${p.image?`<img src="${p.image}">`:""}
+          <h3>${p.title}</h3>
+          <div class="price">${p.price} TON</div>
+        `;
+        purchasesEl.appendChild(card);
+      });
     }
 
-    function buy(id){
-      const p=products.find(p=>p.id===id);
-      if(p.bought||p.owner) return;
-      if(balance<p.price){showToast("Недостаточно средств");return;}
-      balance-=p.price;
-      p.bought=true;
-      purchases.push(p);
-      showToast("Товар куплен!");
-      renderHomeFiltered();
+    function renderMyProducts() {
+      myProductsEl.innerHTML="";
+      myProducts.forEach((p,i)=>{
+        const card=document.createElement("div");
+        card.className="card";
+        card.innerHTML=`
+          ${p.image?`<img src="${p.image}">`:""}
+          <h3>${p.title}</h3>
+          <div class="price">${p.price} TON</div>
+          <button onclick="editPrice('${p.id}')">Изменить цену</button>
+          <button onclick="removeProduct('${p.id}')">Снять товар</button>
+        `;
+        myProductsEl.appendChild(card);
+      });
     }
 
-    function addProduct(){
-      const title=document.getElementById('title').value.trim();
-      const price=parseInt(document.getElementById('price').value);
-      const imgInput=document.getElementById('img');
-      if(!title||!price){showToast("Заполните все поля");return;}
-      const id=Date.now();
-      const reader=new FileReader();
-      reader.onload=()=>{
-        const prod={id,title,price,owner:true,bought:false,img:reader.result};
-        products.push(prod);
-        myProducts.push(prod);
-        showToast("Товар добавлен!");
-        switchTab("home");
-      };
-      if(imgInput.files[0]) reader.readAsDataURL(imgInput.files[0]);
-      else {
-        const prod={id,title,price,owner:true,bought:false,img:""};
-        products.push(prod);
-        myProducts.push(prod);
-        showToast("Товар добавлен!");
-        switchTab("home");
+    function addProduct(title,price,image){
+      const p={id:Date.now().toString(),title,price, image, rating:0};
+      products.push(p);
+      myProducts.push(p);
+      renderProducts();
+      renderMyProducts();
+    }
+
+    function buyProduct(id){
+      const p=products.find(x=>x.id===id);
+      if(!p) return;
+      if(balance>=p.price){
+        balance-=p.price;
+        balanceEl.textContent=balance;
+        purchases.push(p);
+        showToast("Покупка успешна!");
+        renderProducts();
+        renderPurchases();
+      } else {
+        showToast("Недостаточно средств!");
       }
     }
 
-    function openEdit(id){
-      editProductId=id;
-      modal.classList.add("active");
+    function purchased(id){
+      return purchases.some(p=>p.id===id);
     }
-    function confirmPriceChange(){
-      const val=parseInt(newPriceInput.value);
-      if(!val){showToast("Введите цену");return;}
-      const prod=products.find(p=>p.id===editProductId);
-      if(prod){prod.price=val;}
-      const mine=myProducts.find(p=>p.id===editProductId);
-      if(mine){mine.price=val;}
-      showToast("Цена изменена");
-      modal.classList.remove("active");
-      renderProfile();
+
+    function toggleFavorite(id){
+      if(favorites.has(id)) favorites.delete(id); else favorites.add(id);
+      renderProducts();
+    }
+
+    function rateProduct(id,r){
+      const p=products.find(x=>x.id===id);
+      if(p){ p.rating=r; renderProducts(); }
+    }
+
+    function editPrice(id){
+      const p=myProducts.find(x=>x.id===id);
+      if(p){
+        const newPrice=+prompt("Новая цена:",p.price);
+        if(newPrice>0){
+          p.price=newPrice;
+          const global=products.find(x=>x.id===id);
+          if(global) global.price=newPrice;
+          renderProducts();
+          renderMyProducts();
+        }
+      }
     }
 
     function removeProduct(id){
-      if(!confirm("Удалить товар?")) return;
-      products=products.filter(p=>p.id!==id);
-      myProducts=myProducts.filter(p=>p.id!==id);
-      showToast("Товар снят");
-      renderProfile();
+      myProducts=myProducts.filter(x=>x.id!==id);
+      products=products.filter(x=>x.id!==id);
+      renderProducts();
+      renderMyProducts();
     }
 
-    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
-    switchTab("home");
+    document.getElementById("addForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const title=document.getElementById("title").value;
+      const price=+document.getElementById("price").value;
+      const file=document.getElementById("image").files[0];
+      if(file){
+        const reader=new FileReader();
+        reader.onload=e=>{
+          addProduct(title,price,e.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        addProduct(title,price,null);
+      }
+      e.target.reset();
+      document.getElementById("netAmount").textContent="0";
+      showToast("Товар опубликован!");
+    });
+
+    document.getElementById("price").addEventListener("input",e=>{
+      const val=+e.target.value;
+      document.getElementById("netAmount").textContent=(val*0.9).toFixed(1);
+    });
+
+    document.querySelectorAll(".tabs button").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".tab").forEach(tab=>tab.classList.add("hidden"));
+        document.getElementById(btn.dataset.tab).classList.remove("hidden");
+      });
+    });
+
+    document.getElementById("search").addEventListener("input",()=>renderProducts());
+    document.getElementById("sort").addEventListener("change",()=>renderProducts());
+    document.getElementById("filterFavorites").addEventListener("click",()=>{
+      if(favorites.size>0) renderProducts(products.filter(p=>favorites.has(p.id)));
+      else renderProducts();
+    });
+
+    renderProducts();
+    renderPurchases();
+    renderMyProducts();
   </script>
 </body>
 </html>
