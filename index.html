@@ -1,30 +1,28 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TonFiles Market</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TONFiles Market</title>
   <style>
     :root {
       --bg: #0f1220;
-      --card: #1a1d2f;
+      --card: #171a2a;
       --text: #e8ebff;
       --muted: #9aa3c7;
       --accent: #6ea8ff;
       --accent-2: #7b6cff;
-      --success: #22c55e;
-      --danger: #ef4444;
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      --btn: #2a2f45;
+      --btn-hover: #343a55;
+      --shadow: 0 10px 30px rgba(0,0,0,0.25);
+      --radius: 18px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
+      margin: 0;
       font-family: sans-serif;
       background: var(--bg);
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
       overflow-x: hidden;
     }
     header {
@@ -32,14 +30,14 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      box-shadow: var(--shadow);
       background: var(--card);
+      box-shadow: var(--shadow);
       position: sticky;
       top: 0;
       z-index: 100;
     }
     header img.logo {
-      height: 28px;
+      height: 32px;
     }
     header .balance {
       display: flex;
@@ -48,47 +46,29 @@
       font-weight: 600;
     }
     header .balance img {
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
     main {
-      flex: 1;
       padding: 16px;
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
     }
     .filters {
       display: flex;
-      gap: 12px;
       flex-wrap: wrap;
-      justify-content: center;
+      gap: 10px;
       margin-bottom: 16px;
+      justify-content: center;
     }
-    .filters input[type="text"] {
-      flex: 1;
-      min-width: 160px;
-      padding: 10px 12px;
-      border-radius: var(--radius);
+    .filters input,
+    .filters select {
+      padding: 8px 12px;
+      border-radius: 10px;
       border: none;
-      background: #1f2338;
+      outline: none;
+      background: #1e2235;
       color: var(--text);
-    }
-    .filters input[type="number"] {
-      width: 90px;
-      padding: 10px;
-      border-radius: var(--radius);
-      border: none;
-      background: #1f2338;
-      color: var(--text);
-    }
-    .filters button {
-      padding: 10px 14px;
-      border: none;
-      border-radius: var(--radius);
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
+      font-size: 14px;
+      box-shadow: var(--shadow) inset;
     }
     .grid {
       display: grid;
@@ -103,359 +83,319 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      position: relative;
+      text-align: center;
+      align-items: center;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .card:hover { transform: scale(1.03); box-shadow: 0 15px 35px rgba(0,0,0,0.35); }
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+    }
     .card img.preview {
       width: 100%;
-      border-radius: var(--radius);
-      aspect-ratio: 1/1;
+      border-radius: 12px;
       object-fit: cover;
+      height: 150px;
     }
-    .name { font-size: 16px; font-weight: 600; }
+    .name {
+      font-size: 15px;
+      font-weight: 600;
+    }
     .price {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-weight: 600;
+      gap: 4px;
+      font-weight: 700;
     }
-    .price img { height: 18px; }
+    .price img {
+      width: 16px;
+      height: 16px;
+    }
     .btn {
-      padding: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
+      color: white;
       border: none;
-      border-radius: var(--radius);
+      font-weight: 700;
       cursor: pointer;
-      font-weight: 600;
-      text-align: center;
+      box-shadow: var(--shadow);
+      transition: 0.2s;
     }
-    .btn-buy {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-    }
-    .btn-owned {
-      background: var(--success);
-      color: white;
+    .btn:hover {
+      opacity: 0.9;
     }
     .tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
       justify-content: space-around;
       background: var(--card);
-      padding: 10px;
+      padding: 10px 0;
       box-shadow: var(--shadow);
+      z-index: 100;
     }
     .tabs button {
-      flex: 1;
-      padding: 12px;
-      border: none;
       background: none;
-      color: var(--muted);
-      font-weight: 600;
+      border: none;
+      color: var(--text);
+      font-size: 14px;
       cursor: pointer;
+      flex: 1;
     }
-    .tabs button.active { color: var(--accent); }
-    .tab { display: none; }
-    .tab.active { display: block; }
-    /* Modal */
+    .hidden { display: none; }
     .modal {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: none;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
       justify-content: center;
       align-items: center;
       z-index: 200;
     }
-    .modal.active { display: flex; }
     .modal-content {
       background: var(--card);
-      border-radius: var(--radius);
       padding: 20px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      position: relative;
-    }
-    .modal-content img {
-      width: 100%;
       border-radius: var(--radius);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: var(--shadow);
     }
-    .close-btn {
-      position: absolute;
-      top: 10px; right: 10px;
-      background: var(--danger);
-      border: none;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      color: #fff;
-      cursor: pointer;
-      font-weight: bold;
+    .rating {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
     }
-    .rating { display: flex; gap: 4px; }
     .rating span {
-      font-size: 20px;
+      font-size: 22px;
       cursor: pointer;
-      color: var(--muted);
     }
-    .rating span.active { color: gold; }
+    .rating span.active {
+      color: gold;
+    }
     .my-products {
       margin-top: 20px;
     }
     .my-products h3 {
       margin-bottom: 10px;
     }
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      display: none;
+      z-index: 300;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="tonfiles.svg" alt="logo" class="logo"/>
-    <div class="balance">
-      <span id="balanceValue">1000</span>
-      <img src="ton.svg" alt="TON"/>
-    </div>
+    <img src="tonfiles.svg" class="logo" alt="logo">
+    <div class="balance"><span id="balance">1000</span><img src="ton1.svg" alt="TON"></div>
   </header>
 
-  <main>
-    <!-- Главная -->
-    <div id="homeTab" class="tab active">
-      <div class="filters">
-        <input type="text" id="searchInput" placeholder="Поиск...">
-        <input type="number" id="minPrice" placeholder="Мин">
-        <input type="number" id="maxPrice" placeholder="Макс">
-        <button onclick="applyFilters()">Фильтр</button>
-      </div>
-      <div class="grid" id="productGrid"></div>
+  <main id="homeTab">
+    <div class="filters">
+      <input type="text" id="search" placeholder="Поиск...">
+      <select id="sort">
+        <option value="new">Сначала новые</option>
+        <option value="cheap">Сначала дешёвые</option>
+        <option value="expensive">Сначала дорогие</option>
+      </select>
     </div>
+    <div class="grid" id="productGrid"></div>
+  </main>
 
-    <!-- Добавить -->
-    <div id="addTab" class="tab">
-      <h2>Добавить товар</h2>
-      <div style="display:flex;flex-direction:column;gap:12px;max-width:400px;">
-        <input type="text" id="newName" placeholder="Название">
-        <input type="number" id="newPrice" placeholder="Цена">
-        <input type="file" id="newImage" accept="image/*">
-        <button class="btn btn-buy" onclick="addProduct()">Опубликовать</button>
-      </div>
-      <div id="commissionInfo" style="margin-top:10px;color:var(--muted);font-size:14px;"></div>
-    </div>
-
-    <!-- Профиль -->
-    <div id="profileTab" class="tab">
-      <h2>Профиль</h2>
-      <h3>История покупок</h3>
-      <div class="grid" id="historyGrid"></div>
-
-      <div class="my-products">
-        <h3>Мои товары</h3>
-        <div class="grid" id="myProductsGrid"></div>
-      </div>
+  <main id="profileTab" class="hidden">
+    <h2>История покупок</h2>
+    <div class="grid" id="historyGrid"></div>
+    <div class="my-products">
+      <h3>Мои товары</h3>
+      <div class="grid" id="myProductsGrid"></div>
     </div>
   </main>
 
+  <main id="addTab" class="hidden">
+    <h2>Добавить товар</h2>
+    <form id="addForm">
+      <input type="text" id="prodName" placeholder="Название" required>
+      <input type="number" id="prodPrice" placeholder="Цена в TON" required>
+      <input type="file" id="prodImg" accept="image/*" required>
+      <p>Вы получите: <span id="netAmount">0</span> TON</p>
+      <button type="submit" class="btn">Опубликовать</button>
+    </form>
+  </main>
+
   <div class="tabs">
-    <button onclick="showTab('homeTab')" class="active">Главная</button>
+    <button onclick="showTab('homeTab')">Главная</button>
     <button onclick="showTab('addTab')">Добавить</button>
     <button onclick="showTab('profileTab')">Профиль</button>
   </div>
 
-  <!-- Modal -->
-  <div class="modal" id="modal">
+  <div class="modal hidden" id="productModal">
     <div class="modal-content">
-      <button class="close-btn" onclick="closeModal()">×</button>
-      <img id="modalImage" src="" alt="">
+      <img id="modalImg" src="" style="width:100%; border-radius:12px; margin-bottom:12px;">
       <h3 id="modalName"></h3>
-      <div class="price"><span id="modalPrice"></span> <img src="ton.svg" alt="TON"></div>
+      <div class="price"><span id="modalPrice"></span> <img src="ton1.svg" alt="TON"></div>
       <div class="rating" id="ratingStars"></div>
-      <button id="modalBuyBtn" class="btn btn-buy"></button>
+      <button class="btn" id="buyBtn">Купить</button>
+      <button class="btn" onclick="closeModal()">Закрыть</button>
     </div>
   </div>
 
+  <div class="toast" id="toast"></div>
+
   <script>
     let balance = 1000;
-    let products = [
-      {id:1,name:"Файл 1",price:120,img:"https://via.placeholder.com/300",author:false,ratings:[]},
-      {id:2,name:"Скрипт 2",price:250,img:"https://via.placeholder.com/300",author:false,ratings:[]}
-    ];
+    let products = [];
+    let history = [];
     let myProducts = [];
-    let purchases = [];
-    let selectedProduct = null;
-
-    function updateBalance() {
-      document.getElementById("balanceValue").textContent = balance;
-    }
 
     function showTab(tabId) {
-      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-      document.getElementById(tabId).classList.add("active");
-      document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-      document.querySelector(`.tabs button[onclick="showTab('${tabId}')"]`).classList.add("active");
+      document.querySelectorAll("main").forEach(m=>m.classList.add("hidden"));
+      document.getElementById(tabId).classList.remove("hidden");
       if(tabId==="profileTab"){ renderHistory(); renderMyProducts(); }
+      if(tabId==="homeTab"){ renderProducts(); }
     }
 
     function renderProducts() {
       const grid = document.getElementById("productGrid");
-      grid.innerHTML = "";
-      products.forEach(p=>{
-        const owned = purchases.find(x=>x.id===p.id);
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <img src="${p.img}" alt="" class="preview"/>
+      const search = document.getElementById("search").value.toLowerCase();
+      let filtered = products.filter(p=>p.name.toLowerCase().includes(search));
+      const sort = document.getElementById("sort").value;
+      if(sort==="cheap") filtered.sort((a,b)=>a.price-b.price);
+      if(sort==="expensive") filtered.sort((a,b)=>b.price-a.price);
+      if(sort==="new") filtered.sort((a,b)=>b.id-a.id);
+      grid.innerHTML = filtered.map(p=>`
+        <div class="card" onclick="openModal(${p.id})">
+          <img src="${p.img}" class="preview" alt="">
           <div class="name">${p.name}</div>
-          <div class="price">${p.price} <img src="ton.svg" alt="TON"></div>
-          <button class="btn ${owned?'btn-owned':'btn-buy'}" onclick="openModal(${p.id})">
-            ${owned?'Куплено':'Купить'}
-          </button>
-        `;
-        grid.appendChild(card);
-      });
+          <div class="price">${p.price} <img src="ton1.svg" alt="TON"></div>
+        </div>
+      `).join("");
     }
 
     function openModal(id){
-      const product = products.find(p=>p.id===id);
-      selectedProduct = product;
-      document.getElementById("modalImage").src = product.img;
-      document.getElementById("modalName").textContent = product.name;
-      document.getElementById("modalPrice").textContent = product.price;
-      const buyBtn = document.getElementById("modalBuyBtn");
-      if(purchases.find(x=>x.id===product.id)){
-        buyBtn.textContent = "Куплено";
-        buyBtn.className = "btn btn-owned";
-        buyBtn.onclick = null;
-      } else {
-        buyBtn.textContent = "Купить";
-        buyBtn.className = "btn btn-buy";
-        buyBtn.onclick = ()=>buyProduct(product);
+      const p = products.find(x=>x.id===id);
+      document.getElementById("modalImg").src=p.img;
+      document.getElementById("modalName").innerText=p.name;
+      document.getElementById("modalPrice").innerText=p.price;
+      document.getElementById("buyBtn").onclick=()=>buyProduct(id);
+      const rating=document.getElementById("ratingStars");
+      rating.innerHTML="";
+      for(let i=1;i<=5;i++){
+        const star=document.createElement("span");
+        star.innerText="★";
+        if(p.rating>=i) star.classList.add("active");
+        star.onclick=()=>setRating(id,i);
+        rating.appendChild(star);
       }
-      renderStars(product);
-      document.getElementById("modal").classList.add("active");
+      document.getElementById("productModal").classList.remove("hidden");
     }
 
-    function closeModal(){ document.getElementById("modal").classList.remove("active"); }
+    function closeModal(){ document.getElementById("productModal").classList.add("hidden"); }
 
-    function buyProduct(p){
-      if(balance>=p.price){
-        balance-=p.price;
-        purchases.push(p);
-        updateBalance();
-        renderProducts();
-        closeModal();
-      } else { alert("Недостаточно средств!"); }
+    function setRating(id,stars){
+      const p=products.find(x=>x.id===id);
+      p.rating=stars;
+      showToast("Рейтинг обновлён");
+      openModal(id);
     }
 
-    function addProduct(){
-      const name=document.getElementById("newName").value.trim();
-      const price=parseInt(document.getElementById("newPrice").value);
-      const file=document.getElementById("newImage").files[0];
-      if(!name||!price||!file){alert("Заполните все поля"); return;}
-      const reader=new FileReader();
-      reader.onload=e=>{
-        const newP={id:Date.now(),name,price,img:e.target.result,author:true,ratings:[]};
-        products.push(newP);
-        myProducts.push(newP);
-        renderProducts();
-        document.getElementById("newName").value="";
-        document.getElementById("newPrice").value="";
-        document.getElementById("newImage").value="";
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function applyFilters(){
-      const query=document.getElementById("searchInput").value.toLowerCase();
-      const min=parseInt(document.getElementById("minPrice").value)||0;
-      const max=parseInt(document.getElementById("maxPrice").value)||Infinity;
-      const grid=document.getElementById("productGrid");
-      grid.innerHTML="";
-      products.filter(p=>
-        p.name.toLowerCase().includes(query)&&p.price>=min&&p.price<=max
-      ).forEach(p=>{
-        const owned = purchases.find(x=>x.id===p.id);
-        const card=document.createElement("div");
-        card.className="card";
-        card.innerHTML=`
-          <img src="${p.img}" class="preview"/>
-          <div class="name">${p.name}</div>
-          <div class="price">${p.price} <img src="ton.svg"/></div>
-          <button class="btn ${owned?'btn-owned':'btn-buy'}" onclick="openModal(${p.id})">
-            ${owned?'Куплено':'Купить'}
-          </button>
-        `;
-        grid.appendChild(card);
-      });
+    function buyProduct(id){
+      const p=products.find(x=>x.id===id);
+      if(balance<p.price){showToast("Недостаточно средств");return;}
+      balance-=p.price;
+      history.push(p);
+      document.getElementById("balance").innerText=balance;
+      showToast("Покупка успешна!");
+      closeModal();
     }
 
     function renderHistory(){
       const grid=document.getElementById("historyGrid");
-      grid.innerHTML="";
-      purchases.forEach(p=>{
-        const card=document.createElement("div");
-        card.className="card";
-        card.innerHTML=`
-          <img src="${p.img}" class="preview"/>
+      grid.innerHTML=history.map(p=>`
+        <div class="card">
+          <img src="${p.img}" class="preview" alt="">
           <div class="name">${p.name}</div>
-          <div class="price">${p.price} <img src="ton.svg"/></div>
-        `;
-        grid.appendChild(card);
-      });
+          <div class="price">${p.price} <img src="ton1.svg" alt="TON"></div>
+        </div>
+      `).join("");
     }
 
     function renderMyProducts(){
       const grid=document.getElementById("myProductsGrid");
-      grid.innerHTML="";
-      myProducts.forEach(p=>{
-        const card=document.createElement("div");
-        card.className="card";
-        card.innerHTML=`
-          <img src="${p.img}" class="preview"/>
+      grid.innerHTML=myProducts.map(p=>`
+        <div class="card">
+          <img src="${p.img}" class="preview" alt="">
           <div class="name">${p.name}</div>
-          <div class="price">${p.price} <img src="ton.svg"/></div>
-          <button class="btn btn-buy" onclick="removeProduct(${p.id})">Снять</button>
-        `;
-        grid.appendChild(card);
-      });
+          <div class="price">${p.price} <img src="ton1.svg" alt="TON"></div>
+          <button class="btn" onclick="changePrice(${p.id})">Изменить цену</button>
+          <button class="btn" onclick="removeProduct(${p.id})">Удалить</button>
+        </div>
+      `).join("");
+    }
+
+    function changePrice(id){
+      const newPrice=prompt("Введите новую цену:");
+      if(!newPrice) return;
+      const p=myProducts.find(x=>x.id===id);
+      p.price=parseInt(newPrice);
+      const q=products.find(x=>x.id===id);
+      if(q) q.price=p.price;
+      renderMyProducts(); renderProducts();
+      showToast("Цена изменена");
     }
 
     function removeProduct(id){
-      products=products.filter(p=>p.id!==id);
-      myProducts=myProducts.filter(p=>p.id!==id);
-      renderProducts();
-      renderMyProducts();
+      myProducts=myProducts.filter(x=>x.id!==id);
+      products=products.filter(x=>x.id!==id);
+      renderMyProducts(); renderProducts();
+      showToast("Товар удалён");
     }
 
-    function renderStars(product){
-      const stars=document.getElementById("ratingStars");
-      stars.innerHTML="";
-      for(let i=1;i<=5;i++){
-        const star=document.createElement("span");
-        star.innerHTML="★";
-        if(product.ratings.length&&i<=avgRating(product)){ star.classList.add("active"); }
-        star.onclick=()=>rateProduct(product,i);
-        stars.appendChild(star);
-      }
-    }
-
-    function rateProduct(product,value){
-      product.ratings.push(value);
-      renderStars(product);
-    }
-
-    function avgRating(p){
-      return Math.round(p.ratings.reduce((a,b)=>a+b,0)/p.ratings.length);
-    }
-
-    document.getElementById("newPrice").addEventListener("input",()=>{
-      const price=parseInt(document.getElementById("newPrice").value)||0;
-      const earn=price*0.9;
-      document.getElementById("commissionInfo").textContent=`Вы получите ${earn} TON (с учётом комиссии 10%)`;
+    document.getElementById("prodPrice").addEventListener("input",()=>{
+      const val=document.getElementById("prodPrice").value;
+      document.getElementById("netAmount").innerText=(val*0.9).toFixed(2);
     });
 
-    updateBalance();
+    document.getElementById("addForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const name=document.getElementById("prodName").value;
+      const price=parseInt(document.getElementById("prodPrice").value);
+      const file=document.getElementById("prodImg").files[0];
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const prod={id:Date.now(),name,price,img:reader.result,rating:0};
+        products.push(prod); myProducts.push(prod);
+        renderProducts();
+        showTab("homeTab");
+        showToast("Товар опубликован");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    function showToast(msg){
+      const toast=document.getElementById("toast");
+      toast.innerText=msg;
+      toast.style.display="block";
+      setTimeout(()=>toast.style.display="none",2000);
+    }
+
+    document.getElementById("search").addEventListener("input",renderProducts);
+    document.getElementById("sort").addEventListener("change",renderProducts);
+
     renderProducts();
   </script>
 </body>
 </html>
+```
