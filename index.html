@@ -11,9 +11,7 @@
       --text: #e8ebff;
       --muted: #9aa3c7;
       --accent: #6ea8ff;
-      --accent-2: #7b6cff;
       --success: #22c55e;
-      --danger: #ef4444;
       --radius: 16px;
       --shadow: 0 6px 18px rgba(0,0,0,0.25);
     }
@@ -35,9 +33,7 @@
       background: var(--card);
       box-shadow: var(--shadow);
     }
-    header img.logo {
-      height: 28px;
-    }
+    header img.logo { height: 28px; }
     header .balance {
       display: flex;
       align-items: center;
@@ -47,16 +43,8 @@
       padding: 6px 12px;
       border-radius: var(--radius);
     }
-    header .balance img {
-      height: 16px;
-      width: 16px;
-      object-fit: contain;
-    }
-    main {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
+    header .balance img { height: 16px; width: 16px; object-fit: contain; }
+    main { flex: 1; overflow-y: auto; padding: 16px; }
     .tabs {
       display: flex;
       justify-content: space-around;
@@ -80,7 +68,7 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
     .card {
@@ -101,16 +89,8 @@
       object-fit: cover;
       border-radius: var(--radius);
     }
-    .card h3 {
-      margin: 10px 0 6px;
-      font-size: 15px;
-      font-weight: bold;
-    }
-    .card p {
-      font-size: 13px;
-      color: var(--muted);
-      flex-grow: 1;
-    }
+    .card h3 { margin: 10px 0 6px; font-size: 15px; font-weight: bold; }
+    .card p { font-size: 13px; color: var(--muted); flex-grow: 1; }
     .buy-btn {
       margin-top: 10px;
       padding: 10px;
@@ -122,11 +102,7 @@
       justify-content: space-between;
       align-items: center;
     }
-    .buy-btn img {
-      height: 14px;
-      width: 14px;
-      object-fit: contain;
-    }
+    .buy-btn img { height: 14px; width: 14px; object-fit: contain; }
     .buy { background: var(--accent); color: #fff; }
     .owned { background: var(--success); color: #fff; }
     .mine { background: #333; color: var(--muted); cursor: default; }
@@ -159,11 +135,7 @@
     .modal-content p { font-size: 14px; color: var(--muted); }
     .modal-actions { margin-top: 14px; display: flex; gap: 10px; }
     /* Add product */
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    form { display: flex; flex-direction: column; gap: 12px; }
     form input, form textarea {
       padding: 10px;
       border-radius: var(--radius);
@@ -173,7 +145,18 @@
       font-size: 14px;
       width: 100%;
     }
-    form button {
+    form .files { display: flex; gap: 10px; }
+    form .files button {
+      flex: 1;
+      padding: 10px;
+      background: var(--card);
+      border: 1px dashed var(--muted);
+      color: var(--muted);
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+    form .note { font-size: 13px; color: var(--muted); }
+    form button[type="submit"] {
       background: var(--accent);
       color: #fff;
       padding: 12px;
@@ -182,6 +165,8 @@
       font-weight: bold;
       cursor: pointer;
     }
+    h2 { margin: 10px 0; }
+    .empty { color: var(--muted); font-size: 14px; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -265,10 +250,21 @@
         <form onsubmit="addProduct(event)">
           <input type="text" id="title" placeholder="Название" required>
           <textarea id="desc" rows="3" placeholder="Описание" required></textarea>
-          <input type="number" id="price" placeholder="Цена (TON)" step="0.01" required>
-          <input type="url" id="img" placeholder="URL изображения" required>
+          <input type="number" id="price" placeholder="Цена (TON)" step="0.01" required oninput="updateCommission()">
+          <div class="note" id="commission">Вы получите 0 TON (с учётом комиссии маркетплейса 10%)</div>
+          <label>Загрузка файлов:</label>
+          <div class="files">
+            <button type="button">Превью</button>
+            <button type="button">Конечный файл</button>
+          </div>
           <button type="submit">Опубликовать</button>
         </form>`;
+    }
+
+    function updateCommission() {
+      const val = parseFloat(document.getElementById("price").value);
+      const com = isNaN(val) ? 0 : (val*0.9).toFixed(2);
+      document.getElementById("commission").innerText = `Вы получите ${com} TON (с учётом комиссии маркетплейса 10%)`;
     }
 
     function addProduct(e) {
@@ -277,7 +273,7 @@
       const title = document.getElementById("title").value;
       const desc = document.getElementById("desc").value;
       const price = parseFloat(document.getElementById("price").value).toFixed(2);
-      const img = document.getElementById("img").value;
+      const img = "https://via.placeholder.com/300x200"; // Заглушка вместо превью
       const product = {id, title, desc, price:parseFloat(price), img, owner:"me"};
       products.push(product);
       myProducts.push(product);
@@ -286,20 +282,32 @@
     }
 
     function renderProfile() {
-      content.innerHTML = '<h2>Мои товары</h2><div class="grid">' + myProducts.map(p => `
-        <div class="card">
-          <img src="${p.img}" alt="">
-          <h3>${p.title}</h3>
-          <p>${p.desc}</p>
-          <button class="buy-btn mine">Мой товар</button>
-        </div>`).join('') + '</div>';
-      content.innerHTML += '<h2>Мои покупки</h2><div class="grid">' + products.filter(p=>bought.includes(p.id)).map(p => `
-        <div class="card">
-          <img src="${p.img}" alt="">
-          <h3>${p.title}</h3>
-          <p>${p.desc}</p>
-          <button class="buy-btn owned">Приобретено</button>
-        </div>`).join('') + '</div>';
+      let html = '<h2>Мои товары</h2>';
+      if(myProducts.length===0) {
+        html += '<div class="empty">ничего не найдено</div>';
+      } else {
+        html += '<div class="grid">' + myProducts.map(p => `
+          <div class="card">
+            <img src="${p.img}" alt="">
+            <h3>${p.title}</h3>
+            <p>${p.desc}</p>
+            <button class="buy-btn mine">Мой товар</button>
+          </div>`).join('') + '</div>';
+      }
+      html += '<h2>Мои покупки</h2>';
+      const purchases = products.filter(p=>bought.includes(p.id));
+      if(purchases.length===0) {
+        html += '<div class="empty">ничего не найдено</div>';
+      } else {
+        html += '<div class="grid">' + purchases.map(p => `
+          <div class="card">
+            <img src="${p.img}" alt="">
+            <h3>${p.title}</h3>
+            <p>${p.desc}</p>
+            <button class="buy-btn owned">Приобретено</button>
+          </div>`).join('') + '</div>';
+      }
+      content.innerHTML = html;
     }
 
     function buyProduct(id) {
@@ -309,7 +317,6 @@
         bought.push(p.id);
         updateBalance();
         renderHome();
-        renderProfile();
         modal.classList.remove("active");
       } else {
         alert("Недостаточно средств!");
