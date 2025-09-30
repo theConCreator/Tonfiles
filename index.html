@@ -6,14 +6,13 @@
   <title>Tonfiles Market</title>
   <style>
     :root {
-      --bg: #0f1220;
-      --card: #171a2a;
-      --text: #e8ebff;
-      --muted: #9aa3c7;
-      --accent: #6ea8ff;
-      --success: #22c55e;
-      --radius: 16px;
-      --shadow: 0 6px 18px rgba(0,0,0,0.25);
+      --bg: #000000;
+      --card: #ffffff;
+      --text: #000000;
+      --muted: #444444;
+      --accent: #0eff00;
+      --radius: 14px;
+      --shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -30,8 +29,8 @@
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
-      background: var(--card);
-      box-shadow: var(--shadow);
+      background: var(--bg);
+      border-bottom: 2px solid var(--accent);
     }
     header img.logo { height: 28px; }
     header .balance {
@@ -39,27 +38,27 @@
       align-items: center;
       gap: 6px;
       font-weight: bold;
-      background: #1e2235;
+      background: var(--card);
       padding: 6px 12px;
       border-radius: var(--radius);
+      border: 1px solid var(--accent);
     }
     header .balance img { height: 16px; width: 16px; object-fit: contain; }
     main { flex: 1; overflow-y: auto; padding: 16px; }
     .tabs {
       display: flex;
       justify-content: space-around;
-      background: var(--card);
-      padding: 10px 0;
-      box-shadow: var(--shadow);
+      background: var(--bg);
+      border-top: 2px solid var(--accent);
     }
     .tabs button {
       flex: 1;
       background: none;
       border: none;
-      color: var(--text);
+      color: white;
       font-size: 14px;
       font-weight: bold;
-      padding: 8px;
+      padding: 10px;
       cursor: pointer;
     }
     .tabs button.active {
@@ -79,10 +78,11 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      cursor: pointer;
-      transition: transform 0.2s ease;
       width: 100%;
       height: 260px;
+      border: 1px solid var(--accent);
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
     .card:hover { transform: scale(1.02); }
     .card img {
@@ -112,7 +112,7 @@
     .buy-btn {
       margin-top: 10px;
       padding: 10px;
-      border: none;
+      border: 1px solid var(--accent);
       border-radius: var(--radius);
       font-weight: bold;
       cursor: pointer;
@@ -122,18 +122,13 @@
       width: 100%;
       text-align: center;
       gap: 6px;
+      background: var(--card);
+      color: var(--text);
     }
     .buy-btn img { height: 14px; width: 14px; object-fit: contain; }
-    .buy { background: var(--accent); color: white; }
-    .owned { background: var(--success); color: white; }
-    .file-btn {
-      background: #2a2f45;
-      color: var(--text);
-      margin-top: 8px;
-      justify-content: center;
-      align-items: center;
-      display: flex;
-    }
+    .buy { background: var(--accent); color: black; }
+    .owned { background: #d9ffd9; color: black; }
+    .file-btn { background: white; border: 1px solid var(--accent); }
     /* модалка */
     .modal {
       position: fixed;
@@ -153,6 +148,7 @@
       width: 90%;
       box-shadow: var(--shadow);
       text-align: center;
+      border: 1px solid var(--accent);
     }
     .modal-content img {
       width: 100%;
@@ -169,12 +165,16 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      background: var(--card);
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--accent);
     }
     form input, form textarea {
       padding: 10px;
       border-radius: var(--radius);
-      border: none;
-      background: #1e2235;
+      border: 1px solid var(--accent);
+      background: white;
       color: var(--text);
       resize: none;
     }
@@ -185,7 +185,7 @@
       font-weight: bold;
       cursor: pointer;
       background: var(--accent);
-      color: white;
+      color: black;
     }
   </style>
 </head>
@@ -258,8 +258,8 @@
       }
       if (currentTab === 'profile') {
         main.innerHTML = `
-          <h3>Мои покупки</h3>
-          ${purchases.length===0 ? `<p>Ничего не найдено</p>` : `<div class="grid">${products.filter(p=>purchases.includes(p.id)).map(p=>`
+          <h3 style="color:white;">Мои покупки</h3>
+          ${purchases.length===0 ? `<p style="color:white;">Ничего не найдено</p>` : `<div class="grid">${products.filter(p=>purchases.includes(p.id)).map(p=>`
             <div class="card" onclick="openModal(${p.id})">
               <img src="${p.img}" alt="">
               <h3>${truncateText(p.name, 20)}</h3>
@@ -267,8 +267,8 @@
               <div class="buy-btn owned">Приобретено</div>
               <div class="buy-btn file-btn">Получить файл</div>
             </div>`).join("")}</div>`}
-          <h3 style="margin-top:16px;">Мои товары</h3>
-          ${myProducts.length===0 ? `<p>Ничего не найдено</p>` : `<div class="grid">${myProducts.map(p=>`
+          <h3 style="margin-top:16px;color:white;">Мои товары</h3>
+          ${myProducts.length===0 ? `<p style="color:white;">Ничего не найдено</p>` : `<div class="grid">${myProducts.map(p=>`
             <div class="card" onclick="openModal(${p.id})">
               <img src="${p.img}" alt="">
               <h3>${truncateText(p.name, 20)}</h3>
