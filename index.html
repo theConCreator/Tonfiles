@@ -98,9 +98,10 @@ a{text-decoration:none;color:inherit}
   gap:8px;
   box-shadow:var(--shadow);
   height:320px;
-  transition:transform .15s;
+  transition:transform .15s, box-shadow .15s;
+  cursor:pointer;
 }
-.card:hover {transform:translateY(-4px)}
+.card:hover {transform:translateY(-4px);box-shadow:0 8px 22px rgba(14,255,0,0.25)}
 .thumb {
   width:100%;
   height:150px;
@@ -140,8 +141,10 @@ a{text-decoration:none;color:inherit}
   font-weight:700;
   cursor:pointer;
   text-align:center;
+  transition:background .2s;
 }
 .btn-buy {background:var(--accent);color:#000}
+.btn-buy:hover {background:#4fff49}
 .btn-owned {background:#0bbf44;color:#000}
 .btn-ghost {background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted)}
 .btn-danger {background:var(--danger);color:#fff}
@@ -181,6 +184,8 @@ a{text-decoration:none;color:inherit}
 }
 .modal-card img {width:100%;height:250px;object-fit:cover;border-radius:10px}
 .modal-info {margin-top:12px}
+.modal-info h3 {margin-bottom:6px}
+.modal-info p {margin-bottom:6px}
 .modal-actions {display:flex;gap:10px;margin-top:12px}
 
 /* TOAST */
@@ -223,11 +228,11 @@ a{text-decoration:none;color:inherit}
     <div class="form">
       <input id="title" class="input" placeholder="Название">
       <textarea id="description" class="input" placeholder="Описание"></textarea>
-      <input id="price" class="input" type="number" placeholder="Цена (TON)">
+      <input id="price" class="input" type="number" step="0.01" placeholder="Цена (TON)">
       <label>Превью: <input type="file" id="thumb" accept="image/*"></label>
       <div id="thumbPreview" class="preview">Нет превью</div>
       <label>Файл: <input type="file" id="asset"></label>
-      <button id="publish" class="btn btn-buy">Опубликовать</button>
+      <button id="publish" type="button" class="btn btn-buy">Опубликовать</button>
     </div>
   </section>
 
@@ -292,11 +297,13 @@ function renderProfile(){
   const buyEl=document.getElementById("purchases");buyEl.innerHTML="";
   purchases.forEach(x=>{
     const p=products.find(pp=>pp.id===x.productId);if(!p)return;
-    const c=document.createElement("div");c.className="card";c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div>`;buyEl.appendChild(c);
+    const c=document.createElement("div");c.className="card";c.onclick=()=>openModal(p.id);
+    c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div>`;buyEl.appendChild(c);
   });
   const myEl=document.getElementById("myProducts");myEl.innerHTML="";
   products.forEach(p=>{
-    const c=document.createElement("div");c.className="card";c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div>`;myEl.appendChild(c);
+    const c=document.createElement("div");c.className="card";c.onclick=()=>openModal(p.id);
+    c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div>`;myEl.appendChild(c);
   });
 }
 
@@ -316,8 +323,13 @@ function openModal(id){
   document.getElementById("modalPrice").textContent=fmt(p.price);
   const act=document.getElementById("modalActions");act.innerHTML="";
   const purchased=purchases.find(x=>x.productId===p.id);
-  if(purchased){act.innerHTML=`<button class="btn btn-owned" style="flex:1">Приобретено</button>`;}
-  else {const b=document.createElement("button");b.className="btn btn-buy";b.textContent="Купить";b.onclick=()=>buy(p.id);act.appendChild(b);}
+  if(purchased){
+    act.innerHTML=`<button class="btn btn-owned" style="flex:1">Приобретено</button>
+                   <button class="btn btn-ghost" style="flex:1">Получить файл</button>`;
+  }
+  else {
+    const b=document.createElement("button");b.className="btn btn-buy";b.textContent="Купить";b.onclick=()=>buy(p.id);act.appendChild(b);
+  }
   document.getElementById("modal").classList.add("show");
 }
 document.getElementById("closeModal").onclick=()=>document.getElementById("modal").classList.remove("show");
@@ -332,7 +344,8 @@ document.getElementById("asset").onchange=e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();r.onload=ev=>{assetData=ev.target.result;toast("info","Файл загружен");};r.readAsDataURL(f);
 };
-document.getElementById("publish").onclick=()=>{
+document.getElementById("publish").onclick=(e)=>{
+  e.preventDefault();
   const title=document.getElementById("title").value,desc=document.getElementById("description").value,price=parseFloat(document.getElementById("price").value);
   if(!title||!desc||!price){toast("error","Заполните поля");return;}
   products.unshift({id:Date.now(),title,description:desc,price,thumb:thumbData,asset:assetData});
