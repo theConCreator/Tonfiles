@@ -30,7 +30,7 @@
       font-weight: bold;
     }
     header .balance img {
-      height: 16px;
+      height: 12px;
     }
     main {
       padding: 15px;
@@ -125,7 +125,7 @@
       gap: 5px;
     }
     .card button img {
-      height: 14px;
+      height: 12px;
     }
     /* Модальное окно */
     .modal {
@@ -168,7 +168,7 @@
       gap: 5px;
     }
     .modal-content button img {
-      height: 14px;
+      height: 12px;
     }
     .buy-btn { background: #0eff00; color: #000; }
     .owned-btn { background: #333; color: #0eff00; }
@@ -216,6 +216,10 @@
       margin: 20px 0;
     }
     /* Публикация */
+    #add {
+      max-width: 400px;
+      margin: 0 auto;
+    }
     .form-group {
       margin: 10px 0;
     }
@@ -231,6 +235,7 @@
       border-radius: 5px;
       background: #111;
       color: #fff;
+      box-sizing: border-box;
     }
     .form-group input[type="file"] {
       border: none;
@@ -273,7 +278,7 @@
       <h2>Профиль</h2>
       <div style="margin-bottom:15px; padding:10px; border:1px solid #0eff00; border-radius:8px; background:#111;">
         <h3>Реферальная система</h3>
-        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="height:14px"></p>
+        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="height:12px"></p>
         <button onclick="withdrawRef()">Вывести</button>
       </div>
       <div class="profile-tabs">
