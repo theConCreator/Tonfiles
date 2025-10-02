@@ -1,380 +1,593 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TONFiles Market</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TONFiles Market — demo</title>
 <style>
-:root {
-  --bg: #0b0b0b;
-  --surface: #161616;
-  --card: #1d1d1d;
-  --text: #f0f0f0;
-  --muted: #9ca3af;
-  --accent: #0eff00;
-  --danger: #ff4747;
-  --radius: 14px;
-  --shadow: 0 6px 20px rgba(0,0,0,0.5);
+:root{
+  --bg:#070707;
+  --surface:#121214;
+  --card:#171718;
+  --muted:#9aa0a6;
+  --text:#eaf0f6;
+  --accent:#0eff00;
+  --danger:#ff5c5c;
+  --radius:12px;
+  --shadow:0 10px 30px rgba(0,0,0,0.6);
+  --glass: rgba(255,255,255,0.02);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body {
-  background: var(--bg);
-  font-family: "Segoe UI", Inter, sans-serif;
-  color: var(--text);
-  overflow-x:hidden;
-}
-button,input,textarea{font:inherit;outline:none;border:none}
+/* reset */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;overflow-x:hidden}
+button,input,textarea{font:inherit}
 a{text-decoration:none;color:inherit}
 
-/* HEADER */
-.header {
-  display:flex;justify-content:space-between;align-items:center;
-  padding:12px 18px;
-  background:var(--surface);
-  border-radius:var(--radius);
-  margin:12px;
-  box-shadow:var(--shadow);
-}
-.logo {display:flex;align-items:center;gap:10px}
-.logo img{height:36px}
-.balance {
-  display:flex;align-items:center;gap:6px;
-  background:rgba(14,255,0,0.12);
-  padding:6px 12px;
-  border-radius:999px;
-  font-weight:700;
-  color:var(--accent);
-}
+/* layout */
+.app{max-width:1100px;margin:0 auto;padding:16px 14px 86px 14px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border-radius:12px;border:1px solid var(--glass);box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{height:36px}
+.h-right{display:flex;align-items:center;gap:12px}
 
-/* TABS */
-.tabs {
-  display:flex;
-  margin:0 12px;
-  margin-top:4px;
-}
-.tab-btn {
-  flex:1;
-  padding:12px;
-  border-radius:var(--radius);
-  border:1px solid rgba(255,255,255,0.05);
-  background:transparent;
-  color:var(--muted);
-  font-weight:700;
-  cursor:pointer;
-  transition:all .2s;
-}
-.tab-btn.active {
-  background:rgba(14,255,0,0.15);
-  color:var(--accent);
-  border:1px solid rgba(14,255,0,0.3);
-}
+/* top search */
+.top-controls{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
+.search{flex:1;min-width:200px;background:#0b0c0d;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.search input{width:100%;background:transparent;border:0;color:var(--text);outline:none;font-size:14px;padding:6px}
 
-/* PANELS */
-.panel {
-  display:none;
-  margin:12px;
-  padding:16px;
-  border-radius:var(--radius);
-  background:var(--surface);
-  box-shadow:var(--shadow);
-}
-.panel.active {display:block}
-.panel h3 {margin-bottom:12px}
+/* center panels */
+.panels{margin-top:14px;display:block}
+.panel{display:none;background:var(--surface);padding:14px;border-radius:12px;border:1px solid var(--glass);box-shadow:var(--shadow)}
+.panel.active{display:block}
 
-/* GRID */
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:14px;
-  margin-top:14px;
-}
+/* grid */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.grid{grid-template-columns:repeat(1,1fr)}}
 
-/* CARD */
-.card {
-  background:var(--card);
-  border-radius:var(--radius);
-  padding:12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  box-shadow:var(--shadow);
-  height:320px;
-  transition:transform .15s, box-shadow .15s;
-  cursor:pointer;
-}
-.card:hover {transform:translateY(-4px);box-shadow:0 8px 22px rgba(14,255,0,0.25)}
-.thumb {
-  width:100%;
-  height:150px;
-  border-radius:10px;
-  object-fit:cover;
-  background:#0a0a0a;
-}
-.title {
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.desc {
-  font-size:13px;
-  color:var(--muted);
-  line-height:1.3;
-  overflow:hidden;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  word-break:break-word;
-}
-.meta {font-size:12px;color:var(--muted)}
-.footer {
-  margin-top:auto;
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
+/* card */
+.card{background:var(--card);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.6);height:320px;transition:transform .14s}
+.card:hover{transform:translateY(-6px)}
+.thumb{width:100%;height:150px;border-radius:10px;object-fit:cover;background:#0a0a0a}
+.title{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.desc{color:var(--muted);font-size:13px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;overflow-wrap:anywhere}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.footer{display:flex;gap:8px;margin-top:auto;align-items:center}
 
-/* BUTTONS */
-.btn {
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  font-weight:700;
-  cursor:pointer;
-  text-align:center;
-  transition:background .2s;
-}
-.btn-buy {background:var(--accent);color:#000}
-.btn-buy:hover {background:#4fff49}
-.btn-owned {background:#0bbf44;color:#000}
-.btn-ghost {background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted)}
-.btn-danger {background:var(--danger);color:#fff}
+/* buttons */
+.btn{padding:10px 12px;border-radius:10px;font-weight:800;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px}
+.btn-buy{background:linear-gradient(135deg,var(--accent),#88ff66);color:#021}
+.btn-owned{background:#0bbf44;color:#021}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+.btn-danger{background:var(--danger);color:#121}
 
-/* FORMS */
-.form {display:flex;flex-direction:column;gap:12px}
-.input, textarea {
-  padding:10px;
-  border-radius:10px;
-  background:#0f0f0f;
-  color:var(--text);
-  width:100%;
-}
-textarea{resize:vertical;min-height:70px}
-.preview {
-  height:160px;
-  border-radius:10px;
-  background:#0d0d0d;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:var(--muted);
-  overflow:hidden;
-  border:1px dashed rgba(255,255,255,0.2);
-}
-.preview img{width:100%;height:100%;object-fit:cover}
+/* add form */
+.form{display:flex;gap:12px;flex-wrap:wrap}
+.form .left{flex:1;min-width:260px}
+.form .right{width:320px}
+.input,textarea{width:100%;padding:10px;border-radius:10px;background:#0d0d0d;border:1px solid rgba(255,255,255,0.02);color:var(--text)}
+textarea{min-height:90px;resize:vertical}
+.preview{height:160px;border-radius:10px;background:#0b0b0b;display:flex;align-items:center;justify-content:center;color:var(--muted);overflow:hidden;border:1px dashed rgba(255,255,255,0.04)}
+.small{font-size:13px;color:var(--muted)}
 
-/* MODAL */
-.modal {
-  position:fixed;inset:0;background:rgba(0,0,0,0.75);
-  display:none;align-items:center;justify-content:center;
-  z-index:999;
-}
-.modal.show {display:flex}
-.modal-card {
-  background:var(--card);
-  padding:18px;
-  border-radius:var(--radius);
-  width:95%;max-width:700px;
-  box-shadow:var(--shadow);
-}
-.modal-card img {width:100%;height:250px;object-fit:cover;border-radius:10px}
-.modal-info {margin-top:12px}
-.modal-info h3 {margin-bottom:6px}
-.modal-info p {margin-bottom:6px}
-.modal-actions {display:flex;gap:10px;margin-top:12px}
+/* profile sub-tabs */
+.profile-tabs{display:flex;gap:8px;margin-bottom:12px}
+.profile-tabs button{flex:1;padding:8px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);font-weight:700}
+.profile-tabs button.active{background:rgba(14,255,0,0.12);color:var(--accent);border:1px solid rgba(14,255,0,0.2)}
 
-/* TOAST */
-.toast {
-  position:fixed;bottom:60px;right:18px;
-  padding:10px 14px;
-  border-radius:10px;
-  font-weight:700;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 1s ease;
-}
-.toast.show {opacity:1;pointer-events:auto}
-.toast.success{background:var(--accent);color:#000}
-.toast.error{background:var(--danger)}
-.toast.info{background:#2c2c2c}
+/* referral block */
+.ref-block{background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+.ref-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:999}
+.modal.show{display:flex}
+.modal-card{background:var(--card);padding:16px;border-radius:12px;width:95%;max-width:820px;display:flex;gap:12px;flex-wrap:wrap}
+.modal-left{flex:0 0 420px}
+.modal-left img{width:100%;height:320px;object-fit:cover;border-radius:10px}
+.modal-info{flex:1;min-width:240px}
+.modal-actions{display:flex;gap:8px;margin-top:12px}
+
+/* bottom nav */
+.bottom-nav{position:fixed;left:0;right:0;bottom:10px;display:flex;justify-content:center;pointer-events:none}
+.bottom-nav .nav-inner{width:100%;max-width:1100px;padding:8px 12px;background:linear-gradient(180deg,rgba(0,0,0,0.2),transparent);display:flex;gap:8px;border-radius:12px;pointer-events:auto}
+.bottom-nav button{flex:1;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:var(--surface);color:var(--muted);font-weight:800;cursor:pointer}
+.bottom-nav button.active{background:linear-gradient(180deg,rgba(14,255,0,0.12),transparent);color:var(--accent);border:1px solid rgba(14,255,0,0.2)}
+
+/* toast */
+.toast{position:fixed;right:18px;bottom:110px;padding:10px 14px;border-radius:10px;font-weight:800;opacity:0;transition:opacity 1s ease;pointer-events:none;z-index:1200}
+.toast.show{opacity:1}
+.toast.success{background:var(--accent);color:#021}
+.toast.error{background:var(--danger);color:#121}
+.toast.info{background:#222;color:var(--text)}
 </style>
 </head>
 <body>
+<div class="app">
   <header class="header">
-    <div class="logo">
+    <div class="brand">
       <img src="tonfiles.svg" alt="logo">
-      <strong>TONFiles Market</strong>
+      <div>
+        <div style="font-weight:900">TONFiles Market — demo</div>
+        <div class="small">Локальная демо-версия</div>
+      </div>
     </div>
-    <div class="balance" id="balance">1000 TON</div>
+    <div class="h-right">
+      <div class="small">Ваш рефкод: <strong id="meId" style="color:var(--accent)"></strong></div>
+      <div class="small">Баланс: <strong id="balance" style="color:var(--accent)">1000</strong> <img src="ton1.svg" style="height:16px"></div>
+    </div>
   </header>
 
-  <div class="tabs">
-    <button class="tab-btn active" id="tabCatalog">Каталог</button>
-    <button class="tab-btn" id="tabAdd">Добавить</button>
-    <button class="tab-btn" id="tabProfile">Профиль</button>
+  <div class="top-controls">
+    <div class="search"><input id="searchMain" placeholder="Поиск в каталоге..."></div>
+    <div class="small">(Поиск есть и в профиле)</div>
   </div>
 
-  <!-- Catalog -->
-  <section id="panelCatalog" class="panel active">
-    <h3>Каталог</h3>
-    <div class="grid" id="catalog"></div>
-  </section>
+  <div class="panels">
+    <!-- CATALOG PANEL -->
+    <section id="catalogPanel" class="panel active">
+      <h3>Каталог</h3>
+      <div id="catalogGrid" class="grid"></div>
+    </section>
 
-  <!-- Add -->
-  <section id="panelAdd" class="panel">
-    <h3>Добавить товар</h3>
-    <div class="form">
-      <input id="title" class="input" placeholder="Название">
-      <textarea id="description" class="input" placeholder="Описание"></textarea>
-      <input id="price" class="input" type="number" step="0.01" placeholder="Цена (TON)">
-      <label>Превью: <input type="file" id="thumb" accept="image/*"></label>
-      <div id="thumbPreview" class="preview">Нет превью</div>
-      <label>Файл: <input type="file" id="asset"></label>
-      <button id="publish" type="button" class="btn btn-buy">Опубликовать</button>
-    </div>
-  </section>
+    <!-- ADD PANEL -->
+    <section id="addPanel" class="panel">
+      <h3>Добавить товар</h3>
+      <div class="form">
+        <div class="left">
+          <input id="title" class="input" placeholder="Название">
+          <textarea id="description" class="input" placeholder="Описание"></textarea>
+          <input id="price" class="input" type="number" step="0.01" placeholder="Цена (TON)">
+          <div class="small">Вы получите (с учётом комиссии 10%): <strong id="youReceive">0.00</strong> TON</div>
+          <div style="margin-top:8px">
+            <label class="small">Превью (изображение)<br><input id="thumb" type="file" accept="image/*"></label>
+            <div id="thumbPreview" class="preview" style="margin-top:8px">Превью не загружено</div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="small" style="margin-bottom:8px">Конечный файл (который покупатель получит)</div>
+          <label class="small">Загрузить файл<br><input id="asset" type="file"></label>
+          <div style="height:12px"></div>
+          <button id="publish" class="btn btn-buy" style="width:100%">Опубликовать</button>
+          <button id="clearForm" class="btn btn-ghost" style="width:100%;margin-top:8px">Очистить</button>
+        </div>
+      </div>
+    </section>
 
-  <!-- Profile -->
-  <section id="panelProfile" class="panel">
-    <h3>Мои покупки</h3>
-    <div class="grid" id="purchases"></div>
-    <h3 style="margin-top:16px">Мои товары</h3>
-    <div class="grid" id="myProducts"></div>
-  </section>
+    <!-- PROFILE PANEL -->
+    <section id="profilePanel" class="panel">
+      <h3>Профиль</h3>
 
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <div class="modal-card">
-      <img id="modalImg" src="">
-      <div class="modal-info">
-        <h3 id="modalTitle"></h3>
-        <p id="modalDesc"></p>
-        <p><b id="modalPrice"></b> TON</p>
-        <div class="modal-actions" id="modalActions"></div>
-        <button id="closeModal" class="btn btn-ghost" style="margin-top:10px;width:100%">Закрыть</button>
+      <!-- profile sub-tabs -->
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div style="display:flex;gap:8px;flex:1">
+          <div class="profile-tabs" style="flex:1">
+            <button id="purchasesTab" class="active">Мои покупки</button>
+            <button id="myProductsTab">Мои товары</button>
+          </div>
+          <div style="flex:1">
+            <input id="searchProfile" class="input" placeholder="Поиск в профиле...">
+          </div>
+        </div>
+        <!-- referral block -->
+        <div style="width:320px">
+          <div class="ref-block">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="font-weight:800">Реферальная система</div>
+              <div class="small">2% от покупок реферала</div>
+            </div>
+            <div class="small">Ваш рефкод:</div>
+            <div style="font-weight:900;color:var(--accent);margin-bottom:8px" id="refCode"></div>
+
+            <div class="small">Указать рефкод пригласившего</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <input id="referrerInput" class="input" placeholder="Рефкод приглашившего">
+              <button id="setRef" class="btn btn-ghost">Указать</button>
+            </div>
+
+            <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+              <div class="small">Реф-баланс:</div>
+              <div style="font-weight:900;color:var(--accent)" id="refBal">0.00</div>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button id="withdrawRef" class="btn btn-buy" style="flex:1">Вывести в баланс</button>
+              <button id="exportRef" class="btn btn-ghost" style="flex:1">Копировать ссылку</button>
+            </div>
+            <div class="small" style="margin-top:8px;color:var(--muted)">Ссылка будет вести в Telegram-бота (пока заглушка).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- lists -->
+      <div id="profileContent" style="margin-top:12px">
+        <div id="purchasesPanel">
+          <h4>Мои покупки</h4>
+          <div id="purchasesGrid" class="grid"></div>
+        </div>
+
+        <div id="myProductsPanel" style="display:none">
+          <h4>Мои товары</h4>
+          <div id="myProductsGrid" class="grid"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- modal -->
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-left"><img id="modalImg" src="" alt=""></div>
+    <div class="modal-info">
+      <h3 id="modalTitle"></h3>
+      <div id="modalDesc" class="small" style="margin-top:8px"></div>
+      <div style="margin-top:12px;display:flex;align-items:center;gap:10px">
+        <div style="font-weight:900;font-size:20px" id="modalPrice">0.00</div>
+        <img src="ton1.svg" style="height:20px" alt="TON">
+        <div style="margin-left:auto" class="small" id="modalOwner">Продавец</div>
+      </div>
+      <div class="modal-actions" style="margin-top:14px" id="modalActions"></div>
+      <div style="margin-top:12px" id="modalExtra" class="small"></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="modalClose" class="btn btn-ghost" style="flex:1">Закрыть</button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<!-- bottom nav -->
+<div class="bottom-nav">
+  <div class="nav-inner">
+    <button id="navCatalog" class="active">Главная</button>
+    <button id="navAdd">Добавить</button>
+    <button id="navProfile">Профиль</button>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast" class="toast"></div>
 
 <script>
-/* Data in memory */
-let products=[];
-let purchases=[];
-let balance=1000;
+/* ======== In-memory data (NOT saved to localStorage) ======== */
+/* Products and purchases are stored only in memory as you requested */
+let products = [];
+let purchases = []; // { productId, date, price }
+let refBalances = {}; // map refCode -> amount (in memory)
+let meId = localStorage.getItem('tf_meid_v1');
+if(!meId){ meId = 'u' + Math.random().toString(36).slice(2,9); localStorage.setItem('tf_meid_v1', meId); }
+document.getElementById('meId').textContent = meId;
+document.getElementById('refCode').textContent = meId;
 
-/* demo product */
-products.push({id:Date.now(),title:"TON Guide",description:"Учебник по TON",price:12.5,thumb:"https://via.placeholder.com/400x300?text=TON",asset:null});
+/* current user's chosen referrer (string) */
+let myReferrer = localStorage.getItem('tf_myref_v1') || '';
+document.getElementById('referrerInput').value = myReferrer;
 
-/* helpers */
-function fmt(n){return Number(n).toFixed(2).replace(/\.00$/,"");}
-function toast(type,txt){
-  const t=document.getElementById("toast");
-  t.className="toast "+type;
-  t.textContent=txt;
-  t.classList.add("show");
-  setTimeout(()=>{t.classList.remove("show")},1500); // держим 1.5s
+/* balances */
+let balance = 1000.00;
+let myRefBalance = refBalances[meId] || 0.00;
+
+/* helper: show toast with timed fade
+   behavior: visible 1.5s, then opacity transitions 1s -> hidden
+*/
+const toastEl = document.getElementById('toast');
+function showToast(type, text){
+  toastEl.className = 'toast show ' + (type||'info');
+  toastEl.textContent = text;
+  // show for 1.5s, then hide (opacity CSS transition 1s)
+  setTimeout(()=> {
+    toastEl.classList.remove('show');
+  }, 1500);
 }
-function updateBalance(){document.getElementById("balance").textContent=fmt(balance)+" TON";}
 
-/* render catalog */
-function renderCatalog(){
-  const el=document.getElementById("catalog");el.innerHTML="";
+/* update UI balances */
+function updateBalancesUI(){
+  document.getElementById('balance').textContent = balance.toFixed(2);
+  myRefBalance = refBalances[meId] || 0;
+  document.getElementById('refBal').textContent = myRefBalance.toFixed(2);
+}
+
+/* ====== Seed one test product (as requested) ====== */
+products.push({
+  id: Date.now(),
+  title: 'TON Quick Guide — demo',
+  description: 'Короткий гайд по TON — тестовый товар для проверки покупок. Файл и превью — демо.',
+  price: 9.99,
+  thumb: 'https://via.placeholder.com/800x600?text=TON+Guide',
+  asset: null,
+  assetName: null,
+  owner: 'demo_seller',
+  created: Date.now()
+});
+
+/* ====== Render helpers ====== */
+const catalogGrid = document.getElementById('catalogGrid');
+const purchasesGrid = document.getElementById('purchasesGrid');
+const myProductsGrid = document.getElementById('myProductsGrid');
+
+function formatPrice(v){ return Number(v).toFixed(2); }
+
+/* render catalog with optional filter */
+function renderCatalog(filter=''){
+  catalogGrid.innerHTML = '';
+  const q = filter.trim().toLowerCase();
   products.forEach(p=>{
-    const c=document.createElement("div");c.className="card";c.onclick=()=>openModal(p.id);
-    c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div><div class="meta">Цена: ${fmt(p.price)} TON</div>`;
-    const f=document.createElement("div");f.className="footer";
-    const purchased=purchases.find(x=>x.productId===p.id);
-    if(purchased){f.innerHTML=`<button class="btn btn-owned">Приобретено</button>`;}else{f.innerHTML=`<button class="btn btn-buy">Купить</button>`;f.querySelector("button").onclick=(e)=>{e.stopPropagation();buy(p.id)};}
-    c.appendChild(f);el.appendChild(c);
+    if(q){
+      const hay = (p.title + ' ' + (p.description||'')).toLowerCase();
+      if(!hay.includes(q)) return;
+    }
+    const card = document.createElement('div'); card.className = 'card';
+    const thumb = document.createElement('img'); thumb.className='thumb'; thumb.src = p.thumb || '';
+    const title = document.createElement('div'); title.className='title'; title.textContent = p.title;
+    const desc = document.createElement('div'); desc.className='desc'; desc.textContent = p.description || '';
+    const meta = document.createElement('div'); meta.className='meta'; meta.innerHTML = `<div>Продавец: ${p.owner||'—'}</div><div>${formatPrice(p.price)} TON</div>`;
+    const footer = document.createElement('div'); footer.className='footer';
+
+    // buy button shows price directly
+    const purchased = purchases.some(r=>r.productId===p.id);
+    if(p.owner === meId){
+      const mine = document.createElement('button'); mine.className='btn btn-ghost'; mine.textContent='Мой товар';
+      footer.appendChild(mine);
+    } else if(purchased){
+      const owned = document.createElement('button'); owned.className='btn btn-owned'; owned.textContent='Приобретено';
+      footer.appendChild(owned);
+      if(p.asset){
+        const get = document.createElement('button'); get.className='btn btn-ghost'; get.textContent='Получить файл';
+        get.onclick = (e)=>{ e.stopPropagation(); downloadAsset(p); };
+        footer.appendChild(get);
+      }
+    } else {
+      const buy = document.createElement('button'); buy.className='btn btn-buy';
+      buy.textContent = `Купить — ${formatPrice(p.price)} TON`;
+      buy.onclick = (e)=>{ e.stopPropagation(); openModal(p.id); };
+      footer.appendChild(buy);
+    }
+
+    card.appendChild(thumb);
+    card.appendChild(title);
+    card.appendChild(desc);
+    card.appendChild(meta);
+    card.appendChild(footer);
+    card.onclick = ()=> openModal(p.id);
+    catalogGrid.appendChild(card);
   });
 }
 
-/* render profile */
-function renderProfile(){
-  const buyEl=document.getElementById("purchases");buyEl.innerHTML="";
-  purchases.forEach(x=>{
-    const p=products.find(pp=>pp.id===x.productId);if(!p)return;
-    const c=document.createElement("div");c.className="card";c.onclick=()=>openModal(p.id);
-    c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div>`;buyEl.appendChild(c);
-  });
-  const myEl=document.getElementById("myProducts");myEl.innerHTML="";
-  products.forEach(p=>{
-    const c=document.createElement("div");c.className="card";c.onclick=()=>openModal(p.id);
-    c.innerHTML=`<img src="${p.thumb||''}" class="thumb"><div class="title">${p.title}</div><div class="desc">${p.description}</div>`;myEl.appendChild(c);
-  });
-}
-
-/* buy */
-function buy(id){
-  const p=products.find(x=>x.id===id);if(!p)return;
-  if(balance<p.price){toast("error","Недостаточно средств");return;}
-  balance-=p.price;purchases.push({productId:p.id,date:new Date().toLocaleString()});
-  updateBalance();renderCatalog();renderProfile();toast("success","Покупка успешна");
-}
-
-/* modal */
-function openModal(id){
-  const p=products.find(x=>x.id===id);if(!p)return;
-  document.getElementById("modalImg").src=p.thumb||"";
-  document.getElementById("modalTitle").textContent=p.title;
-  document.getElementById("modalDesc").textContent=p.description;
-  document.getElementById("modalPrice").textContent=fmt(p.price);
-  const act=document.getElementById("modalActions");act.innerHTML="";
-  const purchased=purchases.find(x=>x.productId===p.id);
-  if(purchased){
-    act.innerHTML=`<button class="btn btn-owned" style="flex:1">Приобретено</button>
-                   <button class="btn btn-ghost" style="flex:1">Получить файл</button>`;
+/* render profile sections */
+let activeProfileTab = 'purchases'; // or 'myproducts'
+function renderProfile(filter=''){
+  // purchases
+  purchasesGrid.innerHTML = '';
+  const q = filter.trim().toLowerCase();
+  const userPurchases = purchases.slice().reverse(); // latest first
+  if(userPurchases.length === 0){
+    purchasesGrid.innerHTML = '<div class="small">Ничего не найдено</div>';
+  } else {
+    userPurchases.forEach(rec=>{
+      const p = products.find(x=>x.id === rec.productId);
+      if(!p) return;
+      const hay = (p.title + ' ' + (p.description||'')).toLowerCase();
+      if(q && !hay.includes(q)) return;
+      const card = document.createElement('div'); card.className='card';
+      card.innerHTML = `<img class="thumb" src="${p.thumb||''}"><div class="title">${p.title}</div><div class="desc">${p.description||''}</div><div class="meta">Куплено: ${rec.date} — ${formatPrice(rec.price)} TON</div>`;
+      const footer = document.createElement('div'); footer.className='footer';
+      const get = document.createElement('button'); get.className='btn btn-ghost'; get.textContent='Получить файл';
+      get.onclick = (e)=>{ e.stopPropagation(); downloadAsset(p); };
+      footer.appendChild(get);
+      card.appendChild(footer);
+      card.onclick = ()=> openModal(p.id);
+      purchasesGrid.appendChild(card);
+    });
   }
-  else {
-    const b=document.createElement("button");b.className="btn btn-buy";b.textContent="Купить";b.onclick=()=>buy(p.id);act.appendChild(b);
+
+  // my products
+  myProductsGrid.innerHTML = '';
+  const my = products.filter(p=>p.owner === meId);
+  if(my.length === 0){
+    myProductsGrid.innerHTML = '<div class="small">Ничего не найдено</div>';
+  } else {
+    my.forEach(p=>{
+      const hay = (p.title + ' ' + (p.description||'')).toLowerCase();
+      if(filter && !hay.includes(filter.toLowerCase())) return;
+      const card = document.createElement('div'); card.className='card';
+      card.innerHTML = `<img class="thumb" src="${p.thumb||''}"><div class="title">${p.title}</div><div class="desc">${p.description||''}</div><div class="meta">Цена: ${formatPrice(p.price)} TON</div>`;
+      const footer = document.createElement('div'); footer.className='footer';
+      const edit = document.createElement('button'); edit.className='btn btn-ghost'; edit.textContent='Ред.'; edit.onclick=(e)=>{ e.stopPropagation(); openEditPrompt(p.id); };
+      const remove = document.createElement('button'); remove.className='btn btn-danger'; remove.textContent='Снять'; remove.onclick=(e)=>{ e.stopPropagation(); if(confirm('Удалить товар?')) removeProduct(p.id); };
+      footer.appendChild(edit); footer.appendChild(remove);
+      card.appendChild(footer);
+      card.onclick = ()=> openModal(p.id);
+      myProductsGrid.appendChild(card);
+    });
   }
-  document.getElementById("modal").classList.add("show");
 }
-document.getElementById("closeModal").onclick=()=>document.getElementById("modal").classList.remove("show");
 
-/* add */
-let thumbData=null,assetData=null;
-document.getElementById("thumb").onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();r.onload=ev=>{thumbData=ev.target.result;document.getElementById("thumbPreview").innerHTML=`<img src="${thumbData}">`;};r.readAsDataURL(f);
-};
-document.getElementById("asset").onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();r.onload=ev=>{assetData=ev.target.result;toast("info","Файл загружен");};r.readAsDataURL(f);
-};
-document.getElementById("publish").onclick=(e)=>{
-  e.preventDefault();
-  const title=document.getElementById("title").value,desc=document.getElementById("description").value,price=parseFloat(document.getElementById("price").value);
-  if(!title||!desc||!price){toast("error","Заполните поля");return;}
-  products.unshift({id:Date.now(),title,description:desc,price,thumb:thumbData,asset:assetData});
-  renderCatalog();renderProfile();toast("success","Товар добавлен");
-};
-
-/* tabs */
-function showTab(tab){
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-  document.getElementById("tab"+tab).classList.add("active");
-  document.getElementById("panel"+tab).classList.add("active");
+/* download asset */
+function downloadAsset(p){
+  if(!p.asset){ showToastInfo('Файл отсутствует у продавца'); return; }
+  const a = document.createElement('a'); a.href = p.asset; a.download = p.assetName || 'file'; a.click();
 }
-document.getElementById("tabCatalog").onclick=()=>showTab("Catalog");
-document.getElementById("tabAdd").onclick=()=>showTab("Add");
-document.getElementById("tabProfile").onclick=()=>showTab("Profile");
 
-/* init */
-updateBalance();renderCatalog();renderProfile();
+/* ===== modal ===== */
+const modalEl = document.getElementById('modal');
+function openModal(productId){
+  const p = products.find(x=>x.id === productId); if(!p) return;
+  document.getElementById('modalImg').src = p.thumb || '';
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalDesc').textContent = p.description || '';
+  document.getElementById('modalPrice').textContent = formatPrice(p.price);
+  document.getElementById('modalOwner').textContent = p.owner || '—';
+  const actions = document.getElementById('modalActions'); actions.innerHTML = '';
+  const purchased = purchases.some(r=>r.productId === p.id);
+  if(p.owner === meId){
+    const mine = document.createElement('button'); mine.className='btn btn-ghost'; mine.textContent='Мой товар';
+    actions.appendChild(mine);
+    if(p.asset){
+      const dl = document.createElement('button'); dl.className='btn btn-ghost'; dl.textContent='Скачать'; dl.onclick = ()=> downloadAsset(p);
+      actions.appendChild(dl);
+    }
+  } else if(purchased){
+    const own = document.createElement('button'); own.className='btn btn-owned'; own.textContent='Приобретено';
+    const get = document.createElement('button'); get.className='btn btn-ghost'; get.textContent='Получить файл'; get.onclick = ()=> downloadAsset(p);
+    actions.appendChild(own); actions.appendChild(get);
+  } else {
+    const buy = document.createElement('button'); buy.className='btn btn-buy'; buy.textContent = `Купить — ${formatPrice(p.price)} TON`;
+    buy.onclick = ()=> doBuy(p.id);
+    actions.appendChild(buy);
+  }
+  modalEl.classList.add('show');
+}
+document.getElementById('modalClose').onclick = ()=> modalEl.classList.remove('show');
+modalEl.addEventListener('click', (e)=>{ if(e.target === modalEl) modalEl.classList.remove('show'); });
+
+/* ===== publish flow ===== */
+let thumbData = null, assetData = null, assetName = null;
+document.getElementById('thumb').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ev => { thumbData = ev.target.result; document.getElementById('thumbPreview').innerHTML = `<img src="${thumbData}" style="width:100%;height:100%;object-fit:cover">`; };
+  r.readAsDataURL(f);
+});
+document.getElementById('asset').addEventListener('change', (e)=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ev => { assetData = ev.target.result; assetName = f.name; showToastInfo('Файл загружен'); };
+  r.readAsDataURL(f);
+});
+document.getElementById('price').addEventListener('input', (e)=>{
+  const v = parseFloat(e.target.value) || 0;
+  const net = Math.round(v * 0.9 * 100) / 100;
+  document.getElementById('youReceive').textContent = net.toFixed(2);
+});
+
+/* publish */
+document.getElementById('publish').addEventListener('click', ()=>{
+  const title = (document.getElementById('title').value || '').trim();
+  const desc = (document.getElementById('description').value || '').trim();
+  let price = parseFloat(document.getElementById('price').value);
+  if(!title || !desc || isNaN(price) || price <= 0){ showToastError('Заполните название, описание и корректную цену'); return; }
+  price = Math.round(price * 100) / 100;
+  const newP = {
+    id: Date.now() + Math.floor(Math.random()*1000),
+    title, description: desc, price,
+    thumb: thumbData, asset: assetData, assetName,
+    owner: meId, created: Date.now()
+  };
+  products.unshift(newP);
+  // reset form
+  document.getElementById('title').value=''; document.getElementById('description').value=''; document.getElementById('price').value=''; thumbData=null; assetData=null; assetName=null;
+  document.getElementById('thumbPreview').innerHTML = 'Превью не загружено'; document.getElementById('youReceive').textContent = '0.00';
+  renderCatalog(); renderProfile(document.getElementById('searchProfile').value || '');
+  showToastSuccess('Товар опубликован (в памяти сессии)');
+});
+
+/* ===== buy flow + referral accrual ===== */
+function doBuy(productId){
+  const p = products.find(x=>x.id===productId); if(!p) return;
+  if(balance < p.price){ showToastError('Недостаточно средств'); return; }
+  balance = Math.round((balance - p.price) * 100) / 100;
+  purchases.push({ productId: p.id, date: new Date().toLocaleString(), price: p.price });
+  // referral: if current user has myReferrer set, credit 2% to refBalances[myReferrer]
+  const ref = localStorage.getItem('tf_myref_v1') || '';
+  if(ref){
+    const credit = Math.round((p.price * 0.02) * 100) / 100;
+    refBalances[ref] = (refBalances[ref] || 0) + credit;
+  }
+  updateBalancesUI();
+  renderCatalog(); renderProfile(document.getElementById('searchProfile').value || '');
+  showToastSuccess('Покупка успешна');
+  modalEl.classList.remove('show');
+}
+
+/* ===== profile: set referrer, withdraw ===== */
+document.getElementById('setRef').addEventListener('click', ()=>{
+  const code = (document.getElementById('referrerInput').value || '').trim();
+  if(!code){ showToastError('Введите рефкод'); return; }
+  if(code === meId){ showToastError('Нельзя указать собственный код'); return; }
+  localStorage.setItem('tf_myref_v1', code);
+  showToastSuccess('Рефкод установлен (в памяти)');
+});
+document.getElementById('withdrawRef').addEventListener('click', ()=>{
+  const amt = refBalances[meId] || 0;
+  if(!amt || amt <= 0){ showToastInfo('Реф-баланс пуст'); return; }
+  balance = Math.round((balance + amt) * 100) / 100;
+  refBalances[meId] = 0;
+  updateBalancesUI();
+  showToastSuccess('Реф-баланс выведен в основной баланс');
+});
+document.getElementById('exportRef').addEventListener('click', ()=>{
+  // copy placeholder link to clipboard (will be telegram bot link later)
+  const link = `https://t.me/your_bot?start=${meId}`;
+  navigator.clipboard?.writeText(link).then(()=> showToastInfo('Ссылка скопирована'), ()=> showToastInfo(link));
+});
+
+/* ===== editing/removing own product (prompt-based) ===== */
+function openEditPrompt(productId){
+  const p = products.find(x=>x.id===productId); if(!p) return;
+  const title = prompt('Новое название', p.title); if(title === null) return;
+  const desc = prompt('Новое описание', p.description || ''); if(desc === null) return;
+  const priceRaw = prompt('Новая цена (TON)', String(p.price)); if(priceRaw === null) return;
+  const price = parseFloat(priceRaw);
+  if(isNaN(price) || price <= 0){ showToastError('Некорректная цена'); return; }
+  p.title = title.trim(); p.description = desc.trim(); p.price = Math.round(price*100)/100;
+  renderCatalog(); renderProfile(document.getElementById('searchProfile').value || '');
+  showToastSuccess('Товар обновлён');
+}
+function removeProduct(productId){
+  products = products.filter(x=>x.id !== productId);
+  purchases = purchases.filter(x=>x.productId !== productId);
+  renderCatalog(); renderProfile(document.getElementById('searchProfile').value || '');
+  showToastInfo('Товар удалён (в памяти)');
+}
+
+/* ===== UI helpers: search, tabs, profile sub-tabs ===== */
+document.getElementById('searchMain').addEventListener('input', (e)=> renderCatalog(e.target.value));
+document.getElementById('searchProfile').addEventListener('input', (e)=> renderProfile(e.target.value));
+
+document.getElementById('purchasesTab').addEventListener('click', ()=>{
+  document.getElementById('purchasesTab').classList.add('active');
+  document.getElementById('myProductsTab').classList.remove('active');
+  document.getElementById('purchasesPanel').style.display='block';
+  document.getElementById('myProductsPanel').style.display='none';
+});
+document.getElementById('myProductsTab').addEventListener('click', ()=>{
+  document.getElementById('myProductsTab').classList.add('active');
+  document.getElementById('purchasesTab').classList.remove('active');
+  document.getElementById('purchasesPanel').style.display='none';
+  document.getElementById('myProductsPanel').style.display='block';
+});
+
+/* bottom nav */
+const navCatalog = document.getElementById('navCatalog');
+const navAdd = document.getElementById('navAdd');
+const navProfile = document.getElementById('navProfile');
+function setActiveNav(key){
+  [navCatalog, navAdd, navProfile].forEach(btn=>btn.classList.remove('active'));
+  document.getElementById('catalogPanel').classList.remove('active');
+  document.getElementById('addPanel').classList.remove('active');
+  document.getElementById('profilePanel').classList.remove('active');
+  if(key==='catalog'){ navCatalog.classList.add('active'); document.getElementById('catalogPanel').classList.add('active'); }
+  if(key==='add'){ navAdd.classList.add('active'); document.getElementById('addPanel').classList.add('active'); }
+  if(key==='profile'){ navProfile.classList.add('active'); document.getElementById('profilePanel').classList.add('active'); }
+}
+navCatalog.addEventListener('click', ()=> setActiveNav('catalog'));
+navAdd.addEventListener('click', ()=> setActiveNav('add'));
+navProfile.addEventListener('click', ()=> setActiveNav('profile'));
+
+/* ===== small showToast wrappers for convenience ===== */
+function showToastSuccess(msg){ showToast('success', msg); }
+function showToastError(msg){ showToast('error', msg); }
+function showToastInfo(msg){ showToast('info', msg); }
+
+/* ===== init UI ===== */
+updateBalancesUI();
+renderCatalog();
+renderProfile();
+
+/* ensure modal close button */
+document.getElementById('modalClose').addEventListener('click', ()=> modalEl.classList.remove('show'));
+
+/* make sure toast fade works as requested:
+   showToast sets .show (opacity to 1), after 1.5s remove .show and CSS transitions opacity down over 1s.
+   That is handled by .toast.show and CSS transition on opacity.
+*/
+
 </script>
 </body>
 </html>
