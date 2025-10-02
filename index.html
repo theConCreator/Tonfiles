@@ -74,32 +74,37 @@
       background: #111;
       border: 1px solid #0eff00;
       border-radius: 8px;
-      padding: 10px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-      height: 260px;
+      justify-content: space-between;
+      height: 280px;
       overflow: hidden;
     }
     .card img {
-      max-width: 100%;
-      height: 120px;
+      width: 100%;
+      height: 160px;
       object-fit: cover;
-      border-radius: 5px;
+      border-radius: 5px 5px 0 0;
     }
-    .card h3, .card p {
+    .card-content {
+      padding: 8px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card-content h3, .card-content p {
       margin: 5px 0;
       word-wrap: break-word;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .card h3 {
+    .card-content h3 {
       font-size: 14px;
       max-height: 34px;
       line-height: 1.2em;
     }
-    .card p {
+    .card-content p {
       font-size: 12px;
       max-height: 32px;
       line-height: 1.2em;
@@ -111,7 +116,7 @@
       background: #0eff00;
       color: #000;
       border: none;
-      border-radius: 5px;
+      border-radius: 0 0 5px 5px;
       font-weight: bold;
       cursor: pointer;
       display: flex;
@@ -157,6 +162,13 @@
       border: none;
       font-weight: bold;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+    .modal-content button img {
+      height: 14px;
     }
     .buy-btn { background: #0eff00; color: #000; }
     .owned-btn { background: #333; color: #0eff00; }
@@ -196,6 +208,8 @@
       color: #0eff00;
       font-weight: bold;
     }
+    .profile-section { display: none; }
+    .profile-section.active { display: block; }
     .empty-text {
       text-align: center;
       color: #777;
@@ -368,7 +382,8 @@
     let market=document.getElementById('market-grid');market.innerHTML="";
     items.forEach(it=>{
       let card=document.createElement('div');card.className="card";
-      card.innerHTML=`<img src="${it.img}"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p>`;
+      card.innerHTML=`<img src="${it.img}">
+        <div class="card-content"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p></div>`;
       let btn=document.createElement('button');
       if(it.owner)btn.innerText="Мой товар";
       else if(it.purchased)btn.innerText="Приобретено";
@@ -379,14 +394,16 @@
     let pur=document.getElementById('purchases-grid');pur.innerHTML="";
     purchases.forEach(it=>{
       let c=document.createElement('div');c.className="card";
-      c.innerHTML=`<img src="${it.img}"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p>`;
+      c.innerHTML=`<img src="${it.img}">
+        <div class="card-content"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p></div>`;
       let b=document.createElement('button');b.innerText="Приобретено";b.onclick=()=>openModal(it);c.appendChild(b);pur.appendChild(c);
     });
     document.getElementById('purchases-empty').style.display=purchases.length?"none":"block";
     let my=document.getElementById('myitems-grid');my.innerHTML="";
     myItems.forEach(it=>{
       let c=document.createElement('div');c.className="card";
-      c.innerHTML=`<img src="${it.img}"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p>`;
+      c.innerHTML=`<img src="${it.img}">
+        <div class="card-content"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p></div>`;
       let b=document.createElement('button');b.innerText="Мой товар";c.appendChild(b);my.appendChild(c);
     });
     document.getElementById('myitems-empty').style.display=myItems.length?"none":"block";
