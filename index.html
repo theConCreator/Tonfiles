@@ -93,21 +93,23 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
     }
-    .card-content h3, .card-content p {
-      margin: 5px 0;
+    .card-content h3 {
+      font-size: 16px; /* название больше */
+      margin: 4px 0;
       word-wrap: break-word;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    .card-content h3 {
-      font-size: 14px;
-      max-height: 34px;
+      max-height: 38px;
       line-height: 1.2em;
     }
     .card-content p {
-      font-size: 12px;
+      font-size: 13px;
+      margin: 2px 0; /* ближе к заголовку */
+      word-wrap: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
       max-height: 32px;
       line-height: 1.2em;
     }
@@ -175,6 +177,7 @@
       width: 12px;
       height: 12px;
       object-fit: contain;
+      vertical-align: middle; /* чтобы значок был ровно по центру */
     }
     .buy-btn { background: #0eff00; color: #000; }
     .owned-btn { background: #333; color: #0eff00; }
@@ -285,7 +288,7 @@
       <div style="margin-bottom:15px; padding:10px; border:1px solid #0eff00; border-radius:8px; background:#111;">
         <h3>Реферальная система</h3>
         <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="width:12px; height:12px; object-fit:contain"></p>
-        <p style="color:#777; font-size:13px;">2₽ от трат рефералов</p>
+        <p style="color:#777; font-size:13px;">2% от трат рефералов</p>
         <button onclick="withdrawRef()">Вывести</button>
       </div>
       <div class="profile-tabs">
