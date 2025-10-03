@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TONFiles Market</title>
+  <title>Tonfiles Market</title>
   <style>
     body {
       margin: 0;
@@ -17,119 +17,134 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 20px;
-      border-bottom: 1px solid #0eff00;
+      background: #111;
+      border-bottom: 2px solid #0eff00;
     }
     header img {
-      height: 28px;
+      height: 30px;
     }
     header .balance {
-      font-size: 14px;
       display: flex;
       align-items: center;
       gap: 5px;
+      font-weight: bold;
     }
     header .balance img {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
+      object-fit: contain;
     }
     main {
-      padding: 20px;
-      padding-bottom: 80px;
+      padding: 15px;
+      padding-bottom: 70px;
     }
     .tabs {
+      display: flex;
+      justify-content: space-around;
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      display: flex;
       background: #111;
-      border-top: 1px solid #0eff00;
+      border-top: 2px solid #0eff00;
     }
-    .tab {
+    .tabs button {
       flex: 1;
-      padding: 12px;
-      text-align: center;
+      padding: 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 14px;
       cursor: pointer;
-      border-right: 1px solid #222;
     }
-    .tab.active {
-      background: #0eff00;
-      color: #000;
+    .tabs button.active {
+      color: #0eff00;
       font-weight: bold;
     }
-    .tab:last-child {
-      border-right: none;
-    }
-    .hidden {
+    .section {
       display: none;
     }
+    .section.active {
+      display: block;
+    }
+    /* Панель поиска и сортировки */
     .toolbar {
       display: flex;
-      justify-content: space-between;
+      gap: 10px;
       margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 8px;
     }
     .toolbar input, .toolbar select {
       padding: 6px;
       border: 1px solid #0eff00;
-      border-radius: 4px;
+      border-radius: 5px;
       background: #111;
       color: #fff;
+      flex: 1;
     }
+    /* Карточки */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
     }
     .card {
       background: #111;
       border: 1px solid #0eff00;
       border-radius: 8px;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      height: 280px;
+      overflow: hidden;
     }
     .card img {
       width: 100%;
-      height: 120px;
+      height: 160px;
       object-fit: cover;
+      border-radius: 5px 5px 0 0;
     }
     .card-content {
       padding: 8px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
-    .card-title {
-      font-size: 15px;
-      font-weight: bold;
+    .card-content h3 {
+      font-size: 16px;
       margin: 4px 0;
-      word-break: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 38px;
+      line-height: 1.2em;
     }
-    .card-desc {
+    .card-content p {
       font-size: 13px;
-      color: #ccc;
-      margin-bottom: 6px;
-      word-break: break-word;
+      margin: 2px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 32px;
+      line-height: 1.2em;
     }
     .rating {
       display: flex;
       gap: 2px;
-      margin-bottom: 6px;
+      margin-top: auto;
     }
     .rating span {
       cursor: pointer;
       font-size: 16px;
       color: #555;
     }
-    .rating span.active {
-      color: #0eff00;
-    }
-    .btn {
+    .rating span.active { color: #0eff00; }
+    .card button {
+      margin-top: auto;
       padding: 8px;
-      border: none;
-      border-top: 1px solid #0eff00;
+      width: 100%;
       background: #0eff00;
       color: #000;
+      border: none;
+      border-radius: 0 0 5px 5px;
       font-weight: bold;
       cursor: pointer;
       display: flex;
@@ -137,58 +152,104 @@
       align-items: center;
       gap: 5px;
     }
-    .btn img {
-      width: 14px;
-      height: 14px;
+    .card button img {
+      width: 12px;
+      height: 12px;
+      object-fit: contain;
     }
-    .btn:disabled {
-      background: #444;
-      color: #aaa;
-      cursor: not-allowed;
-    }
+    /* Модальное окно */
     .modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.8);
       display: none;
-      align-items: center;
       justify-content: center;
-      z-index: 100;
+      align-items: center;
     }
-    .modal.active {
-      display: flex;
-    }
+    .modal.active { display: flex; }
     .modal-content {
       background: #111;
       border: 1px solid #0eff00;
       border-radius: 10px;
-      padding: 20px;
-      width: 90%;
       max-width: 400px;
+      width: 90%;
+      padding: 15px;
+      text-align: center;
     }
+    .modal-content img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .modal-content button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+    .buy-btn { background: #0eff00; color: #000; }
+    .owned-btn { background: #333; color: #0eff00; }
+    .file-btn { background: #222; color: #fff; }
+    /* Уведомления */
     .toast {
       position: fixed;
-      bottom: 100px;
+      bottom: 70px;
       right: 20px;
-      background: #0eff00;
-      color: #000;
+      background: #111;
+      border: 1px solid #0eff00;
       padding: 10px 15px;
-      border-radius: 6px;
-      opacity: 1;
+      border-radius: 5px;
+      opacity: 0;
       transition: opacity 1s;
+    }
+    .toast.show { opacity: 1; }
+    /* Профиль */
+    .profile-tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #0eff00;
+    }
+    .profile-tabs button {
+      flex: 1;
+      padding: 8px;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+    .profile-tabs button.active {
+      color: #0eff00;
+      font-weight: bold;
+    }
+    .profile-section { display: none; }
+    .profile-section.active { display: block; }
+    .empty-text {
+      text-align: center;
+      color: #777;
+      margin: 20px 0;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="tonfiles.svg" alt="TONFiles">
-    <div class="balance"><img src="ton1.svg" alt="TON"> <span id="balance">1000</span></div>
+    <img src="tonfiles.svg" alt="logo">
+    <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="ton"></div>
   </header>
 
   <main>
     <!-- Главная -->
-    <section id="home">
+    <section id="home" class="section active">
       <div class="toolbar">
         <input type="text" id="searchInput" placeholder="Поиск...">
         <select id="sortSelect">
@@ -198,189 +259,76 @@
           <option value="rating">По рейтингу</option>
         </select>
       </div>
-      <div class="grid" id="productGrid"></div>
+      <div class="grid" id="market-grid"></div>
     </section>
 
     <!-- Добавить -->
-    <section id="add" class="hidden">
-      <h2>Опубликовать товар</h2>
-      <input type="text" id="titleInput" placeholder="Название"><br><br>
-      <textarea id="descInput" placeholder="Описание"></textarea><br><br>
-      <input type="number" id="priceInput" placeholder="Цена (TON)" step="0.01"><br><br>
-      <p id="commissionText"></p>
-      <input type="file" id="previewInput"><br><br>
-      <input type="file" id="fileInput"><br><br>
-      <button class="btn" onclick="publishProduct()">Опубликовать</button>
+    <section id="add" class="section">
+      <h2>Публикация объявления</h2>
+      <div><input id="add-name" placeholder="Название"></div>
+      <div><textarea id="add-desc" placeholder="Описание"></textarea></div>
+      <div><input id="add-price" type="number" step="0.01" placeholder="Цена" oninput="updateNet()">
+        <small id="net-text"></small></div>
+      <div><input id="add-preview" type="file" accept="image/*"><input id="add-file" type="file"></div>
+      <button onclick="publish()">Опубликовать</button>
     </section>
 
     <!-- Профиль -->
-    <section id="profile" class="hidden">
+    <section id="profile" class="section">
       <h2>Профиль</h2>
-      <div class="toolbar">
-        <input type="text" id="profileSearch" placeholder="Поиск по товарам/покупкам...">
+      <div style="margin-bottom:15px; padding:10px; border:1px solid #0eff00; border-radius:8px; background:#111;">
+        <h3>Реферальная система</h3>
+        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:12px;height:12px"></p>
+        <p style="color:#777;font-size:13px;">2% от трат рефералов</p>
+        <button onclick="withdrawRef()">Вывести</button>
       </div>
-      <div>
-        <button class="tabSub active" onclick="switchProfileTab('purchases')">Мои покупки</button>
-        <button class="tabSub" onclick="switchProfileTab('myProducts')">Мои товары</button>
+      <div class="profile-tabs">
+        <button class="active" onclick="switchProfileTab('purchases')">Мои покупки</button>
+        <button onclick="switchProfileTab('myitems')">Мои товары</button>
       </div>
-      <div id="purchasesTab"></div>
-      <div id="myProductsTab" class="hidden"></div>
+      <div id="purchases" class="profile-section active"><div id="purchases-grid" class="grid"></div><div class="empty-text" id="purchases-empty">Ничего не найдено</div></div>
+      <div id="myitems" class="profile-section"><div id="myitems-grid" class="grid"></div><div class="empty-text" id="myitems-empty">Ничего не найдено</div></div>
     </section>
   </main>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('home', this)">Главная</div>
-    <div class="tab" onclick="switchTab('add', this)">Добавить</div>
-    <div class="tab" onclick="switchTab('profile', this)">Профиль</div>
+    <button class="active" onclick="switchTab('home', this)">Главная</button>
+    <button onclick="switchTab('add', this)">Добавить</button>
+    <button onclick="switchTab('profile', this)">Профиль</button>
   </div>
 
-  <!-- Modal -->
-  <div class="modal" id="productModal">
+  <!-- Модалка -->
+  <div class="modal" id="modal">
     <div class="modal-content">
-      <h3 id="modalTitle"></h3>
-      <img id="modalImage" src="" style="width:100%; height:150px; object-fit:cover;">
-      <p id="modalDesc"></p>
-      <div class="rating" id="modalRating"></div>
-      <button class="btn" id="modalBuyBtn"></button>
-      <button class="btn hidden" id="modalFileBtn">Получить файл</button>
-      <button class="btn" onclick="closeModal()">Закрыть</button>
+      <h3 id="modal-name"></h3>
+      <img id="modal-img">
+      <p id="modal-desc"></p>
+      <div class="rating" id="modal-rating"></div>
+      <div id="modal-actions"></div>
+      <button onclick="closeModal()">Закрыть</button>
     </div>
   </div>
 
-  <script>
-    let balance = 1000;
-    let products = [
-      {id: 1, title: "Тестовый товар", desc: "Описание тестового товара", price: 25, preview: "https://via.placeholder.com/300", file: "test.txt", owner: "system", rating: 4, ratingCount: 1, purchased: false}
-    ];
-    let myProducts = [];
-    let purchases = [];
-    let currentProduct = null;
+  <div class="toast" id="toast"></div>
 
-    const balanceEl = document.getElementById("balance");
-    const grid = document.getElementById("productGrid");
-    const searchInput = document.getElementById("searchInput");
-    const sortSelect = document.getElementById("sortSelect");
-    const profileSearch = document.getElementById("profileSearch");
+<script>
+  let balance=1000.00,refBalance=0.00;
+  let items=[{id:1,name:"Тестовый товар",desc:"Описание тестового товара",price:25.50,img:"https://via.placeholder.com/300x200",file:"file.txt",owner:false,purchased:false,rating:4,ratingCount:1}];
+  let myItems=[],purchases=[];let currentItem=null;
 
-    function renderProducts(list = products) {
-      grid.innerHTML = "";
-      let query = searchInput.value.toLowerCase();
-      let filtered = list.filter(p => p.title.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
-
-      if (sortSelect.value === "priceAsc") filtered.sort((a,b)=>a.price-b.price);
-      if (sortSelect.value === "priceDesc") filtered.sort((a,b)=>b.price-a.price);
-      if (sortSelect.value === "rating") filtered.sort((a,b)=> (b.rating||0)-(a.rating||0));
-
-      filtered.forEach(p => {
-        let card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <img src="${p.preview}">
-          <div class="card-content">
-            <div class="card-title">${p.title}</div>
-            <div class="card-desc">${p.desc}</div>
-            <div class="rating">${renderStars(p.rating||0)}</div>
-          </div>
-          <button class="btn" onclick="openProduct(${p.id})">
-            Купить ${p.price} <img src="ton1.svg">
-          </button>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function renderStars(rating) {
-      let stars = "";
-      for (let i=1;i<=5;i++) {
-        stars += `<span class="${i<=rating?'active':''}">★</span>`;
-      }
-      return stars;
-    }
-
-    function openProduct(id) {
-      currentProduct = products.find(p=>p.id===id);
-      document.getElementById("modalTitle").innerText = currentProduct.title;
-      document.getElementById("modalImage").src = currentProduct.preview;
-      document.getElementById("modalDesc").innerText = currentProduct.desc;
-      document.getElementById("modalRating").innerHTML = renderStars(currentProduct.rating||0);
-      let buyBtn = document.getElementById("modalBuyBtn");
-      let fileBtn = document.getElementById("modalFileBtn");
-      if (currentProduct.purchased) {
-        buyBtn.innerText = "Приобретено";
-        buyBtn.disabled = true;
-        fileBtn.classList.remove("hidden");
-      } else {
-        buyBtn.innerHTML = `Купить ${currentProduct.price} <img src="ton1.svg">`;
-        buyBtn.disabled = false;
-        fileBtn.classList.add("hidden");
-      }
-      document.getElementById("productModal").classList.add("active");
-    }
-    function closeModal(){document.getElementById("productModal").classList.remove("active")}
-
-    function publishProduct(){
-      let title = document.getElementById("titleInput").value;
-      let desc = document.getElementById("descInput").value;
-      let price = parseFloat(document.getElementById("priceInput").value);
-      if (!title||!desc||!price) return showToast("Заполните все поля!");
-      let newProduct={id:Date.now(),title,desc,price,preview:"https://via.placeholder.com/300",file:"uploaded.txt",owner:"me"};
-      products.push(newProduct);
-      myProducts.push(newProduct);
-      showToast("Товар опубликован!");
-      renderProducts();
-      renderProfile();
-    }
-
-    function switchTab(tab, el){
-      document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
-      document.getElementById(tab).classList.remove("hidden");
-      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-      el.classList.add("active");
-      if(tab==="profile") renderProfile();
-    }
-
-    function switchProfileTab(tab){
-      document.querySelectorAll("#profile .tabSub").forEach(b=>b.classList.remove("active"));
-      event.target.classList.add("active");
-      document.getElementById("purchasesTab").classList.add("hidden");
-      document.getElementById("myProductsTab").classList.add("hidden");
-      document.getElementById(tab+"Tab").classList.remove("hidden");
-    }
-
-    function renderProfile(){
-      let q = profileSearch.value.toLowerCase();
-      let pur = purchases.filter(p=>p.title.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q));
-      let myp = myProducts.filter(p=>p.title.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q));
-
-      let purDiv=document.getElementById("purchasesTab");
-      let myDiv=document.getElementById("myProductsTab");
-      purDiv.innerHTML=""; myDiv.innerHTML="";
-
-      pur.forEach(p=>{
-        let card=document.createElement("div");
-        card.className="card";
-        card.innerHTML=`<img src="${p.preview}"><div class="card-content"><div class="card-title">${p.title}</div><div class="card-desc">${p.desc}</div></div>`;
-        purDiv.appendChild(card);
-      });
-      myp.forEach(p=>{
-        let card=document.createElement("div");
-        card.className="card";
-        card.innerHTML=`<img src="${p.preview}"><div class="card-content"><div class="card-title">${p.title}</div><div class="card-desc">${p.desc}</div></div>`;
-        myDiv.appendChild(card);
-      });
-    }
-
-    function showToast(msg){
-      let toast=document.createElement("div");
-      toast.className="toast";
-      toast.innerText=msg;
-      document.body.appendChild(toast);
-      setTimeout(()=>toast.style.opacity=0,1500);
-      setTimeout(()=>toast.remove(),2500);
-    }
-
-    renderProducts();
-  </script>
+  function switchTab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+  function switchProfileTab(tab){document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
+  function updateNet(){let price=parseFloat(document.getElementById('add-price').value)||0;document.getElementById('net-text').innerText="Вы получите "+(price*0.9).toFixed(2)+" TON";}
+  function publish(){let name=document.getElementById('add-name').value;let desc=document.getElementById('add-desc').value;let price=parseFloat(document.getElementById('add-price').value)||0;let imgFile=document.getElementById('add-preview').files[0];let file=document.getElementById('add-file').files[0];if(!name||!desc||!price||!imgFile||!file){showToast("Заполните все поля");return;}let reader=new FileReader();reader.onload=e=>{let newItem={id:Date.now(),name,desc,price,img:e.target.result,file:file.name,owner:true,purchased:false,rating:0,ratingCount:0};items.push(newItem);myItems.push(newItem);showToast("Товар опубликован");render();};reader.readAsDataURL(imgFile);}
+  function openModal(item){currentItem=item;document.getElementById('modal-name').innerText=item.name;document.getElementById('modal-img').src=item.img;document.getElementById('modal-desc').innerText=item.desc;document.getElementById('modal-rating').innerHTML=renderStars(item.rating);let act=document.getElementById('modal-actions');act.innerHTML="";if(item.owner){act.innerHTML="<button class='owned-btn'>Мой товар</button>";}else if(item.purchased){act.innerHTML="<button class='owned-btn'>Приобретено</button><button class='file-btn'>Получить файл</button>";}else{act.innerHTML=`<button class='buy-btn' onclick='buy(${item.id})'>Купить ${item.price.toFixed(2)} <img src="ton1.svg"></button>`;}document.getElementById('modal').classList.add('active');}
+  function closeModal(){document.getElementById('modal').classList.remove('active');}
+  function buy(id){let item=items.find(i=>i.id===id);if(balance<item.price){showToast("Недостаточно средств");return;}balance-=item.price;refBalance+=item.price*0.02;item.purchased=true;purchases.push(item);showToast("Покупка успешна");render();closeModal();}
+  function withdrawRef(){if(refBalance<=0){showToast("Нет средств");return;}balance+=refBalance;refBalance=0;showToast("Вывод успешен");render();}
+  function showToast(msg){let t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>{t.classList.remove('show');},2500);}
+  function renderStars(r){let stars="";for(let i=1;i<=5;i++){stars+=`<span class="${i<=r?'active':''}" onclick="rate(${i})">★</span>`;}return stars;}
+  function rate(stars){if(!currentItem||!currentItem.purchased)return;currentItem.rating=Math.round(((currentItem.rating*currentItem.ratingCount)+stars)/(currentItem.ratingCount+1));currentItem.ratingCount++;showToast("Оценка добавлена");render();openModal(currentItem);}
+  function render(){document.getElementById('balance').innerText=balance.toFixed(2);document.getElementById('ref-balance').innerText=refBalance.toFixed(2);let q=document.getElementById('searchInput').value.toLowerCase();let sort=document.getElementById('sortSelect').value;let market=document.getElementById('market-grid');market.innerHTML="";let filtered=items.filter(i=>i.name.toLowerCase().includes(q)||i.desc.toLowerCase().includes(q));if(sort==="priceAsc")filtered.sort((a,b)=>a.price-b.price);if(sort==="priceDesc")filtered.sort((a,b)=>b.price-a.price);if(sort==="rating")filtered.sort((a,b)=>b.rating-a.rating);filtered.forEach(it=>{let card=document.createElement('div');card.className="card";card.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p><div class="rating">${renderStars(it.rating)}</div></div>`;let btn=document.createElement('button');if(it.owner)btn.innerText="Мой товар";else if(it.purchased)btn.innerText="Приобретено";else btn.innerHTML=`Купить ${it.price.toFixed(2)} <img src="ton1.svg">`;btn.onclick=()=>openModal(it);card.appendChild(btn);market.appendChild(card);});let pur=document.getElementById('purchases-grid');pur.innerHTML="";purchases.forEach(it=>{let c=document.createElement('div');c.className="card";c.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p></div>`;let b=document.createElement('button');b.innerText="Приобретено";b.onclick=()=>openModal(it);c.appendChild(b);pur.appendChild(c);});document.getElementById('purchases-empty').style.display=purchases.length?"none":"block";let my=document.getElementById('myitems-grid');my.innerHTML="";myItems.forEach(it=>{let c=document.createElement('div');c.className="card";c.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p></div>`;let b=document.createElement('button');b.innerText="Мой товар";c.appendChild(b);my.appendChild(c);});document.getElementById('myitems-empty').style.display=myItems.length?"none":"block";}
+  document.getElementById('searchInput').oninput=render;document.getElementById('sortSelect').onchange=render;render();
+</script>
 </body>
 </html>
