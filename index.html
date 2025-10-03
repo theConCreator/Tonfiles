@@ -20,9 +20,7 @@
       background: #111;
       border-bottom: 2px solid #0eff00;
     }
-    header img {
-      height: 30px;
-    }
+    header img { height: 30px; }
     header .balance {
       display: flex;
       align-items: center;
@@ -30,57 +28,24 @@
       font-weight: bold;
     }
     header .balance img {
-      width: 12px;
-      height: 12px;
-      object-fit: contain;
+      width: 12px; height: 12px; object-fit: contain;
     }
-    main {
-      padding: 15px;
-      padding-bottom: 70px;
-    }
+    main { padding: 15px; }
     .tabs {
-      display: flex;
-      justify-content: space-around;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #111;
+      display: flex; justify-content: space-around;
+      position: fixed; bottom: 0; left: 0;
+      width: 100%; background: #111;
       border-top: 2px solid #0eff00;
     }
     .tabs button {
-      flex: 1;
-      padding: 10px;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 14px;
+      flex: 1; padding: 10px; background: none;
+      border: none; color: #fff; font-size: 14px;
       cursor: pointer;
     }
-    .tabs button.active {
-      color: #0eff00;
-      font-weight: bold;
-    }
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    /* Панель поиска и сортировки */
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    .toolbar input, .toolbar select {
-      padding: 6px;
-      border: 1px solid #0eff00;
-      border-radius: 5px;
-      background: #111;
-      color: #fff;
-      flex: 1;
-    }
+    .tabs button.active { color: #0eff00; font-weight: bold; }
+    .section { display: none; }
+    .section.active { display: block; }
+
     /* Карточки */
     .grid {
       display: grid;
@@ -94,25 +59,22 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      height: 280px;
+      height: 300px;
       overflow: hidden;
     }
     .card img {
-      width: 100%;
-      height: 160px;
+      width: 100%; height: 180px;
       object-fit: cover;
       border-radius: 5px 5px 0 0;
     }
     .card-content {
       padding: 8px;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+      display: flex; flex-direction: column;
     }
     .card-content h3 {
       font-size: 16px;
       margin: 4px 0;
+      word-wrap: break-word;
       overflow: hidden;
       text-overflow: ellipsis;
       max-height: 38px;
@@ -121,22 +83,12 @@
     .card-content p {
       font-size: 13px;
       margin: 2px 0;
+      word-wrap: break-word;
       overflow: hidden;
       text-overflow: ellipsis;
       max-height: 32px;
       line-height: 1.2em;
     }
-    .rating {
-      display: flex;
-      gap: 2px;
-      margin-top: auto;
-    }
-    .rating span {
-      cursor: pointer;
-      font-size: 16px;
-      color: #555;
-    }
-    .rating span.active { color: #0eff00; }
     .card button {
       margin-top: auto;
       padding: 8px;
@@ -147,98 +99,117 @@
       border-radius: 0 0 5px 5px;
       font-weight: bold;
       cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       gap: 5px;
     }
     .card button img {
-      width: 12px;
-      height: 12px;
-      object-fit: contain;
+      width: 12px; height: 12px; object-fit: contain;
     }
-    /* Модальное окно */
+
+    /* Модалка */
     .modal {
-      position: fixed;
-      top: 0; left: 0;
+      position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.8);
-      display: none;
-      justify-content: center;
-      align-items: center;
+      display: none; justify-content: center; align-items: center;
     }
     .modal.active { display: flex; }
     .modal-content {
       background: #111;
       border: 1px solid #0eff00;
       border-radius: 10px;
-      max-width: 400px;
-      width: 90%;
+      max-width: 400px; width: 90%;
       padding: 15px;
       text-align: center;
     }
     .modal-content img {
-      width: 100%;
-      max-height: 200px;
+      width: 100%; max-height: 200px;
       object-fit: cover;
-      border-radius: 5px;
-      margin-bottom: 10px;
+      border-radius: 5px; margin-bottom: 10px;
     }
     .modal-content button {
-      margin-top: 10px;
-      width: 100%;
+      margin-top: 10px; width: 100%;
       padding: 10px;
-      border-radius: 5px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      border-radius: 5px; border: none;
+      font-weight: bold; cursor: pointer;
+      display: flex; justify-content: center; align-items: center;
       gap: 5px;
+    }
+    .modal-content button img {
+      width: 12px; height: 12px; object-fit: contain;
+      vertical-align: middle;
     }
     .buy-btn { background: #0eff00; color: #000; }
     .owned-btn { background: #333; color: #0eff00; }
     .file-btn { background: #222; color: #fff; }
+
     /* Уведомления */
     .toast {
-      position: fixed;
-      bottom: 70px;
-      right: 20px;
-      background: #111;
-      border: 1px solid #0eff00;
-      padding: 10px 15px;
-      border-radius: 5px;
-      opacity: 0;
-      transition: opacity 1s;
+      position: fixed; bottom: 70px; right: 20px;
+      background: #111; border: 1px solid #0eff00;
+      padding: 10px 15px; border-radius: 5px;
+      opacity: 0; transition: opacity 1s;
     }
-    .toast.show { opacity: 1; }
+    .toast.show { opacity: 1; transition: opacity 0.5s; }
+
     /* Профиль */
     .profile-tabs {
-      display: flex;
-      justify-content: center;
+      display: flex; justify-content: center;
       margin-bottom: 10px;
       border-bottom: 1px solid #0eff00;
     }
     .profile-tabs button {
-      flex: 1;
-      padding: 8px;
-      background: none;
-      border: none;
-      color: #fff;
-      cursor: pointer;
+      flex: 1; padding: 8px;
+      background: none; border: none;
+      color: #fff; cursor: pointer;
     }
     .profile-tabs button.active {
-      color: #0eff00;
-      font-weight: bold;
+      color: #0eff00; font-weight: bold;
     }
     .profile-section { display: none; }
     .profile-section.active { display: block; }
-    .empty-text {
-      text-align: center;
-      color: #777;
-      margin: 20px 0;
+    .empty-text { text-align: center; color: #777; margin: 20px 0; }
+
+    /* Публикация */
+    #add { max-width: 450px; margin: 0 auto; }
+    #add h2 { text-align: center; margin-bottom: 15px; }
+    .form-group { margin: 12px 0; }
+    .form-group label {
+      display: block; margin-bottom: 5px;
+      font-size: 14px; color: #0eff00;
     }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 10px;
+      border: 1px solid #0eff00;
+      border-radius: 5px; background: #111; color: #fff;
+      box-sizing: border-box; font-size: 14px;
+    }
+    .form-group input[type="file"] {
+      border: 1px dashed #0eff00;
+      padding: 8px; cursor: pointer;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; box-shadow: 0 0 5px #0eff00;
+    }
+    #add button {
+      margin-top: 10px; padding: 12px;
+      background: #0eff00; color: #000;
+      border: none; border-radius: 5px;
+      font-size: 15px; font-weight: bold;
+      cursor: pointer; width: 100%;
+    }
+
+    /* Рейтинг */
+    .rating {
+      display: flex; justify-content: center;
+      gap: 5px; margin: 10px 0;
+    }
+    .star {
+      font-size: 20px; cursor: pointer;
+      color: #555;
+    }
+    .star.active { color: #0eff00; }
+    .review-count { font-size: 13px; color: #888; margin-top: 5px; }
   </style>
 </head>
 <body>
@@ -250,26 +221,21 @@
   <main>
     <!-- Главная -->
     <section id="home" class="section active">
-      <div class="toolbar">
-        <input type="text" id="searchInput" placeholder="Поиск...">
-        <select id="sortSelect">
-          <option value="default">Сортировка</option>
-          <option value="priceAsc">Цена ↑</option>
-          <option value="priceDesc">Цена ↓</option>
-          <option value="rating">По рейтингу</option>
-        </select>
-      </div>
       <div class="grid" id="market-grid"></div>
     </section>
 
     <!-- Добавить -->
     <section id="add" class="section">
       <h2>Публикация объявления</h2>
-      <div><input id="add-name" placeholder="Название"></div>
-      <div><textarea id="add-desc" placeholder="Описание"></textarea></div>
-      <div><input id="add-price" type="number" step="0.01" placeholder="Цена" oninput="updateNet()">
-        <small id="net-text"></small></div>
-      <div><input id="add-preview" type="file" accept="image/*"><input id="add-file" type="file"></div>
+      <div class="form-group"><label>Название</label><input id="add-name"></div>
+      <div class="form-group"><label>Описание</label><textarea id="add-desc"></textarea></div>
+      <div class="form-group"><label>Цена</label><input id="add-price" type="number" step="0.01" oninput="updateNet()">
+        <small id="net-text"></small>
+      </div>
+      <div class="form-group"><label>Загрузка файлов</label>
+        <input id="add-preview" type="file" accept="image/*">
+        <input id="add-file" type="file">
+      </div>
       <button onclick="publish()">Опубликовать</button>
     </section>
 
@@ -278,16 +244,22 @@
       <h2>Профиль</h2>
       <div style="margin-bottom:15px; padding:10px; border:1px solid #0eff00; border-radius:8px; background:#111;">
         <h3>Реферальная система</h3>
-        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:12px;height:12px"></p>
-        <p style="color:#777;font-size:13px;">2% от трат рефералов</p>
+        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="width:12px; height:12px; object-fit:contain"></p>
+        <p style="color:#777; font-size:13px;">2% от трат рефералов</p>
         <button onclick="withdrawRef()">Вывести</button>
       </div>
       <div class="profile-tabs">
         <button class="active" onclick="switchProfileTab('purchases')">Мои покупки</button>
         <button onclick="switchProfileTab('myitems')">Мои товары</button>
       </div>
-      <div id="purchases" class="profile-section active"><div id="purchases-grid" class="grid"></div><div class="empty-text" id="purchases-empty">Ничего не найдено</div></div>
-      <div id="myitems" class="profile-section"><div id="myitems-grid" class="grid"></div><div class="empty-text" id="myitems-empty">Ничего не найдено</div></div>
+      <div id="purchases" class="profile-section active">
+        <div id="purchases-grid" class="grid"></div>
+        <div class="empty-text" id="purchases-empty">Ничего не найдено</div>
+      </div>
+      <div id="myitems" class="profile-section">
+        <div id="myitems-grid" class="grid"></div>
+        <div class="empty-text" id="myitems-empty">Ничего не найдено</div>
+      </div>
     </section>
   </main>
 
@@ -304,6 +276,7 @@
       <img id="modal-img">
       <p id="modal-desc"></p>
       <div class="rating" id="modal-rating"></div>
+      <div class="review-count" id="review-count"></div>
       <div id="modal-actions"></div>
       <button onclick="closeModal()">Закрыть</button>
     </div>
@@ -312,23 +285,123 @@
   <div class="toast" id="toast"></div>
 
 <script>
-  let balance=1000.00,refBalance=0.00;
-  let items=[{id:1,name:"Тестовый товар",desc:"Описание тестового товара",price:25.50,img:"https://via.placeholder.com/300x200",file:"file.txt",owner:false,purchased:false,rating:4,ratingCount:1}];
-  let myItems=[],purchases=[];let currentItem=null;
+  let balance = 1000.00, refBalance = 0.00;
+  let items = [
+    {id:1, name:"Тестовый товар", desc:"Описание тестового товара", price:25.50, img:"https://via.placeholder.com/300x200", file:"file.txt", owner:false, purchased:false, reviews:[], rating:0}
+  ];
+  let myItems=[], purchases=[];
 
-  function switchTab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
-  function switchProfileTab(tab){document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));document.getElementById(tab).classList.add('active');document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));event.target.classList.add('active');}
-  function updateNet(){let price=parseFloat(document.getElementById('add-price').value)||0;document.getElementById('net-text').innerText="Вы получите "+(price*0.9).toFixed(2)+" TON";}
-  function publish(){let name=document.getElementById('add-name').value;let desc=document.getElementById('add-desc').value;let price=parseFloat(document.getElementById('add-price').value)||0;let imgFile=document.getElementById('add-preview').files[0];let file=document.getElementById('add-file').files[0];if(!name||!desc||!price||!imgFile||!file){showToast("Заполните все поля");return;}let reader=new FileReader();reader.onload=e=>{let newItem={id:Date.now(),name,desc,price,img:e.target.result,file:file.name,owner:true,purchased:false,rating:0,ratingCount:0};items.push(newItem);myItems.push(newItem);showToast("Товар опубликован");render();};reader.readAsDataURL(imgFile);}
-  function openModal(item){currentItem=item;document.getElementById('modal-name').innerText=item.name;document.getElementById('modal-img').src=item.img;document.getElementById('modal-desc').innerText=item.desc;document.getElementById('modal-rating').innerHTML=renderStars(item.rating);let act=document.getElementById('modal-actions');act.innerHTML="";if(item.owner){act.innerHTML="<button class='owned-btn'>Мой товар</button>";}else if(item.purchased){act.innerHTML="<button class='owned-btn'>Приобретено</button><button class='file-btn'>Получить файл</button>";}else{act.innerHTML=`<button class='buy-btn' onclick='buy(${item.id})'>Купить ${item.price.toFixed(2)} <img src="ton1.svg"></button>`;}document.getElementById('modal').classList.add('active');}
+  function switchTab(id, btn){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+  function switchProfileTab(tab){
+    document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+    document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+  function updateNet(){
+    let price=parseFloat(document.getElementById('add-price').value)||0;
+    document.getElementById('net-text').innerText="Вы получите "+(price*0.9).toFixed(2)+" TON (с учётом комиссии 10%)";
+  }
+  function publish(){
+    let name=document.getElementById('add-name').value;
+    let desc=document.getElementById('add-desc').value;
+    let price=parseFloat(document.getElementById('add-price').value)||0;
+    let imgFile=document.getElementById('add-preview').files[0];
+    let file=document.getElementById('add-file').files[0];
+    if(!name||!desc||!price||!imgFile||!file){showToast("Заполните все поля");return;}
+    let reader=new FileReader();
+    reader.onload=e=>{
+      let newItem={id:Date.now(), name, desc, price, img:e.target.result, file:file.name, owner:true, purchased:false, reviews:[], rating:0};
+      items.push(newItem); myItems.push(newItem);
+      showToast("Товар опубликован");
+      render();
+    };
+    reader.readAsDataURL(imgFile);
+  }
+  function openModal(item){
+    document.getElementById('modal-name').innerText=item.name;
+    document.getElementById('modal-img').src=item.img;
+    document.getElementById('modal-desc').innerText=item.desc;
+    let act=document.getElementById('modal-actions'); act.innerHTML="";
+    if(item.owner){ act.innerHTML="<button class='owned-btn'>Мой товар</button>";}
+    else if(item.purchased){
+      act.innerHTML="<button class='owned-btn'>Приобретено</button><button class='file-btn'>Получить файл</button>";
+    } else {
+      act.innerHTML=`<button class='buy-btn' onclick='buy(${item.id})'>Купить ${item.price.toFixed(2)} <img src="ton1.svg" alt="ton"></button>`;
+    }
+    renderRating(item);
+    document.getElementById('modal').classList.add('active');
+  }
+  function renderRating(item){
+    let ratingDiv=document.getElementById('modal-rating');ratingDiv.innerHTML="";
+    for(let i=1;i<=5;i++){
+      let star=document.createElement("span");
+      star.innerHTML="★";
+      star.className="star"+(i<=item.rating?" active":"");
+      star.onclick=()=>rate(item,i);
+      ratingDiv.appendChild(star);
+    }
+    document.getElementById('review-count').innerText=`${item.reviews.length} отзывов`;
+  }
+  function rate(item,value){
+    item.reviews.push(value);
+    item.rating=Math.round(item.reviews.reduce((a,b)=>a+b,0)/item.reviews.length);
+    showToast("Спасибо за отзыв!");
+    renderRating(item);
+  }
   function closeModal(){document.getElementById('modal').classList.remove('active');}
-  function buy(id){let item=items.find(i=>i.id===id);if(balance<item.price){showToast("Недостаточно средств");return;}balance-=item.price;refBalance+=item.price*0.02;item.purchased=true;purchases.push(item);showToast("Покупка успешна");render();closeModal();}
-  function withdrawRef(){if(refBalance<=0){showToast("Нет средств");return;}balance+=refBalance;refBalance=0;showToast("Вывод успешен");render();}
-  function showToast(msg){let t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>{t.classList.remove('show');},2500);}
-  function renderStars(r){let stars="";for(let i=1;i<=5;i++){stars+=`<span class="${i<=r?'active':''}" onclick="rate(${i})">★</span>`;}return stars;}
-  function rate(stars){if(!currentItem||!currentItem.purchased)return;currentItem.rating=Math.round(((currentItem.rating*currentItem.ratingCount)+stars)/(currentItem.ratingCount+1));currentItem.ratingCount++;showToast("Оценка добавлена");render();openModal(currentItem);}
-  function render(){document.getElementById('balance').innerText=balance.toFixed(2);document.getElementById('ref-balance').innerText=refBalance.toFixed(2);let q=document.getElementById('searchInput').value.toLowerCase();let sort=document.getElementById('sortSelect').value;let market=document.getElementById('market-grid');market.innerHTML="";let filtered=items.filter(i=>i.name.toLowerCase().includes(q)||i.desc.toLowerCase().includes(q));if(sort==="priceAsc")filtered.sort((a,b)=>a.price-b.price);if(sort==="priceDesc")filtered.sort((a,b)=>b.price-a.price);if(sort==="rating")filtered.sort((a,b)=>b.rating-a.rating);filtered.forEach(it=>{let card=document.createElement('div');card.className="card";card.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p><div class="rating">${renderStars(it.rating)}</div></div>`;let btn=document.createElement('button');if(it.owner)btn.innerText="Мой товар";else if(it.purchased)btn.innerText="Приобретено";else btn.innerHTML=`Купить ${it.price.toFixed(2)} <img src="ton1.svg">`;btn.onclick=()=>openModal(it);card.appendChild(btn);market.appendChild(card);});let pur=document.getElementById('purchases-grid');pur.innerHTML="";purchases.forEach(it=>{let c=document.createElement('div');c.className="card";c.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p></div>`;let b=document.createElement('button');b.innerText="Приобретено";b.onclick=()=>openModal(it);c.appendChild(b);pur.appendChild(c);});document.getElementById('purchases-empty').style.display=purchases.length?"none":"block";let my=document.getElementById('myitems-grid');my.innerHTML="";myItems.forEach(it=>{let c=document.createElement('div');c.className="card";c.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p></div>`;let b=document.createElement('button');b.innerText="Мой товар";c.appendChild(b);my.appendChild(c);});document.getElementById('myitems-empty').style.display=myItems.length?"none":"block";}
-  document.getElementById('searchInput').oninput=render;document.getElementById('sortSelect').onchange=render;render();
+  function buy(id){
+    let item=items.find(i=>i.id===id);
+    if(balance<item.price){showToast("Недостаточно средств");return;}
+    balance-=item.price; refBalance+=item.price*0.02;
+    item.purchased=true; purchases.push(item);
+    showToast("Покупка успешна"); render(); closeModal();
+  }
+  function withdrawRef(){if(refBalance<=0){showToast("Нет средств");return;} balance+=refBalance; refBalance=0; showToast("Вывод успешен"); render();}
+  function showToast(msg){
+    let t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');
+    setTimeout(()=>{t.classList.remove('show');},2500);
+  }
+  function render(){
+    document.getElementById('balance').innerText=balance.toFixed(2);
+    document.getElementById('ref-balance').innerText=refBalance.toFixed(2);
+    let market=document.getElementById('market-grid');market.innerHTML="";
+    items.forEach(it=>{
+      let card=document.createElement('div');card.className="card";
+      card.innerHTML=`<img src="${it.img}">
+        <div class="card-content"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p></div>`;
+      let btn=document.createElement('button');
+      if(it.owner)btn.innerText="Мой товар";
+      else if(it.purchased)btn.innerText="Приобретено";
+      else btn.innerHTML=`Купить ${it.price.toFixed(2)} <img src="ton1.svg" alt="ton">`;
+      btn.onclick=()=>openModal(it); card.appendChild(btn);
+      market.appendChild(card);
+    });
+    let pur=document.getElementById('purchases-grid');pur.innerHTML="";
+    purchases.forEach(it=>{
+      let c=document.createElement('div');c.className="card";
+      c.innerHTML=`<img src="${it.img}">
+        <div class="card-content"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p></div>`;
+      let b=document.createElement('button');b.innerText="Приобретено";b.onclick=()=>openModal(it);c.appendChild(b);pur.appendChild(c);
+    });
+    document.getElementById('purchases-empty').style.display=purchases.length?"none":"block";
+    let my=document.getElementById('myitems-grid');my.innerHTML="";
+    myItems.forEach(it=>{
+      let c=document.createElement('div');c.className="card";
+      c.innerHTML=`<img src="${it.img}">
+        <div class="card-content"><h3>${cut(it.name,35)}</h3><p>${cut(it.desc,35)}</p></div>`;
+      let b=document.createElement('button');b.innerText="Мой товар";b.onclick=()=>openModal(it);c.appendChild(b);my.appendChild(c);
+    });
+    document.getElementById('myitems-empty').style.display=myItems.length?"none":"block";
+  }
+  function cut(t,n){return t.length>n?t.substr(0,n-1)+"…":t;}
+  render();
 </script>
 </body>
 </html>
