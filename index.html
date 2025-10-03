@@ -30,7 +30,9 @@
       font-weight: bold;
     }
     header .balance img {
+      width: 12px;
       height: 12px;
+      object-fit: contain;
     }
     main {
       padding: 15px;
@@ -125,7 +127,9 @@
       gap: 5px;
     }
     .card button img {
+      width: 12px;
       height: 12px;
+      object-fit: contain;
     }
     /* Модальное окно */
     .modal {
@@ -168,7 +172,9 @@
       gap: 5px;
     }
     .modal-content button img {
+      width: 12px;
       height: 12px;
+      object-fit: contain;
     }
     .buy-btn { background: #0eff00; color: #000; }
     .owned-btn { background: #333; color: #0eff00; }
@@ -278,7 +284,8 @@
       <h2>Профиль</h2>
       <div style="margin-bottom:15px; padding:10px; border:1px solid #0eff00; border-radius:8px; background:#111;">
         <h3>Реферальная система</h3>
-        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="height:12px"></p>
+        <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="width:12px; height:12px; object-fit:contain"></p>
+        <p style="color:#777; font-size:13px;">2₽ от трат рефералов</p>
         <button onclick="withdrawRef()">Вывести</button>
       </div>
       <div class="profile-tabs">
