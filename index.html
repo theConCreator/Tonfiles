@@ -56,9 +56,16 @@ button:focus,input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;}
 .card{
   background:#111;border:1px solid #0eff00;border-radius:8px;overflow:hidden;
-  display:flex;flex-direction:column;justify-content:space-between;height:280px;
+  display:flex;flex-direction:column;justify-content:space-between;height:280px;position:relative;
 }
-.card img{width:100%;height:170px;object-fit:cover;}
+.card img{
+  width:100%;height:170px;object-fit:cover;display:block;
+  background:#0a0a0a; /* фикс высоты */
+}
+.card .card-id{
+  position:absolute;top:5px;right:7px;font-size:12px;color:#0eff00;background:rgba(0,0,0,0.5);
+  padding:2px 6px;border-radius:4px;
+}
 .card-content{padding:8px;flex-grow:1;display:flex;flex-direction:column;justify-content:space-between;}
 .card-content h3{font-size:17px;margin:4px 0;}
 .card-content p{font-size:13px;margin:2px 0;color:#ccc;}
@@ -165,16 +172,18 @@ button:focus,input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0
       <button onclick="switchProfileTab('myitems')">Мои товары</button>
     </div>
 
-    <div class="profile-search"><input id="profile-search" placeholder="Поиск по покупкам..." oninput="render()"></div>
+    <div class="profile-search">
+      <input id="profile-search" placeholder="Поиск по покупкам..." oninput="render()">
+    </div>
 
     <div id="purchases" class="profile-section active">
       <div id="purchases-grid" class="grid"></div>
-      <p id="purchases-empty" style="text-align:center;color:#777;">Пусто</p>
+      <p id="purchases-empty" style="text-align:center;color:#777;display:none;">Пусто</p>
     </div>
 
     <div id="myitems" class="profile-section">
       <div id="myitems-grid" class="grid"></div>
-      <p id="myitems-empty" style="text-align:center;color:#777;">Пусто</p>
+      <p id="myitems-empty" style="text-align:center;color:#777;display:none;">Пусто</p>
     </div>
   </section>
 </main>
@@ -307,57 +316,47 @@ function render(){
   let grid=document.getElementById('market-grid');
   grid.innerHTML="";
   list.forEach(it=>{
-    let avg=calcAvg(it.reviews);
-    let name=it.name.length>35?it.name.slice(0,35)+"…":it.name;
-    let desc=it.desc.length>35?it.desc.slice(0,35)+"…":it.desc;
-    let html=`<div class="card">
-      <img src="${it.img}" onclick='openModal(${JSON.stringify(it)})'>
-      <div class="card-content">
-        <h3>${name}</h3>
-        <p>${desc}</p>
-        <div class="info-line">
-          <span>⭐ ${avg.toFixed(1)} (${it.reviews.length})</span>
-          <span>${it.price}${tonIcon}</span>
-        </div>
-        ${it.ownerId===userId
-          ?'<button>Мой товар</button>'
-          :purchases.includes(it.id)
-            ?'<div style="display:flex;gap:5px;"><button>Приобретено</button><button>Получить файл</button></div>'
-            :`<button onclick='buy(${it.id})'>Купить за ${it.price}${tonIcon}</button>`}
-      </div>
-    </div>`;
-    grid.insertAdjacentHTML('beforeend',html);
+    grid.insertAdjacentHTML('beforeend',renderCard(it));
   });
 
-  // Профиль
+  // профиль
   let tab=document.querySelector('.profile-section.active').id;
   let psearch=document.getElementById('profile-search').value.toLowerCase();
   if(tab==="purchases"){
-    let g=document.getElementById('purchases-grid');g.innerHTML="";
-    let arr=items.filter(i=>purchases.includes(i.id)&& (i.name+i.desc).toLowerCase().includes(psearch));
-    arr.forEach(i=>g.insertAdjacentHTML('beforeend',renderMiniCard(i)));
+    let g=document.getElementById('purchases-grid');
+    let arr=items.filter(i=>purchases.includes(i.id) && (i.name+i.desc).toLowerCase().includes(psearch));
+    g.innerHTML="";arr.forEach(i=>g.insertAdjacentHTML('beforeend',renderCard(i)));
     document.getElementById('purchases-empty').style.display=arr.length?"none":"block";
+    document.getElementById('myitems-empty').style.display="none";
   } else {
-    let g=document.getElementById('myitems-grid');g.innerHTML="";
+    let g=document.getElementById('myitems-grid');
     let arr=myItems.filter(i=>(i.name+i.desc).toLowerCase().includes(psearch));
-    arr.forEach(i=>g.insertAdjacentHTML('beforeend',renderMiniCard(i)));
+    g.innerHTML="";arr.forEach(i=>g.insertAdjacentHTML('beforeend',renderCard(i)));
     document.getElementById('myitems-empty').style.display=arr.length?"none":"block";
+    document.getElementById('purchases-empty').style.display="none";
   }
 }
-function renderMiniCard(i){
-  let avg=calcAvg(i.reviews);
+
+function renderCard(it){
+  let avg=calcAvg(it.reviews);
+  let idText="#"+String(it.id).padStart(5,"0");
+  let desc=it.desc.length>35?it.desc.slice(0,35)+"…":it.desc;
   return `<div class="card">
-    <img src="${i.img}" onclick='openModal(${JSON.stringify(i)})'>
+    <div class="card-id">${idText}</div>
+    <img src="${it.img}" onclick='openModal(${JSON.stringify(it)})'>
     <div class="card-content">
-      <h3>${i.name}</h3>
-      <p>${i.desc}</p>
-      <div class="info-line"><span>⭐ ${avg.toFixed(1)} (${i.reviews.length})</span><span>${i.price}${tonIcon}</span></div>
-      ${i.ownerId===userId
+      <h3>${it.name}</h3>
+      <p>${desc}</p>
+      <div class="info-line"><span>⭐ ${avg.toFixed(1)} (${it.reviews.length})</span><span>${it.price}${tonIcon}</span></div>
+      ${it.ownerId===userId
         ?'<button>Мой товар</button>'
-        :'<div style="display:flex;gap:5px;"><button>Приобретено</button><button>Получить файл</button></div>'}
+        :purchases.includes(it.id)
+          ?'<div style="display:flex;gap:5px;"><button>Приобретено</button><button>Получить файл</button></div>'
+          :`<button onclick='buy(${it.id})'>Купить за ${it.price}${tonIcon}</button>`}
     </div>
   </div>`;
 }
+
 document.getElementById('sort-btn').onclick=function(){
   this.parentElement.classList.toggle('open');
 };
