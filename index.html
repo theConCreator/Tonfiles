@@ -1,598 +1,344 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TONFiles Market — demo</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tonfiles Market</title>
 <style>
-  /* reset + accessibility */
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
-  html,body { height:100%; }
-  body {
-    margin:0;
-    font-family: Inter, Arial, Helvetica, sans-serif;
-    background: #000;
-    color: #fff;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow-x:hidden;
-  }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#000;color:#fff;overflow-x:hidden;}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#111;border-bottom:2px solid #0eff00;}
+header img{height:28px;}
+header .balance{display:flex;align-items:center;gap:5px;font-weight:bold;}
+header .balance img{width:13px;height:13px;object-fit:contain;}
 
-  /* header */
-  .wrap { max-width:1100px; margin:0 auto; padding:14px; }
-  header {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 16px; background:#111; border-radius:10px;
-    border: 1px solid rgba(255,255,255,0.02);
-  }
-  .brand { display:flex; align-items:center; gap:12px; }
-  .brand img { height:34px; display:block; }
-  .balance { display:flex; align-items:center; gap:8px; font-weight:800; color: #BFFFBF; }
-  .balance img { width:14px; height:14px; object-fit:contain; }
+main{padding:15px 15px 70px;}
 
-  main { max-width:1100px; margin:18px auto; padding:0 14px 120px 14px; }
+input,textarea,select{
+  background:#111;border:1px solid #0eff00;color:#fff;border-radius:6px;
+  padding:8px;width:100%;font-size:14px;
+}
+button{
+  background:#0eff00;color:#000;font-weight:bold;border:none;
+  border-radius:6px;padding:10px;cursor:pointer;width:100%;
+}
+button:hover{opacity:0.9;}
+button:focus,input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 6px #0eff00;}
 
-  /* search & filters */
-  .search-filter { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
-  .input, textarea, .btn, .small-btn {
-    background:#111; color:#fff; border-radius:8px; border:1px solid rgba(255,255,255,0.03);
-    padding:10px; font-size:14px;
-  }
-  .input { min-width:160px; flex:1; border:1px solid rgba(14,255,0,0.07); }
-  .input:focus, textarea:focus, .custom-select > button:focus { outline:none; box-shadow:0 0 8px rgba(14,255,0,0.08); }
+.tabs{
+  display:flex;justify-content:space-around;position:fixed;bottom:0;left:0;width:100%;
+  background:#111;border-top:2px solid #0eff00;
+}
+.tabs button{flex:1;background:none;border:none;color:#fff;padding:10px;cursor:pointer;}
+.tabs button.active{color:#0eff00;font-weight:bold;}
 
-  .search-filter .small { width:140px; min-width:120px; }
-  .btn { background:#0eff00; color:#000; border:none; cursor:pointer; font-weight:800; border-radius:8px; padding:10px 12px; }
-  .small-btn { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.03); cursor:pointer; }
+.section{display:none;}
+.section.active{display:block;}
 
-  /* custom select */
-  .custom-select { position:relative; min-width:200px; }
-  .custom-select > button {
-    width:100%; display:flex; align-items:center; justify-content:space-between;
-    background:#111; border:1px solid rgba(14,255,0,0.07); color:#fff; padding:10px; border-radius:8px; cursor:pointer;
-  }
-  .custom-select .options {
-    position:absolute; left:0; right:0; top:calc(100% + 8px);
-    background:#111; border:1px solid rgba(14,255,0,0.07); border-radius:8px; z-index:30; overflow:hidden;
-  }
-  .custom-select .options div {
-    padding:10px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.02);
-  }
-  .custom-select .options div:last-child { border-bottom: none; }
-  .custom-select .options div:hover { background:#0eff00; color:#000; }
+/* Поиск и фильтры */
+.search-filter{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;}
+.search-filter input{flex:1;min-width:120px;}
+.custom-select{position:relative;flex:1;min-width:150px;}
+.custom-select button{
+  background:#111;border:1px solid #0eff00;color:#fff;width:100%;
+  text-align:left;padding:8px;border-radius:5px;
+}
+.custom-select button:after{content:"▼";float:right;color:#0eff00;}
+.custom-options{
+  display:none;position:absolute;top:40px;left:0;width:100%;background:#111;
+  border:1px solid #0eff00;border-radius:5px;z-index:50;
+}
+.custom-options div{padding:8px;cursor:pointer;}
+.custom-options div:hover{background:#0eff00;color:#000;}
+.custom-select.open .custom-options{display:block;}
 
-  /* layout grid */
-  .grid { display:grid; gap:14px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-  @media (max-width:920px) { .grid { grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); } }
-  .card {
-    background:#111; border:1px solid rgba(14,255,0,0.12); border-radius:14px; overflow:hidden; display:flex; flex-direction:column;
-    height:340px; transition: transform .18s ease, box-shadow .18s ease;
-  }
-  .card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-  .thumb { width:100%; height:200px; object-fit:cover; display:block; background:#0b0b0b; }
-  .card-body { padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; }
-  .title { font-weight:800; font-size:16px; margin:0; line-height:1.2; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-  .desc { color:#BFC7D9; font-size:13px; line-height:1.2; height:36px; overflow:hidden; word-break:break-word; }
-  .meta { display:flex; justify-content:space-between; align-items:center; color:#BFC7D9; font-weight:700; font-size:14px; }
-  .buy-row { margin-top:auto; display:flex; gap:8px; }
-  .buy-full { flex:1; background:#0eff00;color:#000;border-radius:12px;padding:10px;font-weight:900;border:0; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
-  .ghost { background:transparent; color:#BFC7D9; border:1px solid rgba(255,255,255,0.03); padding:8px 10px; border-radius:10px; }
+/* Карточки */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;}
+.card{
+  background:#111;border:1px solid #0eff00;border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;height:280px;
+}
+.card img{width:100%;height:160px;object-fit:cover;}
+.card-content{padding:8px;flex-grow:1;}
+.card-content h3{font-size:16px;margin:4px 0;}
+.card-content p{font-size:13px;margin:2px 0;color:#ccc;}
+.card button{margin-top:auto;}
 
-  /* modal */
-  .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); z-index:1000; }
-  .modal.show { display:flex; }
-  .modal-card { width:90%; max-width:720px; background:#111; border-radius:14px; padding:16px; border:1px solid rgba(14,255,0,0.08); display:flex; gap:16px; flex-wrap:wrap; }
-  .modal-left { flex: 0 0 320px; }
-  .modal-left img { width:100%; height:320px; object-fit:cover; border-radius:10px; }
-  .modal-right { flex:1; min-width:220px; display:flex; flex-direction:column; }
-  .modal-right h3 { margin:0 0 8px 0; }
-  .modal-actions { margin-top:auto; display:flex; gap:10px; flex-wrap:wrap; }
+/* Модалка */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:1000;}
+.modal.active{display:flex;}
+.modal-content{
+  background:#111;border:1px solid #0eff00;border-radius:10px;
+  max-width:400px;width:90%;padding:15px;text-align:center;
+}
+.modal-content img{width:100%;max-height:200px;object-fit:cover;border-radius:5px;margin-bottom:10px;}
+.modal-content button{margin-top:8px;}
 
-  /* profile */
-  .profile-top { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; flex-wrap:wrap; }
-  .ref-card { border:1px solid rgba(14,255,0,0.06); padding:12px; border-radius:10px; min-width:240px; background:#111; }
-  .profile-tabs { display:flex; gap:8px; margin-bottom:12px; }
-  .profile-tabs button { padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:transparent; color:#fff; cursor:pointer; }
-  .profile-tabs button.active { background:#0eff00; color:#000; font-weight:800; }
+/* Публикация */
+#add{max-width:420px;margin:0 auto;}
+#add h2{text-align:center;}
+#add .form-group{margin-bottom:12px;}
+#add label{display:block;margin-bottom:4px;color:#0eff00;font-size:13px;}
 
-  /* publish form */
-  .form-group { margin-bottom:12px; }
-  label.small { display:block; margin-bottom:6px; color:#0eff00; font-weight:700; font-size:13px; }
+/* Профиль */
+#profile h2{text-align:center;}
+.profile-box{
+  padding:10px;background:#111;border:1px solid #0eff00;
+  border-radius:8px;margin-bottom:15px;
+}
+.profile-tabs{display:flex;justify-content:center;border-bottom:1px solid #0eff00;margin-bottom:10px;}
+.profile-tabs button{flex:1;background:none;border:none;color:#fff;padding:8px;cursor:pointer;}
+.profile-tabs button.active{color:#0eff00;font-weight:bold;}
 
-  /* toast */
-  .toast { position:fixed; right:18px; bottom:90px; background:#111; border:1px solid #0eff00; padding:10px 14px; border-radius:10px; opacity:0; transition:opacity .6s; z-index:1300; }
-  .toast.show { opacity:1; }
+/* Звёзды */
+.stars{font-size:22px;margin:8px 0;}
+.star{cursor:pointer;color:#555;}
+.star.active{color:#0eff00;}
 
-  /* small helpers */
-  .muted { color:#9aa3c7; font-size:13px; }
-  .center { display:flex; align-items:center; justify-content:center; }
-  /* remove focus blue on mobile */
-  a, button, input, textarea { -webkit-tap-highlight-color: transparent; }
+/* Уведомление */
+.toast{
+  position:fixed;bottom:70px;right:20px;background:#111;border:1px solid #0eff00;
+  padding:10px 15px;border-radius:5px;opacity:0;transition:opacity 1s;z-index:1000;
+}
+.toast.show{opacity:1;transition:opacity 0.5s;}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <img src="tonfiles.svg" alt="Tonfiles logo">
-        <div style="font-weight:800">TONFiles Market</div>
-      </div>
-      <div class="balance"><span id="balance">1000.00</span> <img src="ton1.svg" alt="TON" /></div>
-    </header>
+<header>
+  <img src="tonfiles.svg" alt="logo">
+  <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="ton"></div>
+</header>
 
-    <main>
-      <!-- Home -->
-      <section id="home" class="section active">
-        <div class="search-filter" role="search">
-          <input id="search-input" class="input" placeholder="Поиск по товарам (названию, описанию)..." />
-          <input id="min-price" class="input" type="number" placeholder="Мин. цена" step="0.01" />
-          <input id="max-price" class="input" type="number" placeholder="Макс. цена" step="0.01" />
-          <div class="custom-select" id="sortControl" aria-haspopup="listbox">
-            <button id="sortButton" aria-expanded="false">Последние</button>
-            <div class="options" id="sortOptions" role="listbox" style="display:none;">
-              <div data-val="newest">Последние</div>
-              <div data-val="price_asc">Цена: по возрастанию</div>
-              <div data-val="price_desc">Цена: по убыванию</div>
-              <div data-val="best">Отзывы: лучшие</div>
-              <div data-val="count">Отзывы: количество</div>
-            </div>
-          </div>
-          <button class="btn" onclick="render()">Применить</button>
-        </div>
+<main>
+  <!-- Главная -->
+  <section id="home" class="section active">
+    <div class="search-filter">
+      <input id="search-input" placeholder="Поиск...">
+      <input id="min-price" type="number" placeholder="Мин. цена" step="0.01">
+      <input id="max-price" type="number" placeholder="Макс. цена" step="0.01">
 
-        <div id="market-grid" class="grid" aria-live="polite"></div>
-      </section>
-
-      <!-- Add -->
-      <section id="add" class="section">
-        <div id="add" style="max-width:640px;margin:0 auto;">
-          <h2 style="text-align:center;margin-bottom:12px">Публикация объявления</h2>
-          <div class="form-group"><label class="small">Название</label><input id="add-name" class="input" /></div>
-          <div class="form-group"><label class="small">Описание</label><textarea id="add-desc" class="input" style="min-height:100px; resize:vertical"></textarea></div>
-          <div class="form-group"><label class="small">Цена (TON)</label><input id="add-price" class="input" type="number" step="0.01" oninput="updateNet()" /></div>
-          <div class="form-group"><small id="net-text" class="muted"></small></div>
-          <div class="form-group"><label class="small">Загрузите превью (картинка)</label><input id="add-preview" type="file" accept="image/*" /></div>
-          <div class="form-group"><label class="small">Загрузите конечный файл</label><input id="add-file" type="file" /></div>
-          <div style="display:flex;gap:10px">
-            <button class="btn" onclick="publish()">Опубликовать</button>
-            <button class="small-btn" onclick="clearPublish()">Очистить</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Profile -->
-      <section id="profile" class="section">
-        <h2 style="text-align:center;margin-bottom:10px">Профиль</h2>
-
-        <div class="profile-top">
-          <div class="ref-card">
-            <div style="font-weight:800">Реферальная система</div>
-            <div class="muted" style="margin-top:6px">2% от трат рефералов</div>
-            <div style="margin-top:8px; font-weight:800; color:#BFFFBF;">Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle" /></div>
-            <div style="margin-top:8px"><button class="btn" onclick="withdrawRef()">Вывести</button></div>
-          </div>
-
-          <div style="flex:1; min-width:260px">
-            <div class="profile-tabs">
-              <button class="active" id="pb_purchases" onclick="switchProfileTab('purchases')">Мои покупки</button>
-              <button id="pb_myitems" onclick="switchProfileTab('myitems')">Мои товары</button>
-            </div>
-
-            <div id="purchases" class="profile-section active">
-              <div id="purchases-grid" class="grid"></div>
-              <div class="empty-text" id="purchases-empty">Ничего не найдено</div>
-            </div>
-
-            <div id="myitems" class="profile-section">
-              <div id="myitems-grid" class="grid"></div>
-              <div class="empty-text" id="myitems-empty">Ничего не найдено</div>
-            </div>
-          </div>
-        </div>
-
-      </section>
-    </main>
-  </div>
-
-  <!-- bottom tabs -->
-  <div style="position:fixed;left:0;right:0;bottom:0;background:#111;border-top:2px solid #0eff00;display:flex;z-index:90">
-    <button style="flex:1;padding:12px;color:#0eff00;font-weight:800;background:transparent;border:0" id="tabHome" onclick="navTo('home')">Главная</button>
-    <button style="flex:1;padding:12px;color:#fff;background:transparent;border:0" id="tabAdd" onclick="navTo('add')">Добавить</button>
-    <button style="flex:1;padding:12px;color:#fff;background:transparent;border:0" id="tabProfile" onclick="navTo('profile')">Профиль</button>
-  </div>
-
-  <!-- modal -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-left">
-        <img id="modal-img" src="" alt="">
-      </div>
-      <div class="modal-right">
-        <h3 id="modal-name"></h3>
-        <div id="modal-desc" class="muted" style="margin-bottom:8px"></div>
-        <div style="font-weight:900;font-size:18px;margin-bottom:8px">Цена: <span id="modal-price"></span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle"/></div>
-
-        <div id="modal-actions" class="modal-actions"></div>
-
-        <div id="modal-rating" style="margin-top:12px"></div>
-
-        <div style="margin-top:12px">
-          <button class="btn" onclick="closeModal()">Закрыть</button>
+      <div class="custom-select" id="sort-select">
+        <button id="sort-btn">Последние</button>
+        <div class="custom-options">
+          <div data-val="newest">Последние</div>
+          <div data-val="price_asc">Цена: по возрастанию</div>
+          <div data-val="price_desc">Цена: по убыванию</div>
+          <div data-val="best">Отзывы: лучшие</div>
+          <div data-val="count">Отзывы: количество</div>
         </div>
       </div>
+      <button onclick="render()">Применить</button>
     </div>
-  </div>
+    <div class="grid" id="market-grid"></div>
+  </section>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <!-- Добавить -->
+  <section id="add" class="section">
+    <h2>Публикация объявления</h2>
+    <div class="form-group"><label>Название</label><input id="add-name"></div>
+    <div class="form-group"><label>Описание</label><textarea id="add-desc"></textarea></div>
+    <div class="form-group"><label>Цена (TON)</label><input id="add-price" type="number" step="0.01"></div>
+    <div class="form-group"><label>Изображение</label><input id="add-preview" type="file" accept="image/*"></div>
+    <div class="form-group"><label>Файл</label><input id="add-file" type="file"></div>
+    <button onclick="publish()">Опубликовать</button>
+  </section>
+
+  <!-- Профиль -->
+  <section id="profile" class="section">
+    <h2>Профиль</h2>
+    <div class="profile-box">
+      <h3>Реферальная система</h3>
+      <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="width:12px;height:12px;vertical-align:middle"></p>
+      <p style="color:#777;font-size:13px;">2% от трат рефералов</p>
+      <button onclick="withdrawRef()">Вывести</button>
+    </div>
+
+    <div class="profile-tabs">
+      <button class="active" onclick="switchProfileTab('purchases')">Мои покупки</button>
+      <button onclick="switchProfileTab('myitems')">Мои товары</button>
+    </div>
+
+    <div id="purchases" class="profile-section active">
+      <div id="purchases-grid" class="grid"></div>
+      <p id="purchases-empty" style="text-align:center;color:#777;">Пусто</p>
+    </div>
+    <div id="myitems" class="profile-section">
+      <div id="myitems-grid" class="grid"></div>
+      <p id="myitems-empty" style="text-align:center;color:#777;">Пусто</p>
+    </div>
+  </section>
+</main>
+
+<!-- Вкладки -->
+<div class="tabs">
+  <button class="active" onclick="switchTab('home',this)">Главная</button>
+  <button onclick="switchTab('add',this)">Добавить</button>
+  <button onclick="switchTab('profile',this)">Профиль</button>
+</div>
+
+<!-- Модалка -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modal-name"></h3>
+    <img id="modal-img">
+    <p id="modal-desc"></p>
+    <p><b>Цена:</b> <span id="modal-price"></span> <img src="ton1.svg" style="width:13px;vertical-align:middle"></p>
+    <div id="modal-actions"></div>
+    <div id="modal-rating"></div>
+    <button onclick="closeModal()">Закрыть</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-/* ---------------------------
-   In-memory app state (demo)
-   --------------------------- */
-let userId = 1;               // current user id (demo)
-let balance = 1000.00;       // user balance
-let refBalance = 0.00;       // referral balance
-let purchases = [];          // purchased item ids
-let myItems = [];            // items published by me (ids)
-let ratedItems = [];         // ids of items this user has rated (one rating per item)
-let sort = 'newest';
+let balance=1000,refBalance=0,userId=1;
+let purchases=[],myItems=[],ratedItems=[];
+let sort="newest";
+const tonIcon='<img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle;">';
 
-/* test items */
-let items = [
-  { id:101, name:"Скрипт Telegram Bot", desc:"Рабочий бот с командами и оплатой", price:15.00, img:"https://via.placeholder.com/800x600?text=Bot", file:"bot.zip", ownerId:2, reviews:[5,4] },
-  { id:102, name:"Видеоурок по дизайну", desc:"UI/UX советы, Figma", price:8.50, img:"https://via.placeholder.com/800x600?text=Design", file:"design.mp4", ownerId:3, reviews:[5,5,4] },
-  { id:103, name:"NFT шаблон", desc:"PSD шаблон коллекции", price:22.00, img:"https://via.placeholder.com/800x600?text=NFT", file:"nft.psd", ownerId:4, reviews:[4,3] },
-  { id:104, name:"React шаблон", desc:"Адаптивный сайт на React", price:18.25, img:"https://via.placeholder.com/800x600?text=React", file:"site.zip", ownerId:5, reviews:[] },
-  { id:105, name:"Мобильное приложение", desc:"Исходники Android", price:30.00, img:"https://via.placeholder.com/800x600?text=App", file:"app.apk", ownerId:2, reviews:[5,5,5,4] },
-  { id:106, name:"Python API пример", desc:"REST API шаблон", price:12.00, img:"https://via.placeholder.com/800x600?text=API", file:"api.py", ownerId:6, reviews:[5] }
+let items=[
+  {id:1,name:"Скрипт Telegram Bot",desc:"Полностью рабочий бот",price:15,img:"https://via.placeholder.com/300x200?text=Bot",file:"bot.zip",ownerId:2,reviews:[5,4]},
+  {id:2,name:"Видеоурок по дизайну",desc:"Советы для UI/UX",price:8,img:"https://via.placeholder.com/300x200?text=Design",file:"design.mp4",ownerId:3,reviews:[5,5,4]},
+  {id:3,name:"NFT шаблон",desc:"Шаблон NFT-коллекции",price:22,img:"https://via.placeholder.com/300x200?text=NFT",file:"nft.psd",ownerId:4,reviews:[4,3]},
+  {id:4,name:"React сайт",desc:"Красивый адаптивный шаблон",price:18,img:"https://via.placeholder.com/300x200?text=React",file:"site.zip",ownerId:5,reviews:[]},
+  {id:5,name:"Python API пример",desc:"REST API шаблон",price:12,img:"https://via.placeholder.com/300x200?text=API",file:"api.py",ownerId:6,reviews:[5]},
 ];
 
-/* ---------------------------
-   Utilities
-   --------------------------- */
-function $(id){ return document.getElementById(id); }
-function showToast(msg){
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), 2500);
-}
-function calcAvg(arr){ return arr && arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
-function cut(str, n=45){ if(!str) return ''; return str.length>n ? str.slice(0,n-1) + '…' : str; }
-
-/* ---------------------------
-   Navigation
-   --------------------------- */
-function navTo(section){
+function switchTab(id,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  $('tabHome').style.color = '#fff'; $('tabAdd').style.color = '#fff'; $('tabProfile').style.color = '#fff';
-  if(section==='home'){ $('home').classList.add('active'); $('tabHome').style.color = '#0eff00'; }
-  if(section==='add'){ $('add').classList.add('active'); $('tabAdd').style.color = '#0eff00'; }
-  if(section==='profile'){ $('profile').classList.add('active'); $('tabProfile').style.color = '#0eff00'; }
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
   render();
 }
-
-/* ---------------------------
-   Custom sort control
-   --------------------------- */
-const sortButton = $('sortButton');
-const sortOptions = $('sortOptions');
-sortButton.addEventListener('click', ()=> {
-  const open = sortOptions.style.display === 'block';
-  sortOptions.style.display = open ? 'none' : 'block';
-});
-sortOptions.addEventListener('click', (e) => {
-  const opt = e.target.closest('div[data-val]');
-  if(!opt) return;
-  sort = opt.dataset.val;
-  sortButton.textContent = opt.textContent;
-  sortOptions.style.display = 'none';
-});
-
-/* close custom select on outside click */
-document.addEventListener('click', (e) => {
-  if(!e.target.closest('.custom-select')) sortOptions.style.display = 'none';
-});
-
-/* ---------------------------
-   Render functions
-   --------------------------- */
-function render(){
-  // update header balances
-  $('balance').textContent = balance.toFixed(2);
-  $('ref-balance').textContent = refBalance.toFixed(2);
-
-  renderMarket();
-  renderProfile();
-}
-
-/* Render market (catalog) */
-function renderMarket(){
-  const grid = $('market-grid');
-  grid.innerHTML = '';
-
-  const q = ($('search-input').value || '').toLowerCase();
-  const min = parseFloat($('min-price').value) || 0;
-  const max = parseFloat($('max-price').value) || Infinity;
-
-  // filter
-  let list = items.filter(it => {
-    const hay = (it.name + ' ' + (it.desc || '')).toLowerCase();
-    if(q && !hay.includes(q)) return false;
-    if(it.price < min || it.price > max) return false;
-    return true;
-  });
-
-  // sort
-  if(sort === 'price_asc') list.sort((a,b)=>a.price-b.price);
-  else if(sort === 'price_desc') list.sort((a,b)=>b.price-a.price);
-  else if(sort === 'best') list.sort((a,b)=> calcAvg(b.reviews) - calcAvg(a.reviews) );
-  else if(sort === 'count') list.sort((a,b)=> b.reviews.length - a.reviews.length );
-  else list.sort((a,b)=> b.id - a.id); // newest by id desc
-
-  if(list.length === 0){
-    const empty = document.createElement('div'); empty.className = 'center muted'; empty.style.padding = '30px'; empty.textContent = 'Товары не найдены';
-    grid.appendChild(empty);
-    return;
-  }
-
-  list.forEach(it => {
-    const avg = calcAvg(it.reviews);
-    const card = document.createElement('div'); card.className = 'card';
-    card.innerHTML = `
-      <img class="thumb" src="${it.img}" alt="${escapeHtml(it.name)}" />
-      <div class="card-body">
-        <div>
-          <div class="title">${escapeHtml(it.name)}</div>
-          <div class="desc">${escapeHtml(it.desc)}</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-          <div class="meta">⭐ ${avg.toFixed(1)} · ${it.reviews.length} отзыв(ов)</div>
-          <div style="font-weight:900;">${it.price.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle" /></div>
-        </div>
-        <div class="buy-row">
-          <button class="buy-full" onclick="openModal(${it.id})">${ it.ownerId === userId ? 'Мой товар' : purchases.includes(it.id) ? 'Приобретено' : 'Купить' }</button>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-/* Render profile sections */
-function renderProfile(){
-  // purchases grid
-  const pgrid = $('purchases-grid'); pgrid.innerHTML = '';
-  const purchasedList = items.filter(it => purchases.includes(it.id));
-  if(purchasedList.length === 0){
-    $('purchases-empty').style.display = 'block';
-  } else {
-    $('purchases-empty').style.display = 'none';
-    purchasedList.forEach(it=>{
-      const c = document.createElement('div'); c.className = 'card';
-      c.innerHTML = `
-        <img class="thumb" src="${it.img}" alt="${escapeHtml(it.name)}" />
-        <div class="card-body">
-          <div class="title">${escapeHtml(it.name)}</div>
-          <div class="desc">${escapeHtml(it.desc)}</div>
-          <div style="margin-top:auto"><button class="small-btn" onclick="openModal(${it.id})">Открыть</button></div>
-        </div>
-      `;
-      pgrid.appendChild(c);
-    });
-  }
-
-  // my items
-  const mygrid = $('myitems-grid'); mygrid.innerHTML = '';
-  const myList = items.filter(it => it.ownerId === userId);
-  if(myList.length === 0) $('myitems-empty').style.display = 'block'; else $('myitems-empty').style.display = 'none';
-  myList.forEach(it=>{
-    const c = document.createElement('div'); c.className = 'card';
-    c.innerHTML = `
-      <img class="thumb" src="${it.img}" alt="${escapeHtml(it.name)}" />
-      <div class="card-body">
-        <div class="title">${escapeHtml(it.name)}</div>
-        <div class="desc">${escapeHtml(it.desc)}</div>
-        <div style="margin-top:auto;display:flex;gap:8px">
-          <button class="small-btn" onclick="editItem(${it.id})">Изменить</button>
-          <button class="small-btn" onclick="removeItem(${it.id})">Снять</button>
-        </div>
-      </div>
-    `;
-    mygrid.appendChild(c);
-  });
-}
-
-/* ---------------------------
-   Modal / actions
-   --------------------------- */
-function openModal(itemId){
-  const item = items.find(i=>i.id===itemId);
-  if(!item) return;
-  $('modal-name').textContent = item.name;
-  $('modal-img').src = item.img;
-  $('modal-desc').textContent = item.desc;
-  $('modal-price').textContent = item.price.toFixed(2);
-
-  const actions = $('modal-actions'); actions.innerHTML = '';
-  if(item.ownerId === userId){
-    const btn = document.createElement('button'); btn.className = 'ghost'; btn.textContent = 'Мой товар';
-    actions.appendChild(btn);
-  } else if(purchases.includes(item.id)){
-    const btn = document.createElement('button'); btn.className = 'ghost'; btn.textContent = 'Приобретено';
-    const getBtn = document.createElement('button'); getBtn.className = 'small-btn'; getBtn.textContent = 'Получить файл'; getBtn.onclick = ()=> downloadFile(item);
-    actions.appendChild(btn); actions.appendChild(getBtn);
-  } else {
-    const buy = document.createElement('button'); buy.className = 'buy-full'; buy.textContent = `Купить ${item.price.toFixed(2)} TON`; buy.onclick = ()=> buyItem(item.id);
-    actions.appendChild(buy);
-  }
-
-  // rating block
-  const ratingBlock = $('modal-rating'); ratingBlock.innerHTML = '';
-  const avg = calcAvg(item.reviews);
-  const avgLine = document.createElement('div'); avgLine.style.marginTop='8px'; avgLine.innerHTML = `<strong>Рейтинг:</strong> ${avg.toFixed(1)} ⭐ (${item.reviews.length})`;
-  ratingBlock.appendChild(avgLine);
-
-  // allow star rating if conditions met: not owner, purchased, and not previously rated
-  if(purchases.includes(item.id) && item.ownerId !== userId && !ratedItems.includes(item.id)){
-    const starsRow = document.createElement('div'); starsRow.style.marginTop='8px';
-    for(let i=1;i<=5;i++){
-      const s = document.createElement('span'); s.textContent = '★'; s.className = 'star'; s.style.marginRight='6px'; s.style.fontSize='20px';
-      s.onclick = ()=> { rateItem(item.id, i); };
-      starsRow.appendChild(s);
-    }
-    ratingBlock.appendChild(starsRow);
-  }
-
-  $('modal').classList.add('show');
-}
-function closeModal(){ $('modal').classList.remove('show'); }
-
-/* buy flow */
-function buyItem(id){
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  if(balance < item.price){ showToast('Недостаточно средств'); return; }
-  balance = Math.round((balance - item.price) * 100) / 100;
-  refBalance = Math.round((refBalance + item.price * 0.02) * 100) / 100;
-  purchases.push(id);
-  showToast('Покупка успешна');
-  render();
-  closeModal();
-}
-
-/* rate (single star-only rating) */
-function rateItem(itemId, value){
-  const it = items.find(i=>i.id===itemId);
-  if(!it) return;
-  if(it.ownerId === userId){ showToast('Нельзя оценивать свой товар'); return; }
-  if(!purchases.includes(itemId)){ showToast('Нельзя оценивать, не купив товар'); return; }
-  if(ratedItems.includes(itemId)){ showToast('Вы уже оставили оценку'); return; }
-  it.reviews.push(value);
-  ratedItems.push(itemId);
-  showToast('Спасибо за оценку!');
-  render();
-  closeModal();
-}
-
-/* download file (demo: uses data URL name) */
-function downloadFile(item){
-  // in demo we only have file name — we can't produce a real file. For demo we will create a small text file
-  const blob = new Blob([`Этот файл: ${item.file}\n(демо-версия)`], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = item.file || 'file.txt';
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
-
-/* publish / manage items */
-function publish(){
-  const name = $('add-name').value.trim();
-  const desc = $('add-desc').value.trim();
-  const price = parseFloat($('add-price').value) || 0;
-  const preview = $('add-preview').files[0];
-  const file = $('add-file').files[0];
-  if(!name || !desc || !price || !preview || !file){ showToast('Заполните все поля и загрузите файлы'); return; }
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const newItem = {
-      id: Date.now() + Math.floor(Math.random()*1000),
-      name, desc, price, img: e.target.result, file: file.name, ownerId: userId, reviews: []
-    };
-    items.unshift(newItem);
-    myItems.push(newItem.id);
-    $('add-name').value = ''; $('add-desc').value = ''; $('add-price').value = ''; $('add-preview').value = ''; $('add-file').value = '';
-    $('net-text').textContent = '';
-    showToast('Товар опубликован (в памяти)');
-    render();
-    navTo('home');
-  };
-  reader.readAsDataURL(preview);
-}
-function clearPublish(){ $('add-name').value=''; $('add-desc').value=''; $('add-price').value=''; $('add-preview').value=''; $('add-file').value=''; $('net-text').textContent=''; }
-
-function updateNet(){
-  const p = parseFloat($('add-price').value) || 0;
-  $('net-text').textContent = `Вы получите ${(p*0.9).toFixed(2)} TON (после комиссии 10%)`;
-}
-
-/* edit / remove my item (demo) */
-function editItem(id){
-  const it = items.find(x=>x.id===id);
-  if(!it) return;
-  // simple: fill publish form for quick edit (demo)
-  navTo('add');
-  $('add-name').value = it.name; $('add-desc').value = it.desc; $('add-price').value = it.price;
-  showToast('Отредактируйте поля и нажмите Опубликовать (будет создан новый товар)');
-}
-function removeItem(id){
-  if(!confirm('Снять товар?')) return;
-  items = items.filter(x=>x.id!==id);
-  myItems = myItems.filter(x=>x!==id);
-  showToast('Товар снят');
-  render();
-}
-
-/* withdraw referral */
-function withdrawRef(){
-  if(refBalance <= 0){ showToast('Нет средств'); return; }
-  balance = Math.round((balance + refBalance) * 100) / 100;
-  refBalance = 0;
-  showToast('Реферальный баланс выведен в основной баланс');
-  render();
-}
-
-/* ---------------------------
-   Helpers & init
-   --------------------------- */
-
-/* escape (very small helper for text injection) */
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-/* profile tab switch */
 function switchProfileTab(id){
-  document.querySelectorAll('.profile-section').forEach(el=>el.classList.remove('active'));
-  $('purchases').classList.remove('active'); $('myitems').classList.remove('active');
-  $('purchases').classList.remove('active'); $('myitems').classList.remove('active');
-  if(id === 'purchases'){ $('purchases').classList.add('active'); }
-  if(id === 'myitems'){ $('myitems').classList.add('active'); }
-  // toggle buttons
-  ['pb_purchases','pb_myitems'].forEach(x=>$(x).classList.remove('active'));
-  if(id==='purchases') $('pb_purchases').classList.add('active'); else $('pb_myitems').classList.add('active');
+  document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
 }
-
-/* set initial UI state: tab colors */
-function setInitialTabs(){
-  $('tabHome').style.color = '#0eff00';
-  $('tabAdd').style.color = '#fff';
-  $('tabProfile').style.color = '#fff';
-}
-
-/* demo: make some items owned by current user (for testing myItems) */
-(function initDemo(){
-  // assign one demo item to user as if published by me
-  const demoOwned = {
-    id: 999,
-    name: "Мой тестовый гайд",
-    desc: "Гайд, опубликованный мной (демо)",
-    price: 5.50,
-    img: "https://via.placeholder.com/800x600?text=My+Guide",
-    file: "guide.pdf",
-    ownerId: userId,
-    reviews: [5]
+function publish(){
+  let name=document.getElementById('add-name').value.trim();
+  let desc=document.getElementById('add-desc').value.trim();
+  let price=parseFloat(document.getElementById('add-price').value)||0;
+  let imgFile=document.getElementById('add-preview').files[0];
+  let file=document.getElementById('add-file').files[0];
+  if(!name||!desc||!price||!imgFile||!file){showToast("Заполните все поля");return;}
+  let reader=new FileReader();
+  reader.onload=e=>{
+    let item={id:Date.now(),name,desc,price,img:e.target.result,file:file.name,ownerId:userId,reviews:[]};
+    items.unshift(item);myItems.push(item);
+    showToast("Товар опубликован");render();
   };
-  items.unshift(demoOwned);
-  myItems.push(demoOwned.id);
+  reader.readAsDataURL(imgFile);
+}
+function openModal(item){
+  document.getElementById('modal-name').innerText=item.name;
+  document.getElementById('modal-img').src=item.img;
+  document.getElementById('modal-desc').innerText=item.desc;
+  document.getElementById('modal-price').innerText=item.price.toFixed(2);
+  let act=document.getElementById('modal-actions');act.innerHTML="";
+  if(item.ownerId===userId){act.innerHTML="<button>Мой товар</button>";}
+  else if(purchases.includes(item.id)){act.innerHTML="<button>Приобретено</button>";}
+  else act.innerHTML=`<button onclick='buy(${item.id})'>Купить за ${item.price}${tonIcon}</button>`;
+  let rating=document.getElementById('modal-rating');
+  let avg=calcAvg(item.reviews);
+  rating.innerHTML=`Рейтинг: ${avg.toFixed(1)} ⭐ (${item.reviews.length})`;
+  if(item.ownerId!==userId && !ratedItems.includes(item.id)){
+    let stars=document.createElement("div");stars.className="stars";
+    for(let i=1;i<=5;i++){
+      let s=document.createElement("span");
+      s.innerText="★";s.className="star";s.onclick=()=>rateItem(item.id,i);
+      stars.appendChild(s);
+    }
+    rating.appendChild(stars);
+  }
+  document.getElementById('modal').classList.add('active');
+}
+function closeModal(){document.getElementById('modal').classList.remove('active');}
+function buy(id){
+  let item=items.find(i=>i.id===id);
+  if(balance<item.price){showToast("Недостаточно средств");return;}
+  balance-=item.price;refBalance+=item.price*0.02;purchases.push(id);
+  showToast("Покупка успешна");render();closeModal();
+}
+function rateItem(id,val){
+  let item=items.find(i=>i.id===id);
+  item.reviews.push(val);ratedItems.push(id);
+  showToast("Спасибо за отзыв!");render();closeModal();
+}
+function withdrawRef(){if(refBalance<=0){showToast("Нет средств");return;}
+  balance+=refBalance;refBalance=0;showToast("Вывод успешен");render();}
+function calcAvg(a){return a.length?a.reduce((x,y)=>x+y)/a.length:0;}
+function showToast(m){let t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
 
-  // optionally, mark one purchase by user for rating demo
-  purchases.push(101); // user has bought item id 101
-  /* mark ratedItems for tests (none initially) */
+function render(){
+  document.getElementById('balance').innerText=balance.toFixed(2);
+  document.getElementById('ref-balance').innerText=refBalance.toFixed(2);
 
-  setInitialTabs();
-  render();
-})();
+  let search=document.getElementById('search-input').value.toLowerCase();
+  let min=parseFloat(document.getElementById('min-price').value)||0;
+  let max=parseFloat(document.getElementById('max-price').value)||Infinity;
 
+  let list=items.filter(i=>(i.name+i.desc).toLowerCase().includes(search))
+                .filter(i=>i.price>=min && i.price<=max);
+
+  if(sort==="price_asc")list.sort((a,b)=>a.price-b.price);
+  else if(sort==="price_desc")list.sort((a,b)=>b.price-a.price);
+  else if(sort==="best")list.sort((a,b)=>calcAvg(b.reviews)-calcAvg(a.reviews));
+  else if(sort==="count")list.sort((a,b)=>b.reviews.length-a.reviews.length);
+  else list.sort((a,b)=>b.id-a.id);
+
+  let grid=document.getElementById('market-grid');
+  grid.innerHTML="";
+  list.forEach(it=>{
+    let avg=calcAvg(it.reviews);
+    let name=it.name.length>35?it.name.slice(0,35)+"…":it.name;
+    let desc=it.desc.length>35?it.desc.slice(0,35)+"…":it.desc;
+    let c=document.createElement('div');
+    c.className="card";
+    c.innerHTML=`
+      <img src="${it.img}">
+      <div class="card-content">
+        <h3>${name}</h3>
+        <p>${desc}</p>
+        <button onclick='openModal(${JSON.stringify(it)})'>
+          Купить за ${it.price}${tonIcon}
+        </button>
+        <p style="font-size:12px;color:#999;">⭐ ${avg.toFixed(1)} (${it.reviews.length})</p>
+      </div>`;
+    grid.appendChild(c);
+  });
+
+  document.getElementById('purchases-grid').innerHTML="";
+  document.getElementById('myitems-grid').innerHTML="";
+  let pur=purchases.map(id=>items.find(i=>i.id===id));
+  pur.forEach(it=>{
+    let c=document.createElement('div');c.className="card";
+    c.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p></div>`;
+    document.getElementById('purchases-grid').appendChild(c);
+  });
+  document.getElementById('purchases-empty').style.display=pur.length?"none":"block";
+  myItems.forEach(it=>{
+    let c=document.createElement('div');c.className="card";
+    c.innerHTML=`<img src="${it.img}"><div class="card-content"><h3>${it.name}</h3><p>${it.desc}</p></div>`;
+    document.getElementById('myitems-grid').appendChild(c);
+  });
+  document.getElementById('myitems-empty').style.display=myItems.length?"none":"block";
+}
+
+// Кастомный селект
+const sortSelect=document.getElementById('sort-select');
+sortSelect.querySelector('#sort-btn').onclick=()=>sortSelect.classList.toggle('open');
+sortSelect.querySelectorAll('.custom-options div').forEach(opt=>{
+  opt.onclick=()=>{sort=opt.dataset.val;
+    document.getElementById('sort-btn').innerText=opt.innerText;
+    sortSelect.classList.remove('open');};
+});
+
+render();
 </script>
 </body>
 </html>
