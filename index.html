@@ -30,7 +30,7 @@ main{padding:15px 15px 70px;max-width:1200px;margin:auto;}
 .custom-select.open .custom-options{display:block;}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;}
-.card{background:#0a0a0a;border:1px solid #0eff00;border-radius:10px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 8px rgba(14,255,0,0.1);overflow:hidden;transition:all .2s;}
+.card{background:#0a0a0a;border:1px solid #0eff00;border-radius:10px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 0 8px rgba(14,255,0,0.1);overflow:hidden;transition:all .2s;cursor:pointer;}
 .card:hover{transform:translateY(-2px);box-shadow:0 0 12px rgba(14,255,0,0.2);}
 .image-wrapper{width:100%;height:160px;background:#111;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .image-wrapper img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -42,7 +42,7 @@ main{padding:15px 15px 70px;max-width:1200px;margin:auto;}
 .info-line{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#aaa;margin-top:auto;margin-bottom:5px;}
 .info-line img{width:12px;height:12px;vertical-align:middle;margin-left:3px;}
 .card .btn-row{display:flex;gap:6px;}
-.card button{background:#0eff00;color:#000;font-weight:bold;border:none;border-radius:6px;padding:7px;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;}
+.card button{background:#0eff00;color:#000;font-weight:bold;border:none;border-radius:6px;padding:7px;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;}
 .card button img{width:12px;height:12px;object-fit:contain;}
 .card button:hover{opacity:0.9;}
 
@@ -68,7 +68,7 @@ main{padding:15px 15px 70px;max-width:1200px;margin:auto;}
 .profile-search{margin-bottom:10px;}
 .profile-search input{width:100%;background:#0a0a0a;border:1px solid #0eff00;border-radius:6px;padding:8px;color:#fff;}
 
-.toast{position:fixed;bottom:70px;right:20px;background:#0a0a0a;border:1px solid #0eff00;padding:10px 15px;border-radius:6px;opacity:0;transition:opacity 0.5s;z-index:1000;}
+.toast{position:fixed;bottom:70px;right:20px;background:#0a0a0a;border:1px solid #0eff00;padding:10px 15px;border-radius:6px;opacity:0;transition:opacity 0.4s;z-index:1000;}
 .toast.show{opacity:1;}
 </style>
 </head>
@@ -147,11 +147,16 @@ main{padding:15px 15px 70px;max-width:1200px;margin:auto;}
   <button onclick="switchTab('profile',this)">Профиль</button>
 </div>
 
+<!-- Модалка товара -->
+<div class="modal" id="item-modal">
+  <div class="modal-content" id="modal-content"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 let balance=1000, refBalance=0, userId=1;
-let purchases=[], myItems=[], sort="newest", currentProfileTab='purchases';
+let purchases=[], myItems=[], currentProfileTab='purchases';
 const tonIcon='<img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle;">';
 let items=[
 {id:101,name:"Скрипт Telegram Bot",desc:"Полностью рабочий бот",price:15,img:"https://via.placeholder.com/300x200?text=Bot",file:"bot.zip",ownerId:2,reviews:[5,4]},
@@ -180,9 +185,13 @@ function switchProfileTab(id,btn){
 function showToast(msg){
  const t=document.getElementById('toast');
  t.innerText=msg;t.classList.add('show');
- setTimeout(()=>t.classList.remove('show'),2000);
+ setTimeout(()=>t.classList.remove('show'),2500);
 }
-function withdrawRef(){showToast("Вывод с реф. баланса");}
+function withdrawRef(){
+ if(refBalance>0){refBalance=0;showToast("Вывод средств выполнен");}
+ else showToast("Недостаточно средств для вывода");
+ render();
+}
 
 function publish(){
  let name=document.getElementById('add-name').value.trim();
@@ -202,42 +211,66 @@ function publish(){
  };
  reader.readAsDataURL(imgFile);
 }
-function buy(id){
- let item=items.find(i=>i.id===id);
- if(balance<item.price){showToast("Недостаточно средств");return;}
- balance-=item.price;refBalance+=item.price*0.02;purchases.push(id);
- showToast("Покупка успешна");render();
-}
+
 function calcAvg(a){return a.length?a.reduce((x,y)=>x+y)/a.length:0;}
+
 function cardHTML(item){
  let owned=item.ownerId===userId;let bought=purchases.includes(item.id);
  let avg=calcAvg(item.reviews).toFixed(1);
- let btnText=owned?"Мой товар":bought?"Приобретено":"Купить";
- let btnAction=owned?"":bought?"":"onclick='buy("+item.id+")'";
- return `<div class='card'>
+ return `<div class='card' onclick="openModal(${item.id})">
   <div class='image-wrapper'><img src='${item.img}'></div>
   <div class='card-content'>
    <div class='item-id'>#${String(item.id).padStart(5,'0')}</div>
    <h3>${item.name}</h3>
    <p>${item.desc}</p>
    <div class='info-line'><span>⭐ ${avg} (${item.reviews.length})</span><span>${item.price.toFixed(2)} ${tonIcon}</span></div>
-   <div class='btn-row'><button ${btnAction}>${btnText}</button>${bought?'<button>Получить файл</button>':''}</div>
+   <div class='btn-row'>
+     ${owned?`<button>Мой товар</button>`:bought?`<button>Приобретено</button><button>Получить файл</button>`:`<button>Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`}
+   </div>
   </div>
  </div>`;
 }
+
+function openModal(id){
+ const item=items.find(i=>i.id===id);
+ const owned=item.ownerId===userId;
+ const bought=purchases.includes(item.id);
+ let avg=calcAvg(item.reviews).toFixed(1);
+ const modal=document.getElementById('item-modal');
+ const c=document.getElementById('modal-content');
+ c.innerHTML=`<img src="${item.img}" alt="">
+ <h3>${item.name}</h3>
+ <p>${item.desc}</p>
+ <p><strong>${item.price.toFixed(2)} ${tonIcon}</strong></p>
+ <p>⭐ ${avg} (${item.reviews.length})</p>
+ ${owned?'<button disabled>Мой товар</button>':
+ bought?'<button disabled>Приобретено</button><button>Получить файл</button>':
+ `<button onclick="buy(${item.id})">Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`}
+ <button onclick="closeModal()">Закрыть</button>`;
+ modal.classList.add('active');
+}
+function closeModal(){document.getElementById('item-modal').classList.remove('active');}
+function buy(id){
+ let item=items.find(i=>i.id===id);
+ if(balance<item.price){showToast("Недостаточно средств");return;}
+ balance-=item.price;refBalance+=item.price*0.02;purchases.push(id);
+ showToast("Покупка успешна");
+ closeModal();render();
+}
+
 function render(){
  document.getElementById('balance').innerText=balance.toFixed(2);
  document.getElementById('ref-balance').innerText=refBalance.toFixed(2);
+ // Главная
  let s=document.getElementById('search-input').value.toLowerCase();
  let min=parseFloat(document.getElementById('min-price').value)||0;
  let max=parseFloat(document.getElementById('max-price').value)||999999;
  let list=items.filter(i=>i.name.toLowerCase().includes(s)&&i.price>=min&&i.price<=max);
  document.getElementById('market-grid').innerHTML=list.map(cardHTML).join('');
- let pList=items.filter(i=>purchases.includes(i.id));
- let mList=myItems;
+ // Профиль
  let q=document.getElementById('profile-search').value.toLowerCase();
- if(currentProfileTab==='purchases')pList=pList.filter(i=>i.name.toLowerCase().includes(q));
- else mList=mList.filter(i=>i.name.toLowerCase().includes(q));
+ let pList=items.filter(i=>purchases.includes(i.id)&&i.name.toLowerCase().includes(q));
+ let mList=myItems.filter(i=>i.name.toLowerCase().includes(q));
  document.getElementById('purchases-grid').innerHTML=pList.map(cardHTML).join('');
  document.getElementById('myitems-grid').innerHTML=mList.map(cardHTML).join('');
  document.getElementById('purchases-empty').style.display=pList.length?'none':'block';
