@@ -40,8 +40,7 @@ main{padding:15px 15px 70px;max-width:1200px;margin:auto;}
 .card .item-id{position:absolute;top:6px;right:8px;font-size:11px;color:#666;}
 
 .info-line{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#aaa;margin-top:auto;margin-bottom:5px;}
-.info-line img{width:12px;height:12px;vertical-align:middle;margin-left:3px;}
-.card .btn-row{display:flex;gap:6px;}
+.card .btn-row{display:flex;gap:6px;margin-top:5px;}
 .card button{background:#0eff00;color:#000;font-weight:bold;border:none;border-radius:6px;padding:7px;flex:1;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;}
 .card button img{width:12px;height:12px;object-fit:contain;}
 .card button:hover{opacity:0.9;}
@@ -147,7 +146,6 @@ main{padding:15px 15px 70px;max-width:1200px;margin:auto;}
   <button onclick="switchTab('profile',this)">Профиль</button>
 </div>
 
-<!-- Модалка товара -->
 <div class="modal" id="item-modal">
   <div class="modal-content" id="modal-content"></div>
 </div>
@@ -192,7 +190,6 @@ function withdrawRef(){
  else showToast("Недостаточно средств для вывода");
  render();
 }
-
 function publish(){
  let name=document.getElementById('add-name').value.trim();
  let desc=document.getElementById('add-desc').value.trim();
@@ -211,9 +208,7 @@ function publish(){
  };
  reader.readAsDataURL(imgFile);
 }
-
 function calcAvg(a){return a.length?a.reduce((x,y)=>x+y)/a.length:0;}
-
 function cardHTML(item){
  let owned=item.ownerId===userId;let bought=purchases.includes(item.id);
  let avg=calcAvg(item.reviews).toFixed(1);
@@ -223,14 +218,13 @@ function cardHTML(item){
    <div class='item-id'>#${String(item.id).padStart(5,'0')}</div>
    <h3>${item.name}</h3>
    <p>${item.desc}</p>
-   <div class='info-line'><span>⭐ ${avg} (${item.reviews.length})</span><span>${item.price.toFixed(2)} ${tonIcon}</span></div>
+   <div class='info-line'>⭐ ${avg} (${item.reviews.length}) • ${item.price.toFixed(2)} ${tonIcon}</div>
    <div class='btn-row'>
      ${owned?`<button>Мой товар</button>`:bought?`<button>Приобретено</button><button>Получить файл</button>`:`<button>Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`}
    </div>
   </div>
  </div>`;
 }
-
 function openModal(id){
  const item=items.find(i=>i.id===id);
  const owned=item.ownerId===userId;
@@ -243,9 +237,7 @@ function openModal(id){
  <p>${item.desc}</p>
  <p><strong>${item.price.toFixed(2)} ${tonIcon}</strong></p>
  <p>⭐ ${avg} (${item.reviews.length})</p>
- ${owned?'<button disabled>Мой товар</button>':
- bought?'<button disabled>Приобретено</button><button>Получить файл</button>':
- `<button onclick="buy(${item.id})">Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`}
+ ${owned?'<button disabled>Мой товар</button>':bought?'<button disabled>Приобретено</button><button>Получить файл</button>': `<button onclick="buy(${item.id})">Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`}
  <button onclick="closeModal()">Закрыть</button>`;
  modal.classList.add('active');
 }
@@ -254,28 +246,35 @@ function buy(id){
  let item=items.find(i=>i.id===id);
  if(balance<item.price){showToast("Недостаточно средств");return;}
  balance-=item.price;refBalance+=item.price*0.02;purchases.push(id);
- showToast("Покупка успешна");
- closeModal();render();
+ showToast("Покупка успешна");closeModal();render();
 }
-
 function render(){
  document.getElementById('balance').innerText=balance.toFixed(2);
  document.getElementById('ref-balance').innerText=refBalance.toFixed(2);
- // Главная
+
  let s=document.getElementById('search-input').value.toLowerCase();
  let min=parseFloat(document.getElementById('min-price').value)||0;
- let max=parseFloat(document.getElementById('max-price').value)||999999;
- let list=items.filter(i=>i.name.toLowerCase().includes(s)&&i.price>=min&&i.price<=max);
- document.getElementById('market-grid').innerHTML=list.map(cardHTML).join('');
- // Профиль
+ let max=parseFloat(document.getElementById('max-price').value)||Infinity;
+ let grid=document.getElementById('market-grid');
+ grid.innerHTML=items.filter(i=>(i.name+i.desc).toLowerCase().includes(s)&&i.price>=min&&i.price<=max).map(cardHTML).join('');
+
  let q=document.getElementById('profile-search').value.toLowerCase();
- let pList=items.filter(i=>purchases.includes(i.id)&&i.name.toLowerCase().includes(q));
- let mList=myItems.filter(i=>i.name.toLowerCase().includes(q));
- document.getElementById('purchases-grid').innerHTML=pList.map(cardHTML).join('');
- document.getElementById('myitems-grid').innerHTML=mList.map(cardHTML).join('');
- document.getElementById('purchases-empty').style.display=pList.length?'none':'block';
- document.getElementById('myitems-empty').style.display=mList.length?'none':'block';
+ if(currentProfileTab==='purchases'){
+   let p=items.filter(i=>purchases.includes(i.id)&&(i.name+i.desc).toLowerCase().includes(q));
+   document.getElementById('purchases-grid').innerHTML=p.map(cardHTML).join('');
+   document.getElementById('purchases-empty').style.display=p.length?'none':'block';
+ } else {
+   let m=myItems.filter(i=>(i.name+i.desc).toLowerCase().includes(q));
+   document.getElementById('myitems-grid').innerHTML=m.map(cardHTML).join('');
+   document.getElementById('myitems-empty').style.display=m.length?'none':'block';
+ }
 }
+
+document.getElementById('sort-select').addEventListener('click',e=>{
+ const el=document.getElementById('sort-select');
+ if(e.target.dataset.val){sort=e.target.dataset.val;document.getElementById('sort-btn').innerText=e.target.innerText;el.classList.remove('open');render();}
+ else el.classList.toggle('open');
+});
 render();
 </script>
 </body>
