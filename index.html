@@ -1,309 +1,149 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TonFiles Market</title>
-<style>
-/* ===== БАЗОВЫЙ СТИЛЬ ===== */
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:Inter,Arial,sans-serif;
-  background:#000;
-  color:#fff;
-  overflow-x:hidden;
-}
-
-/* ===== HEADER ===== */
-header{
-  position:sticky;top:0;z-index:100;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 20px;
-  background:#0a0a0a;
-  border-bottom:2px solid #00ff9a;
-}
-header img.logo{height:28px}
-header .balance{display:flex;align-items:center;gap:8px;font-weight:700}
-
-/* ===== MAIN ===== */
-main{
-  max-width:1100px;
-  margin:0 auto;
-  padding:20px 16px 100px;
-}
-
-/* ===== НАВИГАЦИЯ ВНИЗУ ===== */
-.tabs{
-  position:fixed;bottom:0;left:0;right:0;
-  display:flex;justify-content:space-around;
-  background:#0a0a0a;border-top:2px solid #00ff9a;z-index:150;
-}
-.tabs button{
-  flex:1;padding:10px 5px;
-  border:none;background:none;cursor:pointer;
-  color:#aaa;font-weight:700;
-}
-.tabs button.active{color:#00ff9a}
-
-/* ===== ОБЩИЕ ===== */
-.section{display:none}
-.section.active{display:block}
-.btn{
-  display:flex;align-items:center;justify-content:center;
-  padding:8px 10px;border-radius:8px;border:none;
-  cursor:pointer;font-weight:700;
-}
-.btn-primary{background:#00ff9a;color:#000;}
-.btn-ghost{background:none;border:1px solid #00ff9a;color:#00ff9a;}
-.btn-danger{background:none;border:1px solid #ff5c5c;color:#ff5c5c;}
-.btn:hover{opacity:0.85}
-
-/* ===== ПОИСК + ФИЛЬТРЫ ===== */
-.filters{
-  display:flex;flex-direction:column;align-items:center;
-  background:#0a0a0a;border:1px solid #00ff9a;border-radius:10px;
-  padding:12px;margin-bottom:18px;
-  gap:8px;max-width:100%;
-}
-.filter-row{display:flex;gap:10px;width:100%;justify-content:center;flex-wrap:wrap;}
-.filters input{
-  background:#000;border:1px solid #00ff9a;border-radius:8px;
-  color:#fff;padding:8px;flex:1;min-width:120px;
-}
-.filters .btn{min-width:120px}
-.custom-select{position:relative;min-width:160px;}
-.custom-select button{
-  width:100%;background:#000;color:#fff;
-  border:1px solid #00ff9a;border-radius:8px;padding:8px;text-align:left;
-}
-.custom-select button:after{content:"▼";float:right;color:#00ff9a;}
-.custom-options{
-  display:none;position:absolute;top:40px;left:0;width:100%;
-  background:#0a0a0a;border:1px solid #00ff9a;border-radius:8px;z-index:50;
-}
-.custom-options div{padding:8px;cursor:pointer;}
-.custom-options div:hover{background:#00ff9a;color:#000;}
-.custom-select.open .custom-options{display:block;}
-
-/* ===== СЕТКА ТОВАРОВ ===== */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:14px;
-  justify-content:center;
-}
-.card{
-  background:#0a0a0a;
-  border:1px solid #00ff9a;
-  border-radius:12px;
-  overflow:hidden;
-  transition:transform .2s,box-shadow .2s;
-  cursor:pointer;
-}
-.card:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(0,255,154,0.1)}
-.image-wrap{height:150px;overflow:hidden;background:#111;}
-.image-wrap img{width:100%;height:100%;object-fit:cover;}
-.card-body{padding:10px;display:flex;flex-direction:column;gap:6px;position:relative;}
-.item-id{position:absolute;right:10px;top:8px;font-size:12px;color:#666;}
-.title{font-size:15px;font-weight:700;margin:0;}
-.desc{font-size:13px;color:#aaa;overflow:hidden;text-overflow:ellipsis;max-height:2.6em;}
-.row-info{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#ccc;}
-.btn-row{display:flex;gap:6px;margin-top:6px;}
-
-/* ===== МОДАЛЬНОЕ ОКНО ===== */
-.modal{
-  position:fixed;left:0;top:0;right:0;bottom:0;
-  background:rgba(0,0,0,0.8);
-  display:none;justify-content:center;align-items:center;
-  z-index:400;padding:10px;
-}
-.modal.show{display:flex;}
-.modal-card{
-  background:#0a0a0a;border:1px solid #00ff9a;border-radius:10px;
-  width:95%;max-width:500px;padding:14px;
-}
-.modal-card img{width:100%;max-height:250px;object-fit:cover;border-radius:6px;margin-bottom:10px;}
-.modal-title{font-size:18px;margin:0 0 6px;}
-.modal-desc{color:#aaa;font-size:14px;margin-bottom:8px;}
-.modal-line{text-align:center;font-weight:700;margin-bottom:10px;}
-.modal-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-.modal-actions .btn{flex:1;min-width:120px;}
-.modal-card button{margin-top:5px;}
-
-/* ===== ФОРМА ДОБАВЛЕНИЯ ===== */
-#add form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
-input,textarea{background:#000;border:1px solid #00ff9a;border-radius:8px;color:#fff;padding:10px;font-size:14px;}
-textarea{min-height:90px;resize:vertical;}
-input[type=file]{color:#fff;}
-.input-error{border-color:#ff5c5c;}
-#commission-info{font-size:13px;color:#00ff9a;}
-
-/* ===== ПРОФИЛЬ ===== */
-.profile-box{background:#0a0a0a;border:1px solid #00ff9a;border-radius:10px;padding:12px;margin-bottom:14px;}
-.profile-tabs{display:flex;border-bottom:1px solid #00ff9a;margin-bottom:8px;}
-.profile-tabs button{flex:1;background:none;border:none;color:#aaa;padding:8px;font-weight:700;cursor:pointer;}
-.profile-tabs button.active{color:#00ff9a;}
-.profile-search input{width:100%;background:#000;border:1px solid #00ff9a;color:#fff;border-radius:8px;padding:8px;margin-bottom:10px;}
-
-/* ===== TOAST ===== */
-.toast{position:fixed;right:16px;bottom:90px;background:#0a0a0a;border:1px solid #00ff9a;border-radius:8px;padding:10px 14px;opacity:0;transition:opacity .3s;z-index:1000;}
-.toast.show{opacity:1;}
-.small-muted{font-size:13px;color:#999;text-align:center;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TonFiles Market</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<header>
-  <img src="tonfiles.svg" alt="TonFiles" class="logo">
-  <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="TON" style="width:14px;height:14px;vertical-align:middle;"></div>
-</header>
-
-<main>
-  <!-- ====== ГЛАВНАЯ ====== -->
-  <section id="home" class="section active">
-    <div class="filters">
-      <div class="filter-row">
-        <input id="search-input" placeholder="Поиск по названию или описанию...">
-        <button class="btn btn-ghost" id="apply-top">Применить</button>
+  <header class="site-header">
+    <div class="header-left">
+      <img src="tonfiles.svg" alt="TonFiles" class="logo">
+    </div>
+    <div class="header-right">
+      <div class="balance">
+        <span id="balance">1000.00</span>
+        <img src="ton1.svg" alt="TON" class="ton-icon">
       </div>
-      <div class="filter-row">
-        <input id="min-price" type="number" step="0.01" placeholder="Мин. цена">
-        <input id="max-price" type="number" step="0.01" placeholder="Макс. цена">
-        <div class="custom-select" id="sort-select">
-          <button id="sort-btn">Последние</button>
-          <div class="custom-options">
-            <div data-val="newest">Последние</div>
-            <div data-val="price_asc">Цена: по возрастанию</div>
-            <div data-val="price_desc">Цена: по убыванию</div>
-            <div data-val="best">Отзывы: лучшие</div>
-            <div data-val="count">Отзывы: количество</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="home" class="page active">
+      <div class="controls">
+        <div class="controls-row top">
+          <input id="search-input" class="input" placeholder="Поиск по названию или описанию…" />
+          <button id="apply-btn" class="btn btn-outline">Применить</button>
+        </div>
+
+        <div class="controls-row bottom">
+          <input id="min-price" class="input small" type="number" min="0" step="0.01" placeholder="Мин. цена" />
+          <input id="max-price" class="input small" type="number" min="0" step="0.01" placeholder="Макс. цена" />
+          <div class="select-wrap" id="sort-select">
+            <button id="sort-btn" class="btn-select">Последние</button>
+            <div class="select-options">
+              <div data-val="newest">Последние</div>
+              <div data-val="price_asc">Цена: по возрастанию</div>
+              <div data-val="price_desc">Цена: по убыванию</div>
+              <div data-val="best">Отзывы: лучшие</div>
+              <div data-val="count">Отзывы: количество</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div id="market-grid" class="grid"></div>
-  </section>
 
-  <!-- ====== ДОБАВИТЬ ====== -->
-  <section id="add" class="section">
-    <form onsubmit="event.preventDefault(); publish();">
-      <div><label>Название</label><input id="add-name" type="text" required></div>
-      <div><label>Описание</label><textarea id="add-desc" required></textarea></div>
-      <div>
-        <label>Цена (TON)</label>
-        <input id="add-price" type="number" step="0.01" oninput="updateCommission()" required>
-        <div id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</div>
-      </div>
-      <div><label>Превью (изображение)</label><input id="add-preview" type="file" accept="image/*" required></div>
-      <div><label>Файл (конечный файл)</label><input id="add-file" type="file" required></div>
-      <button type="submit" class="btn btn-primary">Опубликовать</button>
-    </form>
-  </section>
+      <div id="market-grid" class="grid" aria-live="polite"></div>
+      <div id="market-empty" class="empty">Пусто</div>
+    </section>
 
-  <!-- ====== ПРОФИЛЬ ====== -->
-  <section id="profile" class="section">
-    <div class="profile-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><b>Реферальная программа</b><div class="small-muted">2% от трат рефералов</div></div>
-        <div style="text-align:right;">
-          <b><span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle;"></b><br>
-          <button class="btn btn-ghost" onclick="withdrawRef()">Вывести</button>
+    <!-- ADD -->
+    <section id="add" class="page">
+      <form id="add-form" class="add-form" novalidate>
+        <h2 class="form-title">Публикация объявления</h2>
+
+        <label class="field">
+          <span class="label">Название</span>
+          <input id="add-name" class="input" type="text" required />
+        </label>
+
+        <label class="field">
+          <span class="label">Описание</span>
+          <textarea id="add-desc" class="input" rows="4" required></textarea>
+        </label>
+
+        <label class="field">
+          <span class="label">Цена (TON)</span>
+          <input id="add-price" class="input" type="number" min="0" step="0.01" required />
+          <div id="commission-info" class="muted">Вы получите: 0.00 TON (с учётом комиссии 10%)</div>
+        </label>
+
+        <label class="field">
+          <span class="label">Загрузка файлов</span>
+          <div class="file-row">
+            <label class="file-btn btn-outline">
+              Превью
+              <input id="add-preview" type="file" accept="image/*" class="file-input" required>
+            </label>
+            <label class="file-btn btn-outline">
+              Конечный файл
+              <input id="add-file" type="file" class="file-input" required>
+            </label>
+          </div>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Опубликовать</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- PROFILE -->
+    <section id="profile" class="page">
+      <div class="profile-top">
+        <div class="profile-box">
+          <div>
+            <div class="muted small">Реферальная система — 2% от трат рефералов</div>
+          </div>
+          <div class="ref-right">
+            <div class="ref-amount"><span id="ref-balance">0.00</span> <img src="ton1.svg" class="ton-icon" alt="TON"></div>
+            <button class="btn btn-outline" id="withdraw-btn">Вывести</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="profile-tabs">
-      <button class="active" onclick="switchProfileTab('purchases', this)">Мои покупки</button>
-      <button onclick="switchProfileTab('myitems', this)">Мои товары</button>
-    </div>
-    <div class="profile-search"><input id="profile-search" placeholder="Поиск..." oninput="render()"></div>
+      <div class="profile-tabs">
+        <button class="tab active" data-tab="purchases">Мои покупки</button>
+        <button class="tab" data-tab="myitems">Мои товары</button>
+      </div>
 
-    <div id="purchases" class="profile-section active">
-      <div id="purchases-grid" class="grid"></div>
-      <p id="purchases-empty" class="small-muted">Пусто</p>
-    </div>
-    <div id="myitems" class="profile-section">
-      <div id="myitems-grid" class="grid"></div>
-      <p id="myitems-empty" class="small-muted">Пусто</p>
-    </div>
-  </section>
-</main>
+      <div class="profile-search">
+        <input id="profile-search" class="input" placeholder="Поиск..." />
+      </div>
 
-<!-- ====== НАВИГАЦИЯ ====== -->
-<div class="tabs">
-  <button class="active" onclick="switchTab('home', this)">Главная</button>
-  <button onclick="switchTab('add', this)">Добавить</button>
-  <button onclick="switchTab('profile', this)">Профиль</button>
-</div>
+      <div id="purchases" class="profile-section">
+        <div id="purchases-grid" class="grid"></div>
+        <div id="purchases-empty" class="empty">Пусто</div>
+      </div>
 
-<!-- ====== МОДАЛ ====== -->
-<div id="modal" class="modal"><div class="modal-card" id="modal-card"></div></div>
-<div id="toast" class="toast"></div>
+      <div id="myitems" class="profile-section" hidden>
+        <div id="myitems-grid" class="grid"></div>
+        <div id="myitems-empty" class="empty">Пусто</div>
+      </div>
+    </section>
+  </main>
 
-<script>
-let balance=1000.00, refBalance=0.00, userId=1, sort='newest';
-let purchases=[], myItems=[], items=[
-{id:101,name:"React шаблон",desc:"Современный адаптивный шаблон",price:15,img:"https://via.placeholder.com/600x400?text=React",file:"site.zip",ownerId:2,reviews:[5,4]},
-{id:102,name:"Python бот",desc:"Telegram бот на aiogram",price:10,img:"https://via.placeholder.com/600x400?text=Bot",file:"bot.zip",ownerId:3,reviews:[5,5]},
-{id:103,name:"NFT шаблон",desc:"PSD шаблон NFT коллекции",price:22,img:"https://via.placeholder.com/600x400?text=NFT",file:"nft.psd",ownerId:4,reviews:[4]},
-{id:104,name:"UI набор",desc:"Премиум иконки и кнопки",price:7,img:"https://via.placeholder.com/600x400?text=UI",file:"ui.zip",ownerId:5,reviews:[5,5,5]}
-];
-(function(){const id=999;const it={id,name:"Мой пример",desc:"Мой тестовый файл",price:5,img:"https://via.placeholder.com/600x400?text=My+Item",file:"test.pdf",ownerId:userId,reviews:[5]};items.unshift(it);myItems.push(it);})();
-function avg(a){return a.length?a.reduce((x,y)=>x+y)/a.length:0;}
-function showToast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000);}
-function switchTab(id,btn){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
-let currentProfileTab='purchases';
-function switchProfileTab(id,btn){currentProfileTab=id;document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
-const MIN_PRICE=0.1;
-function updateCommission(){const p=document.getElementById('add-price'),info=document.getElementById('commission-info');let v=parseFloat(p.value)||0;if(v<MIN_PRICE&&v>0){p.classList.add('input-error');info.innerHTML=`Минимальная сумма: ${MIN_PRICE.toFixed(2)} TON`;}else{p.classList.remove('input-error');info.textContent=v?`Вы получите: ${(v*0.9).toFixed(2)} TON (с учётом комиссии 10%)`:'Вы получите: 0.00 TON (с учетом комиссии 10%)';}}
-function publish(){const n=document.getElementById('add-name').value.trim(),d=document.getElementById('add-desc').value.trim(),p=parseFloat(document.getElementById('add-price').value)||0,pr=document.getElementById('add-preview').files[0],f=document.getElementById('add-file').files[0];if(!n||!d||!p||!pr||!f){showToast('Заполните все поля');return;}if(p<MIN_PRICE){showToast(`Мин. цена ${MIN_PRICE} TON`);return;}const r=new FileReader();r.onload=e=>{const id=Math.floor(Math.random()*999999),it={id,name:n,desc:d,price:p,img:e.target.result,file:f.name,ownerId:userId,reviews:[]};items.unshift(it);myItems.push(it);showToast('Товар опубликован');render();};r.readAsDataURL(pr);}
-function withdrawRef(){if(refBalance>0){balance+=refBalance;refBalance=0;showToast('Баланс выведен');}else showToast('Нет средств');render();}
-function openModal(id){const it=items.find(x=>x.id===id);if(!it)return;const owned=it.ownerId===userId,bought=purchases.includes(it.id),m=document.getElementById('modal-card');let act='';if(owned){act=`<button class="btn btn-ghost" disabled>Мой товар</button><button class="btn btn-danger" onclick="openDeleteModal(${it.id})">Удалить</button>`;}else if(bought){act=`<button class="btn btn-ghost" disabled>Приобретено</button><button class="btn btn-ghost" onclick="showFile(${it.id})">Файл</button>`;}else{act=`<button class="btn btn-primary" onclick="buy(${it.id})">Купить за ${it.price.toFixed(2)} TON</button>`;}m.innerHTML=`<img src="${it.img}"><h3 class="modal-title">${it.name}</h3><div class="modal-desc">${it.desc}</div><div class="modal-line">${avg(it.reviews).toFixed(1)} ★ • ${it.price.toFixed(2)} TON</div><div class="modal-actions">${act}</div><button class="btn btn-ghost" onclick="closeModal()">Закрыть</button>`;document.getElementById('modal').classList.add('show');}
-function closeModal(){document.getElementById('modal').classList.remove('show');}
-function openDeleteModal(id){const it=items.find(x=>x.id===id),m=document.getElementById('modal-card');m.innerHTML=`<h3>Удалить "${it.name}"?</h3><p class="modal-desc">После удаления рейтинг и информация будут утеряны безвозвратно.</p><div class="modal-actions"><button class="btn btn-danger" onclick="deleteItem(${id})">Удалить</button><button class="btn btn-ghost" onclick="closeModal()">Отмена</button></div>`;}
-function deleteItem(id){items=items.filter(x=>x.id!==id);myItems=myItems.filter(x=>x.id!==id);showToast('Товар удалён');closeModal();render();}
-function buy(id){const it=items.find(x=>x.id===id);if(balance<it.price){showToast('Недостаточно средств');return;}balance-=it.price;refBalance+=(it.price*0.02);purchases.push(id);showToast('Покупка успешна');render();closeModal();}
-function showFile(id){showToast('Файл скачан');}
-function render(){document.getElementById('balance').textContent=balance.toFixed(2);document.getElementById('ref-balance').textContent=refBalance.toFixed(2);const s=document.getElementById('search-input').value.toLowerCase(),min=parseFloat(document.getElementById('min-price').value)||0,max=parseFloat(document.getElementById('max-price').value)||Infinity;
-const prof=document.getElementById('profile-search').value.toLowerCase();
-function filter(arr){return arr.filter(i=>i.name.toLowerCase().includes(s)&&i.price>=min&&i.price<=max);}
-let list=filter(items);if(sort==='price_asc')list.sort((a,b)=>a.price-b.price);else if(sort==='price_desc')list.sort((a,b)=>b.price-a.price);else if(sort==='best')list.sort((a,b)=>avg(b.reviews)-avg(a.reviews));
-const grid=document.getElementById('market-grid');grid.innerHTML='';
-list.forEach(it=>{
-  const owned=it.ownerId===userId,bought=purchases.includes(it.id);
-  let btns='';
-  if(owned)btns=`<div class='btn-row'><button class='btn btn-ghost' onclick='openModal(${it.id})'>Мой товар</button><button class='btn btn-danger' onclick='openDeleteModal(${it.id})'>Удалить</button></div>`;
-  else if(bought)btns=`<div class='btn-row'><button class='btn btn-ghost' onclick='openModal(${it.id})'>Приобретено</button><button class='btn btn-ghost' onclick='showFile(${it.id})'>Файл</button></div>`;
-  else btns=`<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${it.id})'>Купить</button></div>`;
-  grid.innerHTML+=`
-  <div class='card'>
-    <div class='image-wrap' onclick='openModal(${it.id})'><img src='${it.img}'></div>
-    <div class='card-body'>
-      <div class='item-id'>#${it.id}</div>
-      <div class='title'>${it.name}</div>
-      <div class='desc'>${it.desc}</div>
-      <div class='row-info'><span>${avg(it.reviews).toFixed(1)}★</span><span>${it.price.toFixed(2)} TON</span></div>
-      ${btns}
+  <nav class="bottom-tabs">
+    <button class="tab-btn active" data-page="home">Главная</button>
+    <button class="tab-btn" data-page="add">Добавить</button>
+    <button class="tab-btn" data-page="profile">Профиль</button>
+  </nav>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div id="modal-content"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn btn-outline" id="modal-close">Закрыть</button>
+      </div>
     </div>
-  </div>`;});
-const pg=document.getElementById('purchases-grid'),mg=document.getElementById('myitems-grid');
-pg.innerHTML='';mg.innerHTML='';
-purchases.map(i=>items.find(x=>x.id===i)).filter(Boolean).forEach(it=>{
-  if(it.name.toLowerCase().includes(prof))
-    pg.innerHTML+=`<div class='card'><div class='image-wrap' onclick='openModal(${it.id})'><img src='${it.img}'></div><div class='card-body'><div class='item-id'>#${it.id}</div><div class='title'>${it.name}</div><div class='desc'>${it.desc}</div><div class='row-info'><span>${avg(it.reviews).toFixed(1)}★</span><span>${it.price.toFixed(2)} TON</span></div><div class='btn-row'><button class='btn btn-ghost' onclick='openModal(${it.id})'>Приобретено</button><button class='btn btn-ghost' onclick='showFile(${it.id})'>Файл</button></div></div></div>`;
-});
-myItems.filter(it=>it.name.toLowerCase().includes(prof)).forEach(it=>{
-  mg.innerHTML+=`<div class='card'><div class='image-wrap' onclick='openModal(${it.id})'><img src='${it.img}'></div><div class='card-body'><div class='item-id'>#${it.id}</div><div class='title'>${it.name}</div><div class='desc'>${it.desc}</div><div class='row-info'><span>${avg(it.reviews).toFixed(1)}★</span><span>${it.price.toFixed(2)} TON</span></div><div class='btn-row'><button class='btn btn-ghost' onclick='openModal(${it.id})'>Мой товар</button><button class='btn btn-danger' onclick='openDeleteModal(${it.id})'>Удалить</button></div></div></div>`;
-});
-document.getElementById('purchases-empty').style.display=purchases.length?'none':'block';
-document.getElementById('myitems-empty').style.display=myItems.length?'none':'block';
-}
-document.getElementById('sort-btn').onclick=function(){this.parentElement.classList.toggle('open');};
-document.querySelectorAll('.custom-options div').forEach(o=>o.onclick=function(){sort=this.dataset.val;document.getElementById('sort-btn').textContent=this.textContent;this.closest('.custom-select').classList.remove('open');render();});
-document.getElementById('apply-top').onclick=render;
-render();
-</script>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="app.js"></script>
 </body>
 </html>
