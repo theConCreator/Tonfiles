@@ -5,106 +5,132 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>TonFiles Market — Demo</title>
 <style>
-/* --- Общие стили --- */
+/* ====== Базовые стили (в стиле предыдущей версии) ====== */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;font-family:Inter,Arial,sans-serif;background:#000;color:#fff;overflow-x:hidden}
-a{color:inherit}
-img{max-width:100%;display:block}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:#000;
+  color:#fff;
+  overflow-x:hidden;
+}
 
 /* Header */
 header{
-  position:sticky;top:0;z-index:100;
+  position:sticky;top:0;z-index:110;
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 18px;background:#0a0a0a;border-bottom:2px solid #0eff00;
 }
 header img.logo{height:28px}
-header .balance{display:flex;align-items:center;gap:8px;font-weight:700}
-header .balance img{width:14px;height:14px}
+header .balance{display:flex;gap:8px;align-items:center;font-weight:700}
+header .balance img{width:14px;height:14px;object-fit:contain}
 
 /* Main container */
 main{max-width:1200px;margin:0 auto;padding:16px 14px 90px}
 
 /* Bottom tabs */
 .tabs{
-  position:fixed;left:0;right:0;bottom:0;display:flex;background:#0a0a0a;border-top:2px solid #0eff00;z-index:120;
+  position:fixed;left:0;right:0;bottom:0;z-index:200;
+  display:flex;background:#0a0a0a;border-top:2px solid #0eff00;
 }
-.tabs button{flex:1;padding:10px;border:0;background:none;color:#9aa;font-weight:700;cursor:pointer}
+.tabs button{
+  flex:1;padding:10px;border:0;background:none;color:#9aa;font-weight:700;cursor:pointer;
+}
 .tabs button.active{color:#0eff00}
 
 /* Sections */
 .section{display:none}
 .section.active{display:block}
 
-/* Search & filters */
+/* Search/filters */
 .search-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.search-filter .row1{display:flex;gap:10px;flex:1;min-width:220px}
-.search-filter .row2{display:flex;gap:10px;flex:1;min-width:220px;margin-top:8px}
-.search-filter input[type="text"], .search-filter input[type="number"], .custom-select button{
-  background:#0a0a0a;border:1px solid #0eff00;padding:8px;border-radius:8px;color:#fff;
+.search-filter input{
+  background:#0a0a0a;border:1px solid #0eff00;padding:8px;border-radius:8px;color:#fff;flex:1;min-width:140px;
 }
-.search-filter input[type="text"]{flex:1}
-.search-filter input[type="number"]{width:140px}
+.search-filter .row-top{display:flex;gap:10px;align-items:center;width:100%;}
+.search-filter .row-bot{display:flex;gap:10px;align-items:center;width:100%;margin-top:8px;}
+.search-filter .btn-apply{min-width:120px}
+
+/* Sort select */
 .custom-select{position:relative;min-width:160px}
-.custom-select button{width:100%;text-align:left;background:#0a0a0a;border:1px solid #0eff00;color:#fff;padding:8px;border-radius:6px}
+.custom-select button{
+  width:100%;text-align:left;background:#0a0a0a;border:1px solid #0eff00;color:#fff;padding:8px;border-radius:6px;
+}
 .custom-select button:after{content:"▼";float:right;color:#0eff00}
-.custom-options{display:none;position:absolute;top:40px;left:0;width:100%;background:#0a0a0a;border:1px solid #0eff00;border-radius:6px;z-index:50}
+.custom-options{
+  display:none;position:absolute;top:40px;left:0;width:100%;background:#0a0a0a;border:1px solid #0eff00;border-radius:6px;z-index:50;
+}
 .custom-options div{padding:8px;cursor:pointer}
 .custom-options div:hover{background:#0eff00;color:#000}
 .custom-select.open .custom-options{display:block}
 
-/* Grid / cards */
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+/* Grid and cards */
+.grid{
+  display:grid;gap:14px;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+}
 .card{
-  background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;overflow:hidden;
-  display:flex;flex-direction:column;cursor:pointer;transition:transform .16s,box-shadow .16s;
+  background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;
+  overflow:hidden;display:flex;flex-direction:column;cursor:pointer;
+  transition:transform .16s,box-shadow .16s;
   min-height:300px;
 }
-.card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(14,255,0,0.08)}
-.image-wrap{height:160px;background:#111;display:flex;align-items:center;justify-content:center}
-.image-wrap img{width:100%;height:100%;object-fit:cover}
-.card-body{padding:12px;position:relative;display:flex;flex-direction:column;gap:8px;flex:1}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(14,255,0,0.06)}
+.image-wrap{height:150px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.image-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.card-body{padding:12px;display:flex;flex-direction:column;gap:8px;position:relative;flex:1}
 .item-id{position:absolute;right:10px;top:8px;font-size:12px;color:#6b6f73}
 .title{font-size:15px;font-weight:700;margin:0}
-.desc{font-size:13px;color:#bfc7d9;line-height:1.2;height:2.4em;overflow:hidden;text-overflow:ellipsis}
-.row-info{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#aeb7c9}
-.btn-row{display:flex;gap:8px;margin-top:8px}
+.desc{font-size:13px;color:#bfc7d9;margin:0;line-height:1.2;height:2.4em;overflow:hidden;text-overflow:ellipsis}
+.row-info{display:flex;justify-content:space-between;align-items:center;color:#aeb7c9;font-size:13px}
+.btn-row{display:flex;gap:8px;margin-top:6px}
 
 /* Buttons */
-.btn{flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-primary{background:#0eff00;color:#000;transition:.15s}
-.btn-primary:hover{background:#12ff55}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.12);color:#cfe}
-.btn-ghost:hover{border-color:#0eff00;color:#0eff00}
+.btn{
+  flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-primary{background:#0eff00;color:#000}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#cfe}
 .btn-danger{background:transparent;border:1px solid #ff5c5c;color:#ff9b9b}
-.btn-danger:hover{background:rgba(255,0,0,0.06)}
 
 /* Modal */
-.modal{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;z-index:200}
+.modal{
+  position:fixed;left:0;top:0;right:0;bottom:0;display:none;
+  justify-content:center;align-items:center;background:rgba(0,0,0,0.75);z-index:400;
+}
 .modal.show{display:flex}
-.modal-card{width:95%;max-width:520px;background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;padding:16px;box-shadow:0 12px 40px rgba(14,255,0,0.06)}
+.modal-card{
+  width:95%;max-width:520px;background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;padding:16px;
+  box-shadow:0 12px 40px rgba(14,255,0,0.06);
+}
 .modal-card img{width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:12px}
 .modal-title{font-size:18px;margin:0 0 6px}
 .modal-desc{color:#bfc7d9;margin:0 0 10px}
-.modal-line{display:flex;justify-content:center;align-items:center;gap:10px;font-weight:700;margin-bottom:10px}
+.modal-line{display:flex;justify-content:center;gap:10px;align-items:center;color:#dfe6f9;margin-bottom:10px;font-weight:700}
 .modal-actions{display:flex;gap:10px;margin-top:8px}
 
-/* Add form */
+/* Form add */
 #add form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.form-row{display:flex;flex-direction:column;gap:6px}
 label{color:#0eff00;font-weight:700;font-size:13px}
-input,textarea{background:#0a0a0a;border:1px solid #0eff00;padding:10px;border-radius:8px;color:#fff}
-textarea{min-height:90px}
-.input-error{border-color:#ff5c5c!important}
-#commission-info{font-size:13px;color:#9fbf9f}
+input[type=file]{color:#fff}
+input[type="text"],input[type="number"],textarea{
+  background:#0a0a0a;border:1px solid #0eff00;padding:10px;border-radius:8px;color:#fff;font-size:14px
+}
+textarea{min-height:90px;resize:vertical}
+.input-error{border-color:#ff5c5c !important;box-shadow:0 0 6px rgba(255,0,0,0.08)}
+#commission-info{color:#9fbf9f;font-size:13px}
 
 /* Profile */
 .profile-box{background:#0a0a0a;border:1px solid #0eff00;padding:12px;border-radius:10px;margin-bottom:12px}
 .profile-tabs{display:flex;border-bottom:1px solid #0eff00;margin-bottom:10px;padding-bottom:6px}
 .profile-tabs button{flex:1;background:none;border:0;color:#dfe;padding:8px;font-weight:700;cursor:pointer}
 .profile-tabs button.active{color:#0eff00}
-.profile-search input{width:100%;padding:8px;background:#0a0a0a;border:1px solid #0eff00;border-radius:8px;color:#fff}
 
 /* Toast */
-.toast{position:fixed;right:18px;bottom:84px;background:#0a0a0a;border:1px solid #0eff00;padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .25s;z-index:300}
+.toast{position:fixed;right:18px;bottom:84px;background:#0a0a0a;border:1px solid #0eff00;padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .25s;z-index:1000}
 .toast.show{opacity:1}
 .small-muted{font-size:13px;color:#9fbf9f}
 
@@ -115,21 +141,21 @@ button,input,textarea{outline:none}
 <body>
 
 <header>
-  <img class="logo" src="tonfiles.svg" alt="TonFiles">
+  <img class="logo" src="tonfiles.svg" alt="TONFiles">
   <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="TON" style="width:14px;height:14px;vertical-align:middle"></div>
 </header>
 
 <main>
-  <!-- HOME -->
+  <!-- Главная -->
   <section id="home" class="section active">
     <div class="search-filter">
-      <div class="row1" style="display:flex;gap:10px;flex:1;">
-        <input id="search-input" type="text" placeholder="Поиск по названию или описанию...">
-        <button id="apply-btn" class="btn btn-ghost" style="min-width:120px">Применить</button>
+      <div class="row-top" style="width:100%;">
+        <input id="search-input" placeholder="Поиск по названию или описанию..." />
+        <button class="btn btn-ghost btn-apply" id="apply-top">Применить</button>
       </div>
-      <div class="row2" style="display:flex;gap:10px;flex:1;margin-top:10px;">
-        <input id="min-price" type="number" placeholder="Мин. цена" step="0.01">
-        <input id="max-price" type="number" placeholder="Макс. цена" step="0.01">
+      <div class="row-bot" style="width:100%; margin-top:8px;">
+        <input id="min-price" type="number" placeholder="Мин. цена" step="0.01" style="max-width:160px" />
+        <input id="max-price" type="number" placeholder="Макс. цена" step="0.01" style="max-width:160px" />
         <div class="custom-select" id="sort-select" style="min-width:160px">
           <button id="sort-btn">Последние</button>
           <div class="custom-options">
@@ -146,30 +172,23 @@ button,input,textarea{outline:none}
     <div class="grid" id="market-grid"></div>
   </section>
 
-  <!-- ADD -->
+  <!-- Добавить -->
   <section id="add" class="section">
     <form onsubmit="event.preventDefault(); publish();">
-      <label for="add-name">Название</label>
-      <input id="add-name" type="text">
-
-      <label for="add-desc">Описание</label>
-      <textarea id="add-desc"></textarea>
-
-      <label for="add-price">Цена (TON)</label>
-      <input id="add-price" type="number" step="0.01" oninput="updateCommission()">
-      <div id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</div>
-
-      <label for="add-preview">Превью (изображение)</label>
-      <input id="add-preview" type="file" accept="image/*">
-
-      <label for="add-file">Файл товара</label>
-      <input id="add-file" type="file">
-
+      <div class="form-row"><label for="add-name">Название</label><input id="add-name" type="text" /></div>
+      <div class="form-row"><label for="add-desc">Описание</label><textarea id="add-desc"></textarea></div>
+      <div class="form-row">
+        <label for="add-price">Цена (TON)</label>
+        <input id="add-price" type="number" step="0.01" oninput="updateCommission()" />
+        <div id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</div>
+      </div>
+      <div class="form-row"><label for="add-preview">Загрузка файлов — превью (изображение)</label><input id="add-preview" type="file" accept="image/*" /></div>
+      <div class="form-row"><label for="add-file">Загрузка файла — конечный файл</label><input id="add-file" type="file" /></div>
       <button class="btn btn-primary" type="submit">Опубликовать</button>
     </form>
   </section>
 
-  <!-- PROFILE -->
+  <!-- Профиль -->
   <section id="profile" class="section">
     <div class="profile-box">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -178,7 +197,7 @@ button,input,textarea{outline:none}
           <div class="small-muted">2% от трат рефералов</div>
         </div>
         <div style="text-align:right">
-          <div style="font-weight:800"><span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle"></div>
+          <div style="font-weight:800"><span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle" /></div>
           <button class="btn btn-ghost" style="margin-top:6px" onclick="withdrawRef()">Вывести</button>
         </div>
       </div>
@@ -190,7 +209,7 @@ button,input,textarea{outline:none}
     </div>
 
     <div class="profile-search" style="margin-bottom:10px;">
-      <input id="profile-search" placeholder="Поиск..." oninput="render()">
+      <input id="profile-search" placeholder="Поиск..." oninput="render()" />
     </div>
 
     <div id="purchases" class="profile-section active">
@@ -205,57 +224,60 @@ button,input,textarea{outline:none}
   </section>
 </main>
 
-<!-- Bottom tabs -->
+<!-- Навигация -->
 <div class="tabs">
   <button class="active" onclick="switchTab('home', this)">Главная</button>
   <button onclick="switchTab('add', this)">Добавить</button>
   <button onclick="switchTab('profile', this)">Профиль</button>
 </div>
 
-<!-- Modal -->
-<div id="modal" class="modal" aria-modal="true" role="dialog">
-  <div id="modal-card" class="modal-card"></div>
+<!-- Модал -->
+<div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-card" id="modal-card"></div>
 </div>
 
-<!-- Toast -->
+<!-- Тост -->
 <div id="toast" class="toast"></div>
 
 <script>
-/* ---------- Demo data & state ---------- */
+/* ===== Demo state ===== */
 let balance = 1000.00;
 let refBalance = 0.00;
-let userId = 1;
-let purchases = [];
-let myItems = [];
-let sort = 'newest'; // sorting state
+let userId = 1; // demo user
+let purchases = []; // ids of purchased items
+let myItems = []; // items posted by me
+let sort = 'newest';
 
 let items = [
-  { id: 101, name: "Скрипт Telegram Bot", desc: "Полностью рабочий бот", price: 15.00, img: "https://via.placeholder.com/600x400?text=Bot", file: "bot.zip", ownerId: 2, reviews: [5,4] },
-  { id: 102, name: "Видеоурок по дизайну", desc: "Советы для UI/UX", price: 8.00, img: "https://via.placeholder.com/600x400?text=Design", file: "design.mp4", ownerId: 3, reviews: [5,5,4] },
-  { id: 103, name: "NFT шаблон", desc: "Шаблон NFT-коллекции", price: 22.00, img: "https://via.placeholder.com/600x400?text=NFT", file: "nft.psd", ownerId: 4, reviews: [4,3] },
-  { id: 104, name: "React сайт", desc: "Красивый адаптивный шаблон", price: 18.00, img: "https://via.placeholder.com/600x400?text=React", file: "site.zip", ownerId: 5, reviews: [] },
-  { id: 105, name: "Python API пример", desc: "REST API шаблон", price: 12.00, img: "https://via.placeholder.com/600x400?text=API", file: "api.py", ownerId: 6, reviews: [5] }
+  { id: 101, name: "Скрипт Telegram Bot", desc: "Полностью рабочий бот", price: 15, img: "https://via.placeholder.com/600x400?text=Bot", file: "bot.zip", ownerId: 2, reviews: [5,4] },
+  { id: 102, name: "Видеоурок по дизайну", desc: "Советы для UI/UX", price: 8, img: "https://via.placeholder.com/600x400?text=Design", file: "design.mp4", ownerId: 3, reviews: [5,5,4] },
+  { id: 103, name: "NFT шаблон", desc: "Шаблон NFT-коллекции", price: 22, img: "https://via.placeholder.com/600x400?text=NFT", file: "nft.psd", ownerId: 4, reviews: [4,3] },
+  { id: 104, name: "React сайт", desc: "Красивый адаптивный шаблон", price: 18, img: "https://via.placeholder.com/600x400?text=React", file: "site.zip", ownerId: 5, reviews: [] },
+  { id: 105, name: "Python API пример", desc: "REST API шаблон", price: 12, img: "https://via.placeholder.com/600x400?text=API", file: "api.py", ownerId: 6, reviews: [5] }
 ];
 
-// add one item that belongs to current user (demo)
-(function seedMyItem(){
+// seed my item
+(function seedMy(){
   const id = Math.floor(Math.random() * 900000) + 100000;
-  const it = { id, name: "Мой тестовый гайд", desc: "Тестовый файл от меня", price: 5.50, img: "https://via.placeholder.com/600x400?text=My+Guide", file: "guide.pdf", ownerId: userId, reviews: [5] };
+  const it = { id, name: "Мой тестовый гайд", desc: "Тестовый файл от меня", price: 5.5, img: "https://via.placeholder.com/600x400?text=My+Guide", file: "guide.pdf", ownerId: userId, reviews: [5] };
   items.unshift(it);
   myItems.push(it);
 })();
 
-/* ---------- Helpers ---------- */
+/* ===== Helpers ===== */
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(()=> t.classList.remove('show'), 2200);
 }
-function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function avg(arr){ return arr && arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0; }
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function avg(arr){ return arr && arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
 
-/* ---------- Navigation / Tabs ---------- */
+/* ===== Navigation ===== */
 function switchTab(id, btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -274,34 +296,33 @@ function switchProfileTab(id, btn){
   render();
 }
 
-/* ---------- Commission / price validation ---------- */
+/* ===== Commission & validation ===== */
 const MIN_PRICE = 0.1;
 function updateCommission(){
-  const priceInput = document.getElementById('add-price');
+  const p = document.getElementById('add-price');
   const info = document.getElementById('commission-info');
-  let v = parseFloat(priceInput.value) || 0;
+  let v = parseFloat(p.value) || 0;
   if(v && v < MIN_PRICE){
-    priceInput.classList.add('input-error');
+    p.classList.add('input-error');
     info.innerHTML = `Минимальная сумма: ${MIN_PRICE.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle">`;
   } else if(v){
-    priceInput.classList.remove('input-error');
-    const after = (v * 0.9).toFixed(2);
-    info.textContent = `Вы получите: ${after} TON (с учётом комиссии 10%)`;
+    p.classList.remove('input-error');
+    info.textContent = `Вы получите: ${(v*0.9).toFixed(2)} TON (с учётом комиссии 10%)`;
   } else {
-    priceInput.classList.remove('input-error');
+    p.classList.remove('input-error');
     info.textContent = 'Вы получите: 0.00 TON (с учетом комиссии 10%)';
   }
 }
 
-/* ---------- Publish item ---------- */
+/* ===== Publish ===== */
 function publish(){
   const name = document.getElementById('add-name').value.trim();
   const desc = document.getElementById('add-desc').value.trim();
   const price = parseFloat(document.getElementById('add-price').value) || 0;
-  const preview = document.getElementById('add-preview').files[0];
+  const prev = document.getElementById('add-preview').files[0];
   const file = document.getElementById('add-file').files[0];
 
-  if(!name || !desc || !price || !preview || !file){
+  if(!name || !desc || !price || !prev || !file){
     showToast('Заполните все поля');
     return;
   }
@@ -316,7 +337,6 @@ function publish(){
     const item = { id, name, desc, price: Number(price.toFixed(2)), img: e.target.result, file: file.name, ownerId: userId, reviews: [] };
     items.unshift(item);
     myItems.push(item);
-    // clear form
     document.getElementById('add-name').value = '';
     document.getElementById('add-desc').value = '';
     document.getElementById('add-price').value = '';
@@ -326,10 +346,10 @@ function publish(){
     showToast('Товар опубликован');
     render();
   };
-  reader.readAsDataURL(preview);
+  reader.readAsDataURL(prev);
 }
 
-/* ---------- Withdraw referral ---------- */
+/* ===== Withdraw ref ===== */
 function withdrawRef(){
   if(refBalance > 0){
     balance += refBalance;
@@ -341,68 +361,66 @@ function withdrawRef(){
   render();
 }
 
-/* ---------- Open modal for item ---------- */
+/* ===== Modal / buy / delete ===== */
 let pendingDeleteId = null;
 function openModal(id){
-  const item = items.find(i => i.id === id);
-  if(!item) return;
-  const owned = item.ownerId === userId;
-  const bought = purchases.includes(item.id);
+  const it = items.find(x=>x.id===id);
+  if(!it) return;
+  const owned = it.ownerId === userId;
+  const bought = purchases.includes(it.id);
   const container = document.getElementById('modal-card');
-  const average = avg(item.reviews).toFixed(1);
+  const average = avg(it.reviews).toFixed(1);
   const tonIcon = `<img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle">`;
 
   let actions = '';
   if(owned){
     actions = `<button class="btn btn-ghost" disabled>Мой товар</button>
-               <button class="btn btn-danger" onclick="openDeleteModal(${item.id})">Удалить</button>`;
+               <button class="btn btn-danger" onclick="openDeleteModal(${it.id})">Удалить</button>`;
   } else if(bought){
     actions = `<button class="btn btn-ghost" disabled>Приобретено</button>
-               <button class="btn btn-ghost" onclick="showFile(${item.id})">Получить файл</button>`;
+               <button class="btn btn-ghost" onclick="showFile(${it.id})">Получить файл</button>`;
   } else {
-    actions = `<button class="btn btn-primary" onclick="buyFromModal(${item.id})">Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`;
+    actions = `<button class="btn btn-primary" onclick="buyFromModal(${it.id})">Купить за ${it.price.toFixed(2)} ${tonIcon}</button>`;
   }
 
   container.innerHTML = `
-    <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.name)}">
-    <h2 class="modal-title">${escapeHtml(item.name)}</h2>
-    <p class="modal-desc">${escapeHtml(item.desc)}</p>
-    <div class="modal-line">⭐ ${average} (${item.reviews.length}) &nbsp; • &nbsp; <strong>${item.price.toFixed(2)} TON</strong></div>
+    <img src="${escapeHtml(it.img)}" alt="${escapeHtml(it.name)}">
+    <h2 class="modal-title">${escapeHtml(it.name)}</h2>
+    <p class="modal-desc">${escapeHtml(it.desc)}</p>
+    <div class="modal-line">⭐ ${average} (${it.reviews.length}) &nbsp; • &nbsp; <strong>${it.price.toFixed(2)} TON</strong></div>
     <div class="modal-actions">${actions}</div>
     <div style="margin-top:10px"><button class="btn btn-ghost" onclick="closeModal()">Закрыть</button></div>
   `;
   document.getElementById('modal').classList.add('show');
 }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); pendingDeleteId=null; }
 
-/* ---------- Buy from modal ---------- */
 function buyFromModal(id){
-  const item = items.find(i => i.id === id);
-  if(!item) return;
-  if(balance < item.price){ showToast('Недостаточно средств'); return; }
-  balance = Number((balance - item.price).toFixed(2));
-  refBalance = Number((refBalance + item.price * 0.02).toFixed(2));
-  purchases.push(item.id);
+  const it = items.find(x=>x.id===id);
+  if(!it) return;
+  if(balance < it.price){ showToast('Недостаточно средств'); return; }
+  balance = Number((balance - it.price).toFixed(2));
+  refBalance = Number((refBalance + it.price * 0.02).toFixed(2));
+  purchases.push(it.id);
   showToast('Покупка успешна');
   closeModal();
   render();
 }
 
-/* ---------- Show file placeholder ---------- */
 function showFile(id){
-  const item = items.find(i => i.id === id);
-  if(!item) return;
-  showToast(`Файл "${item.file}" будет доступен после интеграции бэкенда`);
+  const it = items.find(x=>x.id===id);
+  if(!it) return;
+  showToast(`Файл "${it.file}" будет доступен после интеграции бэкенда`);
 }
 
-/* ---------- Delete flow ---------- */
 function openDeleteModal(id){
   pendingDeleteId = id;
-  const item = items.find(i => i.id === id);
-  if(!item) return;
+  const it = items.find(x=>x.id===id);
+  if(!it) return;
   const container = document.getElementById('modal-card');
   container.innerHTML = `
     <h3 class="modal-title">Подтвердите удаление</h3>
-    <p class="modal-desc">Вы действительно хотите удалить товар "<strong>${escapeHtml(item.name)}</strong>"?</p>
+    <p class="modal-desc">Вы действительно хотите удалить товар "<strong>${escapeHtml(it.name)}</strong>"?</p>
     <p class="small-muted">Внимание: удаление необратимо. Все отзывы и рейтинг будут утеряны безвозвратно.</p>
     <div style="display:flex;gap:10px;margin-top:12px">
       <button class="btn btn-danger" onclick="confirmDelete()">Удалить навсегда</button>
@@ -411,72 +429,25 @@ function openDeleteModal(id){
   `;
   document.getElementById('modal').classList.add('show');
 }
-
 function confirmDelete(){
   if(pendingDeleteId === null){ closeModal(); return; }
   const id = pendingDeleteId;
-  items = items.filter(i => i.id !== id);
-  myItems = myItems.filter(i => i.id !== id);
-  purchases = purchases.filter(pid => pid !== id);
+  items = items.filter(i=>i.id!==id);
+  myItems = myItems.filter(i=>i.id!==id);
+  purchases = purchases.filter(pid=>pid!==id);
   pendingDeleteId = null;
   closeModal();
   showToast('Товар удалён');
   render();
 }
 
-/* ---------- Close modal ---------- */
-function closeModal(){
-  document.getElementById('modal').classList.remove('show');
-  pendingDeleteId = null;
-}
-
-/* ---------- Render functions ---------- */
-function render(){
-  document.getElementById('balance').textContent = balance.toFixed(2);
-  document.getElementById('ref-balance').textContent = refBalance.toFixed(2);
-
-  // Filters
-  const search = (document.getElementById('search-input').value || '').toLowerCase();
-  const min = parseFloat(document.getElementById('min-price').value) || 0;
-  const max = parseFloat(document.getElementById('max-price').value) || Infinity;
-
-  let list = items.filter(i => (i.name + ' ' + i.desc).toLowerCase().includes(search) && i.price >= min && i.price <= max);
-
-  // Sorting
-  if(sort === 'price_asc') list.sort((a,b)=>a.price-b.price);
-  else if(sort === 'price_desc') list.sort((a,b)=>b.price-a.price);
-  else if(sort === 'best') list.sort((a,b)=>avg(b.reviews)-avg(a.reviews));
-  else if(sort === 'count') list.sort((a,b)=>b.reviews.length-a.reviews.length);
-  else list.sort((a,b)=>b.id-a.id);
-
-  const grid = document.getElementById('market-grid');
-  grid.innerHTML = list.map(i => cardHTML(i)).join('');
-  if(!list.length) grid.innerHTML = `<p style="text-align:center;color:#777">Пусто</p>`;
-
-  // Profile view
-  const q = (document.getElementById('profile-search').value || '').toLowerCase();
-  if(currentProfileTab === 'purchases'){
-    const pList = purchases.map(id => items.find(it => it.id === id)).filter(Boolean).filter(i => (i.name + ' ' + i.desc).toLowerCase().includes(q));
-    document.getElementById('purchases-grid').innerHTML = pList.map(i => cardHTML(i)).join('');
-    document.getElementById('purchases-empty').style.display = pList.length ? 'none' : 'block';
-    document.getElementById('myitems-grid').innerHTML = '';
-    document.getElementById('myitems-empty').style.display = 'none';
-  } else {
-    const mList = myItems.filter(Boolean).filter(i => (i.name + ' ' + i.desc).toLowerCase().includes(q));
-    document.getElementById('myitems-grid').innerHTML = mList.map(i => cardHTML(i)).join('');
-    document.getElementById('myitems-empty').style.display = mList.length ? 'none' : 'block';
-    document.getElementById('purchases-grid').innerHTML = '';
-    document.getElementById('purchases-empty').style.display = 'none';
-  }
-}
-
+/* ===== Render ===== */
 function cardHTML(item){
   const owned = item.ownerId === userId;
   const bought = purchases.includes(item.id);
   const stars = avg(item.reviews).toFixed(1);
   const idLabel = `#${String(item.id).padStart(5,'0')}`;
-  const tonIcon = `<img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle">`;
-
+  const tonIcon = `<img src="ton1.svg" style="width:12px;vertical-align:middle">`;
   let buttonsHtml = '';
   if(owned){
     buttonsHtml = `<button class="btn btn-ghost" onclick="event.stopPropagation();openModal(${item.id})">Мой товар</button>
@@ -502,12 +473,49 @@ function cardHTML(item){
   `;
 }
 
-/* ---------- Sorting select handlers ---------- */
+function render(){
+  document.getElementById('balance').textContent = balance.toFixed(2);
+  document.getElementById('ref-balance').textContent = refBalance.toFixed(2);
+
+  const search = (document.getElementById('search-input').value || '').toLowerCase();
+  const min = parseFloat(document.getElementById('min-price').value) || 0;
+  const max = parseFloat(document.getElementById('max-price').value) || Infinity;
+
+  let list = items.filter(i=> (i.name + ' ' + i.desc).toLowerCase().includes(search) && i.price >= min && i.price <= max);
+
+  if(sort === 'price_asc') list.sort((a,b)=>a.price-b.price);
+  else if(sort === 'price_desc') list.sort((a,b)=>b.price-a.price);
+  else if(sort === 'best') list.sort((a,b)=>avg(b.reviews)-avg(a.reviews));
+  else if(sort === 'count') list.sort((a,b)=>b.reviews.length-a.reviews.length);
+  else list.sort((a,b)=>b.id-a.id);
+
+  const market = document.getElementById('market-grid');
+  market.innerHTML = list.map(cardHTML).join('');
+  if(!list.length) market.innerHTML = `<p style="text-align:center;color:#777">Пусто</p>`;
+
+  // profile
+  const q = (document.getElementById('profile-search').value || '').toLowerCase();
+  if(currentProfileTab === 'purchases'){
+    const pList = purchases.map(id=>items.find(it=>it.id===id)).filter(Boolean).filter(i=> (i.name + ' ' + i.desc).toLowerCase().includes(q));
+    document.getElementById('purchases-grid').innerHTML = pList.map(cardHTML).join('');
+    document.getElementById('purchases-empty').style.display = pList.length ? 'none' : 'block';
+    document.getElementById('myitems-grid').innerHTML = '';
+    document.getElementById('myitems-empty').style.display = 'none';
+  } else {
+    const mList = myItems.filter(Boolean).filter(i=> (i.name + ' ' + i.desc).toLowerCase().includes(q));
+    document.getElementById('myitems-grid').innerHTML = mList.map(cardHTML).join('');
+    document.getElementById('myitems-empty').style.display = mList.length ? 'none' : 'block';
+    document.getElementById('purchases-grid').innerHTML = '';
+    document.getElementById('purchases-empty').style.display = 'none';
+  }
+}
+
+/* ===== Sort select handlers ===== */
 document.getElementById('sort-btn').addEventListener('click', ()=> {
   document.getElementById('sort-select').classList.toggle('open');
 });
-document.querySelectorAll('.custom-options div').forEach(opt => {
-  opt.addEventListener('click', () => {
+document.querySelectorAll('.custom-options div').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
     sort = opt.dataset.val;
     document.getElementById('sort-btn').innerText = opt.innerText;
     document.getElementById('sort-select').classList.remove('open');
@@ -515,13 +523,13 @@ document.querySelectorAll('.custom-options div').forEach(opt => {
   });
 });
 
-/* ---------- Misc handlers ---------- */
-document.getElementById('apply-btn').addEventListener('click', render);
-document.getElementById('search-input').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); render(); }});
-document.getElementById('profile-search').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); render(); }});
+/* ===== Misc handlers ===== */
+document.getElementById('apply-top').addEventListener('click', render);
+document.getElementById('search-input').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); render(); } });
+document.getElementById('profile-search').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); render(); } });
 
-/* ---------- Init ---------- */
-document.addEventListener('DOMContentLoaded', () => {
+/* ===== Init ===== */
+document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('commission-info').textContent = 'Вы получите: 0.00 TON (с учетом комиссии 10%)';
   render();
 });
