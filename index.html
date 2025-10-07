@@ -1,514 +1,423 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TonFiles Market — Demo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tonfiles Market</title>
 <style>
-/* Базовые */
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{
-  margin:0;
-  font-family:Inter,Arial,sans-serif;
-  background:#000;
-  color:#fff;
-  overflow-x:hidden;
+  margin:0;font-family:Arial,Helvetica,sans-serif;
+  background:#000;color:#fff;overflow-x:hidden;
 }
-/* Хедер */
 header{
-  position:sticky;top:0;z-index:110;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px;background:#0a0a0a;border-bottom:2px solid #0eff00;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 20px;background:#111;border-bottom:2px solid #0eff00;
 }
-header img.logo{height:28px}
-header .balance{display:flex;gap:8px;align-items:center;font-weight:700}
-header .balance img{width:14px;height:14px;object-fit:contain}
+header img{height:28px;}
+header .balance{display:flex;align-items:center;gap:6px;font-weight:bold;}
+header .balance img{width:14px;height:14px;object-fit:contain;}
 
-/* Основной контейнер */
-main{max-width:1200px;margin:0 auto;padding:16px 14px 90px}
+main{padding:15px 15px 80px;}
 
-/* Нижние табы */
+/* кнопки */
+button,input[type=file],input[type=number],input[type=text],textarea,select{
+  border-radius:6px;font-size:14px;transition:0.2s;
+}
+button{
+  background:#0eff00;color:#000;border:none;padding:9px 10px;
+  font-weight:bold;cursor:pointer;width:100%;
+}
+button:hover{opacity:0.9;}
+button:focus{outline:none;box-shadow:0 0 6px #0eff00;}
+button.dark{background:#111;border:1px solid #0eff00;color:#0eff00;}
+button.dark:hover{background:#0eff00;color:#000;}
+
+/* input */
+input,textarea,select{
+  background:#111;border:1px solid #0eff00;color:#fff;padding:8px;width:100%;
+}
+input:focus,textarea:focus,select:focus{outline:none;box-shadow:0 0 6px #0eff00;}
+
+/* нижнее меню */
 .tabs{
-  position:fixed;left:0;right:0;bottom:0;z-index:200;
-  display:flex;background:#0a0a0a;border-top:2px solid #0eff00;
+  display:flex;justify-content:space-around;position:fixed;bottom:0;left:0;width:100%;
+  background:#111;border-top:2px solid #0eff00;
 }
-.tabs button{
-  flex:1;padding:10px;border:0;background:none;color:#9aa;font-weight:700;cursor:pointer;
+.tabs button{flex:1;background:none;border:none;color:#fff;padding:10px;cursor:pointer;}
+.tabs button.active{color:#0eff00;font-weight:bold;}
+
+/* разделы */
+.section{display:none;}
+.section.active{display:block;}
+
+/* фильтры и поиск */
+.search-filter{margin-bottom:15px;}
+.search-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.search-row input{flex:1;min-width:120px;}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;}
+.custom-select{position:relative;flex:1;min-width:150px;}
+.custom-select button{
+  background:#111;border:1px solid #0eff00;color:#fff;width:100%;
+  text-align:left;padding:8px;border-radius:5px;
 }
-.tabs button.active{color:#0eff00}
-
-/* Секции */
-.section{display:none}
-.section.active{display:block}
-
-/* Поиск/фильтры */
-.search-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.search-filter input{
-  background:#0a0a0a;border:1px solid #0eff00;padding:8px;border-radius:8px;color:#fff;flex:1;min-width:140px;
+.custom-select button:after{content:"▼";float:right;color:#0eff00;}
+.custom-options{
+  display:none;position:absolute;top:38px;left:0;width:100%;background:#111;
+  border:1px solid #0eff00;border-radius:5px;z-index:50;
 }
+.custom-options div{padding:8px;cursor:pointer;}
+.custom-options div:hover{background:#0eff00;color:#000;}
+.custom-select.open .custom-options{display:block;}
 
-/* Сетка карточек */
+/* карточки */
 .grid{
-  display:grid;gap:14px;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;
 }
-
-/* Карточка */
 .card{
-  background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;
-  overflow:hidden;display:flex;flex-direction:column;cursor:pointer;
-  transition:transform .16s,box-shadow .16s;
+  background:#111;border:1px solid #0eff00;border-radius:8px;
+  overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;height:280px;
 }
-.card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(14,255,0,0.06)}
-.image-wrap{height:150px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.image-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-.card-body{padding:12px;display:flex;flex-direction:column;gap:8px;position:relative}
-.item-id{position:absolute;right:10px;top:8px;font-size:12px;color:#6b6f73}
-.title{font-size:15px;font-weight:700;margin:0}
-.desc{font-size:13px;color:#bfc7d9;margin:0;line-height:1.2;height:2.4em;overflow:hidden;text-overflow:ellipsis}
-.row-info{display:flex;justify-content:space-between;align-items:center;color:#aeb7c9;font-size:13px}
-.btn-row{display:flex;gap:8px;margin-top:6px}
-.btn{
-  flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
+.card img{width:100%;height:160px;object-fit:cover;display:block;}
+.card-content{padding:8px;flex-grow:1;}
+.card-content h3{font-size:16px;margin:4px 0;}
+.card-content p{font-size:13px;margin:2px 0;color:#ccc;}
+.card .info-line{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;margin-top:4px;color:#aaa;
 }
-/* Типы кнопок */
-.btn-primary{background:#0eff00;color:#000}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#cfe}
-.btn-danger{background:transparent;border:1px solid #ff5c5c;color:#ff9b9b}
+.card button{margin-top:6px;}
+.card-id{
+  position:absolute;top:5px;right:7px;font-size:12px;color:#0eff00;opacity:0.8;
+}
 
-/* Модалка */
+/* модалка */
 .modal{
-  position:fixed;left:0;top:0;right:0;bottom:0;display:none;
-  justify-content:center;align-items:center;background:rgba(0,0,0,0.75);z-index:400;
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:1000;
 }
-.modal.show{display:flex}
-.modal-card{
-  width:95%;max-width:520px;background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;padding:16px;
-  box-shadow:0 12px 40px rgba(14,255,0,0.06);
+.modal.active{display:flex;}
+.modal-content{
+  background:#111;border:1px solid #0eff00;border-radius:10px;
+  max-width:400px;width:90%;padding:15px;text-align:center;position:relative;
 }
-.modal-card img{width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:12px}
-.modal-title{font-size:18px;margin:0 0 6px}
-.modal-desc{color:#bfc7d9;margin:0 0 10px}
-.modal-line{display:flex;justify-content:center;gap:10px;align-items:center;color:#dfe6f9;margin-bottom:10px;font-weight:700}
-.modal-actions{display:flex;gap:10px;margin-top:8px}
+.modal-content img{width:100%;max-height:200px;object-fit:cover;border-radius:5px;margin-bottom:10px;}
+.modal-content button{margin-top:8px;}
+.modal-header{font-weight:bold;margin-bottom:5px;}
+.modal-rating{color:#0eff00;margin-bottom:8px;font-size:14px;}
+.modal-buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.modal-buttons button{flex:1;}
 
-/* Форма добавления */
-#add form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
-.form-row{display:flex;flex-direction:column;gap:6px}
-label{color:#0eff00;font-weight:700;font-size:13px}
-input[type=file]{color:#fff}
-input[type="text"],input[type="number"],textarea{
-  background:#0a0a0a;border:1px solid #0eff00;padding:10px;border-radius:8px;color:#fff;font-size:14px
+/* публикация */
+#add{max-width:420px;margin:0 auto;}
+#add h2{text-align:center;}
+#add .form-group{margin-bottom:12px;}
+#add label{display:block;margin-bottom:4px;color:#0eff00;font-size:13px;}
+.price-info{font-size:13px;color:#777;margin-top:5px;}
+
+/* профиль */
+#profile h2{text-align:center;}
+.profile-box{
+  padding:10px;background:#111;border:1px solid #0eff00;
+  border-radius:8px;margin-bottom:15px;
 }
-textarea{min-height:90px;resize:vertical}
-.input-error{border-color:#ff5c5c !important;box-shadow:0 0 6px rgba(255,0,0,0.08)}
-#commission-info{color:#9fbf9f;font-size:13px}
+.profile-tabs{display:flex;justify-content:center;border-bottom:1px solid #0eff00;margin-bottom:10px;}
+.profile-tabs button{flex:1;background:none;border:none;color:#fff;padding:8px;cursor:pointer;}
+.profile-tabs button.active{color:#0eff00;font-weight:bold;}
+.profile-search{margin-bottom:10px;}
+.profile-section{display:none;}
+.profile-section.active{display:block;}
 
-/* Профиль */
-.profile-box{background:#0a0a0a;border:1px solid #0eff00;padding:12px;border-radius:10px;margin-bottom:12px}
-.profile-tabs{display:flex;border-bottom:1px solid #0eff00;margin-bottom:10px;padding-bottom:6px}
-.profile-tabs button{flex:1;background:none;border:0;color:#dfe;padding:8px;font-weight:700;cursor:pointer}
-.profile-tabs button.active{color:#0eff00}
-
-/* Тост */
-.toast{position:fixed;right:18px;bottom:84px;background:#0a0a0a;border:1px solid #0eff00;padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .25s;z-index:1000}
-.toast.show{opacity:1}
-.small-muted{font-size:13px;color:#9fbf9f}
-
-/* Убрать фокусную плашку в мобильных браузерах */
-button,input,textarea{outline:none}
+/* уведомления */
+.toast{
+  position:fixed;bottom:70px;right:20px;background:#111;border:1px solid #0eff00;
+  padding:10px 15px;border-radius:5px;opacity:0;transition:opacity 0.5s;z-index:1000;
+}
+.toast.show{opacity:1;}
 </style>
 </head>
 <body>
-
 <header>
-  <img class="logo" src="tonfiles.svg" alt="TONFiles">
-  <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="TON"></div>
+  <img src="tonfiles.svg" alt="logo">
+  <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="ton"></div>
 </header>
 
 <main>
   <!-- Главная -->
   <section id="home" class="section active">
     <div class="search-filter">
-      <input id="search-input" placeholder="Поиск по названию или описанию..." />
-      <input id="min-price" type="number" placeholder="Мин. цена" step="0.01" style="max-width:160px" />
-      <input id="max-price" type="number" placeholder="Макс. цена" step="0.01" style="max-width:160px" />
-      <button class="btn btn-ghost" onclick="render()" style="min-width:120px">Применить</button>
+      <div class="search-row">
+        <input id="search-input" placeholder="Поиск...">
+        <button id="apply-btn">Применить</button>
+      </div>
+      <div class="filter-row">
+        <input id="min-price" type="number" step="0.01" placeholder="Мин. цена">
+        <input id="max-price" type="number" step="0.01" placeholder="Макс. цена">
+        <div class="custom-select" id="sort-select">
+          <button id="sort-btn">Последние</button>
+          <div class="custom-options">
+            <div data-val="newest">Последние</div>
+            <div data-val="price_asc">Цена: по возрастанию</div>
+            <div data-val="price_desc">Цена: по убыванию</div>
+            <div data-val="best">Отзывы: лучшие</div>
+            <div data-val="count">Отзывы: количество</div>
+          </div>
+        </div>
+      </div>
     </div>
-
     <div class="grid" id="market-grid"></div>
   </section>
 
   <!-- Добавить -->
   <section id="add" class="section">
-    <form onsubmit="event.preventDefault(); publish();">
-      <div class="form-row"><label for="add-name">Название</label><input id="add-name" type="text" /></div>
-      <div class="form-row"><label for="add-desc">Описание</label><textarea id="add-desc"></textarea></div>
-      <div class="form-row">
-        <label for="add-price">Цена (TON)</label>
-        <input id="add-price" type="number" step="0.01" oninput="updateCommission()" />
-        <div id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</div>
-      </div>
-      <div class="form-row"><label>Загрузка файлов — превью (изображение)</label><input id="add-preview" type="file" accept="image/*" /></div>
-      <div class="form-row"><label>Загрузка файла — конечный файл</label><input id="add-file" type="file" /></div>
-      <button class="btn btn-primary" type="submit">Опубликовать</button>
-    </form>
+    <h2>Публикация объявления</h2>
+    <div class="form-group"><label>Название</label><input id="add-name"></div>
+    <div class="form-group"><label>Описание</label><textarea id="add-desc"></textarea></div>
+    <div class="form-group"><label>Цена (TON)</label><input id="add-price" type="number" step="0.01"></div>
+    <div class="price-info" id="price-info"></div>
+    <div class="form-group"><label>Изображение</label><input id="add-preview" type="file" accept="image/*"></div>
+    <div class="form-group"><label>Файл</label><input id="add-file" type="file"></div>
+    <button onclick="publish()">Опубликовать</button>
   </section>
 
   <!-- Профиль -->
   <section id="profile" class="section">
+    <h2>Профиль</h2>
     <div class="profile-box">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-weight:800">Реферальная программа</div>
-          <div class="small-muted">2% от трат рефералов</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-weight:800"><span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle" /></div>
-          <button class="btn btn-ghost" style="margin-top:6px" onclick="withdrawRef()">Вывести</button>
-        </div>
-      </div>
+      <h3>Реферальная система</h3>
+      <p>Баланс: <span id="ref-balance">0.00</span> <img src="ton1.svg" alt="ton" style="width:12px;height:12px;vertical-align:middle"></p>
+      <p style="color:#777;font-size:13px;">2% от трат рефералов</p>
+      <button onclick="withdrawRef()">Вывести</button>
     </div>
 
     <div class="profile-tabs">
-      <button class="active" onclick="switchProfileTab('purchases', this)">Мои покупки</button>
-      <button onclick="switchProfileTab('myitems', this)">Мои товары</button>
+      <button class="active" onclick="switchProfileTab('purchases')">Мои покупки</button>
+      <button onclick="switchProfileTab('myitems')">Мои товары</button>
     </div>
 
-    <div class="profile-search"><input id="profile-search" placeholder="Поиск..." oninput="render()" /></div>
-
     <div id="purchases" class="profile-section active">
+      <div class="profile-search"><input id="purchases-search" placeholder="Поиск покупок..."></div>
       <div id="purchases-grid" class="grid"></div>
-      <p id="purchases-empty" class="small-muted" style="text-align:center;margin-top:10px">Пусто</p>
+      <p id="purchases-empty" style="text-align:center;color:#777;">Пусто</p>
     </div>
 
     <div id="myitems" class="profile-section">
+      <div class="profile-search"><input id="myitems-search" placeholder="Поиск товаров..."></div>
       <div id="myitems-grid" class="grid"></div>
-      <p id="myitems-empty" class="small-muted" style="text-align:center;margin-top:10px">Пусто</p>
+      <p id="myitems-empty" style="text-align:center;color:#777;">Пусто</p>
     </div>
   </section>
 </main>
 
-<!-- Навигация -->
+<!-- нижнее меню -->
 <div class="tabs">
-  <button class="active" onclick="switchTab('home', this)">Главная</button>
-  <button onclick="switchTab('add', this)">Добавить</button>
-  <button onclick="switchTab('profile', this)">Профиль</button>
+  <button class="active" onclick="switchTab('home',this)">Главная</button>
+  <button onclick="switchTab('add',this)">Добавить</button>
+  <button onclick="switchTab('profile',this)">Профиль</button>
 </div>
 
-<!-- Модал для товара и для подтверждений -->
-<div id="modal" class="modal" role="dialog" aria-modal="true">
-  <div class="modal-card" id="modal-card">
-    <!-- Содержимое наполняется JS -->
+<!-- модалка товара -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3 id="modal-name"></h3>
+    <img id="modal-img">
+    <p id="modal-desc"></p>
+    <p class="modal-rating" id="modal-rating"></p>
+    <div class="modal-buttons" id="modal-buttons"></div>
+    <button onclick="closeModal()">Закрыть</button>
   </div>
 </div>
 
-<!-- Тост -->
-<div id="toast" class="toast"></div>
+<!-- уведомление -->
+<div class="toast" id="toast"></div>
 
 <script>
-/* ---------- Данные (демо) ---------- */
-let balance = 1000.00;
-let refBalance = 0.00;
-let userId = 1; // текущий пользователь (demo)
-let purchases = []; // массив id купленных
-let myItems = []; // мои опубликованные (объекты)
-let items = [
-  { id: 101, name: "Скрипт Telegram Bot", desc: "Полностью рабочий бот", price: 15, img: "https://via.placeholder.com/600x400?text=Bot", file: "bot.zip", ownerId: 2, reviews: [5,4] },
-  { id: 102, name: "Видеоурок по дизайну", desc: "Советы для UI/UX", price: 8, img: "https://via.placeholder.com/600x400?text=Design", file: "design.mp4", ownerId: 3, reviews: [5,5,4] },
-  { id: 103, name: "NFT шаблон", desc: "Шаблон NFT-коллекции", price: 22, img: "https://via.placeholder.com/600x400?text=NFT", file: "nft.psd", ownerId: 4, reviews: [4,3] },
-  { id: 104, name: "React сайт", desc: "Красивый адаптивный шаблон", price: 18, img: "https://via.placeholder.com/600x400?text=React", file: "site.zip", ownerId: 5, reviews: [] },
-  { id: 105, name: "Python API пример", desc: "REST API шаблон", price: 12, img: "https://via.placeholder.com/600x400?text=API", file: "api.py", ownerId: 6, reviews: [5] }
+let balance=1000,refBalance=0,userId=1;
+let purchases=[],myItems=[],ratedItems=[];
+let sort="newest";
+const tonIcon='<img src="ton1.svg" style="width:12px;vertical-align:middle;">';
+
+let items=[
+  {id:12345,name:"React шаблон",desc:"Современный лендинг",price:20,img:"https://via.placeholder.com/300x200?text=React",file:"react.zip",ownerId:2,reviews:[5,4]},
+  {id:22342,name:"Python бот",desc:"Telegram бот",price:12,img:"https://via.placeholder.com/300x200?text=Bot",file:"bot.zip",ownerId:3,reviews:[5,5,5]},
+  {id:34564,name:"UI Курс",desc:"Основы дизайна",price:8,img:"https://via.placeholder.com/300x200?text=UI",file:"ui.mp4",ownerId:4,reviews:[4]},
 ];
 
-// Для демо добавим в myItems один элемент, ownerId=userId
-(function seedMyItem(){
-  const id = Math.floor(Math.random()*900000)+100000;
-  const it = { id, name: "Мой тестовый гайд", desc: "Тестовый файл от меня", price: 5.5, img: "https://via.placeholder.com/600x400?text=My+Guide", file: "guide.pdf", ownerId: userId, reviews: [5] };
-  items.unshift(it);
-  myItems.push(it);
-})();
-
-/* ---------- UI helper: toast ---------- */
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=> t.classList.remove('show'), 2200);
-}
-
-/* ---------- Навигация между секциями ---------- */
-function switchTab(id, btn){
+function switchTab(id,btn){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   render();
 }
-
-/* ---------- Профиль: подвкладки ---------- */
-let currentProfileTab = 'purchases';
-function switchProfileTab(id, btn){
-  currentProfileTab = id;
+function switchProfileTab(id){
   document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('profile-search').placeholder = id==='purchases' ? 'Поиск покупок...' : 'Поиск моих товаров...';
+  event.target.classList.add('active');
   render();
 }
 
-/* ---------- Комиссия и валидация цены ---------- */
-const MIN_PRICE = 0.1;
-function updateCommission(){
-  const priceInput = document.getElementById('add-price');
-  const info = document.getElementById('commission-info');
-  let v = parseFloat(priceInput.value) || 0;
-  if(v < MIN_PRICE){
-    priceInput.classList.add('input-error');
-    info.textContent = `Минимальная сумма: ${MIN_PRICE.toFixed(2)} `;
-    // вставим значок TON (не разрывая текста слишком)
-    info.innerHTML += `<img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle">`;
+document.getElementById('add-price').addEventListener('input',()=>{
+  let val=parseFloat(addPrice.value);
+  let info=document.getElementById('price-info');
+  if(!val){info.innerHTML='';return;}
+  if(val<0.1){
+    addPrice.style.borderColor='red';
+    info.style.color='red';
+    info.innerHTML=`Минимальная сумма: 0.1 ${tonIcon}`;
   } else {
-    priceInput.classList.remove('input-error');
-    const after = (v * 0.9).toFixed(2);
-    info.textContent = `Вы получите: ${after} TON (с учётом комиссии 10%)`;
+    addPrice.style.borderColor='#0eff00';
+    info.style.color='#777';
+    info.innerHTML=`Вы получите ${(val*0.9).toFixed(2)} ${tonIcon} с учётом комиссии (10%)`;
   }
-}
+});
 
-/* ---------- Публикация товара ---------- */
 function publish(){
-  const name = document.getElementById('add-name').value.trim();
-  const desc = document.getElementById('add-desc').value.trim();
-  const price = parseFloat(document.getElementById('add-price').value) || 0;
-  const preview = document.getElementById('add-preview').files[0];
-  const file = document.getElementById('add-file').files[0];
-
-  if(!name || !desc || !price || !preview || !file){
-    showToast('Заполните все поля');
-    return;
-  }
-  if(price < MIN_PRICE){
-    showToast(`Минимальная цена ${MIN_PRICE.toFixed(2)} TON`);
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    const id = Math.floor(Math.random() * 900000) + 100000;
-    const item = { id, name, desc, price: Number(price.toFixed(2)), img: e.target.result, file: file.name, ownerId: userId, reviews: [] };
-    items.unshift(item);
-    myItems.push(item);
-    // очистим форму
-    document.getElementById('add-name').value = '';
-    document.getElementById('add-desc').value = '';
-    document.getElementById('add-price').value = '';
-    document.getElementById('add-preview').value = '';
-    document.getElementById('add-file').value = '';
-    document.getElementById('commission-info').textContent = 'Вы получите: 0.00 TON (с учетом комиссии 10%)';
-    showToast('Товар опубликован');
+  let name=addName.value.trim();
+  let desc=addDesc.value.trim();
+  let price=parseFloat(addPrice.value)||0;
+  let imgFile=addPreview.files[0];
+  let file=addFile.files[0];
+  if(!name||!desc||!price||!imgFile||!file){showToast("Заполните все поля");return;}
+  if(price<0.1){showToast("Минимальная цена 0.1 TON");return;}
+  let reader=new FileReader();
+  reader.onload=e=>{
+    let newId=Math.floor(Math.random()*999999);
+    let item={id:newId,name,desc,price,img:e.target.result,file:file.name,ownerId:userId,reviews:[]};
+    items.unshift(item);myItems.push(item);
+    showToast("Товар опубликован");
+    addName.value=addDesc.value=addPrice.value="";addPreview.value=addFile.value="";
+    document.getElementById('price-info').innerHTML="";
     render();
   };
-  reader.readAsDataURL(preview);
+  reader.readAsDataURL(imgFile);
 }
 
-/* ---------- Вывод с реф. баланса ---------- */
+function openModal(item){
+  modalName.innerText=item.name;
+  modalImg.src=item.img;
+  modalDesc.innerText=item.desc;
+  let avg=item.reviews.length?item.reviews.reduce((a,b)=>a+b)/item.reviews.length:0;
+  modalRating.innerHTML=`⭐ ${avg.toFixed(1)} • ${item.price.toFixed(2)} ${tonIcon}`;
+  let btns=document.getElementById('modal-buttons');
+  btns.innerHTML="";
+  if(item.ownerId===userId){
+    btns.innerHTML=`<button class="dark">Мой товар</button><button style="background:red;" onclick="confirmDelete(${item.id})">Удалить</button>`;
+  } else if(purchases.includes(item.id)){
+    btns.innerHTML=`<button class="dark">Приобретено</button><button class="dark">Получить файл</button>`;
+  } else {
+    btns.innerHTML=`<button onclick='buy(${item.id})'>Купить за ${item.price.toFixed(2)} ${tonIcon}</button>`;
+  }
+  modal.classList.add('active');
+}
+
+function closeModal(){modal.classList.remove('active');}
+function confirmDelete(id){
+  if(confirm("Вы уверены, что хотите удалить товар? Отзывы будут утеряны.")){
+    items=items.filter(i=>i.id!==id);
+    myItems=myItems.filter(i=>i.id!==id);
+    showToast("Товар удалён");
+    closeModal();render();
+  }
+}
+
+function buy(id){
+  let item=items.find(i=>i.id===id);
+  if(balance<item.price){showToast("Недостаточно средств");return;}
+  balance-=item.price;refBalance+=item.price*0.02;purchases.push(id);
+  showToast("Покупка успешна");closeModal();render();
+}
+
 function withdrawRef(){
-  if(refBalance > 0){
-    balance += refBalance;
-    refBalance = 0;
-    showToast('Реферальный баланс выведен');
-  } else {
-    showToast('Недостаточно средств для вывода');
-  }
-  render();
+  if(refBalance<=0){showToast("Недостаточно средств на реф. балансе");return;}
+  balance+=refBalance;refBalance=0;showToast("Вывод успешен");render();
 }
 
-/* ---------- Утилиты ---------- */
-function calcAvg(arr){ return arr && arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length) : 0; }
-
-/* ---------- Рендер карточки ---------- */
-function cardHTML(item){
-  const owned = item.ownerId === userId;
-  const bought = purchases.includes(item.id);
-  const avg = calcAvg(item.reviews).toFixed(1);
-  const idLabel = `#${String(item.id).padStart(5,'0')}`;
-  // кнопки: для владельца — "Мой товар" (disabled) + "Удалить"
-  // для купленного — "Приобретено" + "Получить файл"
-  // для чужого — "Купить за X TON" (открывает модал)
-  let buttonsHtml = '';
-  if(owned){
-    buttonsHtml = `<button class="btn btn-ghost" onclick="event.stopPropagation();">Мой товар</button>
-                   <button class="btn btn-danger" onclick="event.stopPropagation(); openDeleteModal(${item.id})">Удалить</button>`;
-  } else if(bought){
-    buttonsHtml = `<button class="btn btn-ghost" onclick="event.stopPropagation();">Приобретено</button>
-                   <button class="btn btn-ghost" onclick="event.stopPropagation(); showFile(${item.id})">Получить файл</button>`;
-  } else {
-    buttonsHtml = `<button class="btn btn-primary" onclick="event.stopPropagation(); openModal(${item.id})">Купить за ${item.price.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle"></button>`;
-  }
-
-  return `
-    <div class="card" onclick="openModal(${item.id})" role="button" aria-pressed="false">
-      <div class="image-wrap"><img src="${item.img}" alt="${escapeHtml(item.name)}"></div>
-      <div class="card-body">
-        <div class="item-id">${idLabel}</div>
-        <h3 class="title">${escapeHtml(item.name)}</h3>
-        <p class="desc">${escapeHtml(item.desc)}</p>
-        <div class="row-info">
-          <div>⭐ ${avg} (${item.reviews.length})</div>
-          <div>${item.price.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle"></div>
-        </div>
-        <div class="btn-row">${buttonsHtml}</div>
-      </div>
-    </div>
-  `;
+function showToast(m){
+  let t=document.getElementById('toast');
+  t.innerText=m;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-/* ---------- Открыть модал с товаром ---------- */
-function openModal(id){
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  const owned = item.ownerId === userId;
-  const bought = purchases.includes(item.id);
-  const avg = calcAvg(item.reviews).toFixed(1);
-  const container = document.getElementById('modal-card');
-
-  // кнопки с тонкой стилизацией
-  let actions = '';
-  if(owned){
-    actions = `<button class="btn btn-ghost" disabled>Мой товар</button>
-               <button class="btn btn-danger" onclick="openDeleteModal(${item.id})">Удалить</button>`;
-  } else if(bought){
-    actions = `<button class="btn btn-ghost" disabled>Приобретено</button>
-               <button class="btn btn-ghost" onclick="showFile(${item.id})">Получить файл</button>`;
-  } else {
-    actions = `<button class="btn btn-primary" onclick="buyFromModal(${item.id})">Купить за ${item.price.toFixed(2)} <img src='ton1.svg' style='width:12px;height:12px;vertical-align:middle'></button>`;
-  }
-
-  container.innerHTML = `
-    <img src="${item.img}" alt="${escapeHtml(item.name)}">
-    <h2 class="modal-title">${escapeHtml(item.name)}</h2>
-    <p class="modal-desc">${escapeHtml(item.desc)}</p>
-    <div class="modal-line">⭐ ${avg} (${item.reviews.length}) &nbsp; • &nbsp; <strong>${item.price.toFixed(2)} TON</strong></div>
-    <div class="modal-actions">${actions}</div>
-    <div style="margin-top:10px"><button class="btn btn-ghost" onclick="closeModal()">Закрыть</button></div>
-  `;
-  document.getElementById('modal').classList.add('show');
-}
-
-/* ---------- Buy from modal (checks and does transaction) ---------- */
-function buyFromModal(id){
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  if(balance < item.price){ showToast('Недостаточно средств'); return; }
-  // списываем
-  balance = Number((balance - item.price).toFixed(2));
-  refBalance = Number((refBalance + item.price*0.02).toFixed(2));
-  purchases.push(item.id);
-  showToast('Покупка успешна');
-  closeModal();
-  render();
-}
-
-/* ---------- show file (placeholder) ---------- */
-function showFile(id){
-  // пока заглушка
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  showToast(`Файл "${item.file}" будет доступен в профиле после интеграции бэкенда`);
-}
-
-/* ---------- Открыть модал подтверждения удаления ---------- */
-let pendingDeleteId = null;
-function openDeleteModal(id){
-  pendingDeleteId = id;
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  const container = document.getElementById('modal-card');
-  container.innerHTML = `
-    <h3 class="modal-title">Подтвердите удаление</h3>
-    <p class="modal-desc">Вы действительно хотите удалить товар "<strong>${escapeHtml(item.name)}</strong>"?</p>
-    <p class="small-muted">Внимание: удаление необратимо. Все отзывы и рейтинг будут удалены безвозвратно.</p>
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button class="btn btn-danger" onclick="confirmDelete()">Удалить навсегда</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Отмена</button>
-    </div>
-  `;
-  document.getElementById('modal').classList.add('show');
-}
-
-/* ---------- Подтверждение удаления ---------- */
-function confirmDelete(){
-  if(pendingDeleteId === null){ closeModal(); return; }
-  const id = pendingDeleteId;
-  // удаляем из items
-  items = items.filter(i=>i.id !== id);
-  // удаляем из myItems
-  myItems = myItems.filter(i=>i.id !== id);
-  // удаляем из purchases если были
-  purchases = purchases.filter(pid=>pid !== id);
-  pendingDeleteId = null;
-  closeModal();
-  showToast('Товар удалён');
-  render();
-}
-
-/* ---------- Закрыть модал ---------- */
-function closeModal(){ document.getElementById('modal').classList.remove('show'); pendingDeleteId=null; }
-
-/* ---------- Рендер всего ---------- */
 function render(){
-  // балансы
-  document.getElementById('balance').textContent = balance.toFixed(2);
-  document.getElementById('ref-balance').textContent = refBalance.toFixed(2);
+  balanceEl.innerText=balance.toFixed(2);
+  refBalanceEl.innerText=refBalance.toFixed(2);
+  let s=document.getElementById('search-input').value.toLowerCase();
+  let min=parseFloat(minPrice.value)||0;
+  let max=parseFloat(maxPrice.value)||Infinity;
+  let list=items.filter(i=>(i.name+i.desc).toLowerCase().includes(s)&&i.price>=min&&i.price<=max);
 
-  // фильтры
-  const search = (document.getElementById('search-input').value || '').toLowerCase();
-  const min = parseFloat(document.getElementById('min-price').value) || 0;
-  const max = parseFloat(document.getElementById('max-price').value) || Infinity;
+  if(sort=="price_asc")list.sort((a,b)=>a.price-b.price);
+  else if(sort=="price_desc")list.sort((a,b)=>b.price-a.price);
+  else if(sort=="best")list.sort((a,b)=>b.reviews.length-a.reviews.length);
+  else list.sort((a,b)=>b.id-a.id);
 
-  // главная сетка
-  const grid = document.getElementById('market-grid');
-  const filtered = items.filter(i=>{
-    return ( (i.name + ' ' + i.desc).toLowerCase().includes(search) ) && i.price >= min && i.price <= max;
-  });
-  grid.innerHTML = filtered.map(cardHTML).join('');
+  let grid=document.getElementById('market-grid');
+  grid.innerHTML=list.map(i=>{
+    let avg=i.reviews.length?i.reviews.reduce((a,b)=>a+b)/i.reviews.length:0;
+    let isMine=i.ownerId===userId;
+    let isBought=purchases.includes(i.id);
+    let btn=isMine?`<button class="dark" onclick="openModal(${JSON.stringify(i).replace(/"/g,'&quot;')})">Мой товар</button>
+                   <button style='background:red;' onclick='confirmDelete(${i.id})'>Удалить</button>`
+      :isBought?`<button class="dark" onclick="openModal(${JSON.stringify(i).replace(/"/g,'&quot;')})">Приобретено</button>
+                 <button class="dark">Получить файл</button>`
+      :`<button onclick="openModal(${JSON.stringify(i).replace(/"/g,'&quot;')})">Купить за ${i.price.toFixed(2)} ${tonIcon}</button>`;
+    return `<div class='card'>
+      <span class='card-id'>#${String(i.id).padStart(5,'0')}</span>
+      <img src='${i.img}' onload='this.style.opacity=1'>
+      <div class='card-content'>
+        <h3>${i.name}</h3>
+        <p>${i.desc}</p>
+        <div class='info-line'><span>⭐ ${avg.toFixed(1)}</span><span>${i.price.toFixed(2)} ${tonIcon}</span></div>
+        ${btn}
+      </div>
+    </div>`;
+  }).join("");
+  if(!list.length)grid.innerHTML="<p style='text-align:center;color:#777;'>Пусто</p>";
 
-  // профиль: покупки / мои товары
-  const q = (document.getElementById('profile-search').value || '').toLowerCase();
-  if(currentProfileTab === 'purchases'){
-    const pList = purchases.map(id=>items.find(it=>it.id===id)).filter(Boolean).filter(i=> (i.name + ' ' + i.desc).toLowerCase().includes(q));
-    document.getElementById('purchases-grid').innerHTML = pList.map(cardHTML).join('');
-    document.getElementById('purchases-empty').style.display = pList.length ? 'none' : 'block';
-    // очистим мои товары отображение
-    document.getElementById('myitems-grid').innerHTML = '';
-    document.getElementById('myitems-empty').style.display = 'none';
-  } else {
-    const mList = myItems.filter(Boolean).filter(i=> (i.name + ' ' + i.desc).toLowerCase().includes(q));
-    document.getElementById('myitems-grid').innerHTML = mList.map(cardHTML).join('');
-    document.getElementById('myitems-empty').style.display = mList.length ? 'none' : 'block';
-    document.getElementById('purchases-grid').innerHTML = '';
-    document.getElementById('purchases-empty').style.display = 'none';
-  }
+  // профиль
+  renderProfile();
 }
 
-/* ---------- Помощник экранирования (безопасность вывода) ---------- */
-function escapeHtml(s){
-  if(!s) return '';
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function renderProfile(){
+  let purGrid=document.getElementById('purchases-grid');
+  let myGrid=document.getElementById('myitems-grid');
+  let purSearch=document.getElementById('purchases-search').value.toLowerCase();
+  let mySearch=document.getElementById('myitems-search').value.toLowerCase();
+
+  let purItems=items.filter(i=>purchases.includes(i.id)&&(i.name+i.desc).toLowerCase().includes(purSearch));
+  let myItemsList=items.filter(i=>i.ownerId===userId&&(i.name+i.desc).toLowerCase().includes(mySearch));
+
+  purGrid.innerHTML=purItems.map(i=>
+    `<div class='card'><span class='card-id'>#${String(i.id).padStart(5,'0')}</span>
+    <img src='${i.img}'><div class='card-content'><h3>${i.name}</h3>
+    <p>${i.desc}</p><div class='info-line'><span>⭐ 5.0</span><span>${i.price.toFixed(2)} ${tonIcon}</span></div>
+    <button class='dark' onclick='openModal(${JSON.stringify(i).replace(/"/g,'&quot;')})'>Приобретено</button>
+    <button class='dark'>Получить файл</button></div></div>`).join("");
+
+  myGrid.innerHTML=myItemsList.map(i=>
+    `<div class='card'><span class='card-id'>#${String(i.id).padStart(5,'0')}</span>
+    <img src='${i.img}'><div class='card-content'><h3>${i.name}</h3>
+    <p>${i.desc}</p><div class='info-line'><span>⭐ 5.0</span><span>${i.price.toFixed(2)} ${tonIcon}</span></div>
+    <button class='dark' onclick='openModal(${JSON.stringify(i).replace(/"/g,'&quot;')})'>Мой товар</button>
+    <button style='background:red;' onclick='confirmDelete(${i.id})'>Удалить</button></div></div>`).join("");
+
+  document.getElementById('purchases-empty').style.display=purItems.length?'none':'block';
+  document.getElementById('myitems-empty').style.display=myItemsList.length?'none':'block';
 }
 
-/* ---------- Инициализация ---------- */
-document.addEventListener('DOMContentLoaded', ()=>{
-  // init commission info
-  document.getElementById('commission-info').textContent = 'Вы получите: 0.00 TON (с учетом комиссии 10%)';
-  // обработчик Enter на поиске
-  document.getElementById('search-input').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); render(); } });
-  document.getElementById('profile-search').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); render(); } });
-  render();
+document.getElementById('apply-btn').onclick=render;
+document.querySelectorAll('.custom-options div').forEach(opt=>{
+  opt.onclick=()=>{
+    sort=opt.dataset.val;document.getElementById('sort-btn').innerText=opt.innerText;
+    document.getElementById('sort-select').classList.remove('open');
+    render();
+  };
 });
+document.getElementById('sort-btn').onclick=()=>document.getElementById('sort-select').classList.toggle('open');
+render();
 </script>
 </body>
 </html>
