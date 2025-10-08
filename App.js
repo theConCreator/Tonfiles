@@ -12,11 +12,11 @@ let items = [
   {id:105,name:"Python API пример",desc:"REST API шаблон",price:12,img:"https://via.placeholder.com/600x400?text=API",file:"api.py",ownerId:6,reviews:[5]}
 ];
 
-(function seedMyItem(){
-  const id = Math.floor(Math.random()*900000)+100000;
-  const it = {id,name:"Мой тестовый гайд",desc:"Тестовый файл от меня",price:5.5,img:"https://via.placeholder.com/600x400?text=My+Guide",file:"guide.pdf",ownerId:userId,reviews:[5]};
-  items.unshift(it);
-  myItems.push(it);
+// Для теста добавляем один свой товар
+(function(){
+  const id=Math.floor(Math.random()*900000)+100000;
+  const it={id,name:"Мой тестовый гайд",desc:"Тестовый файл от меня",price:5.5,img:"https://via.placeholder.com/600x400?text=My+Guide",file:"guide.pdf",ownerId:userId,reviews:[5]};
+  items.unshift(it);myItems.push(it);
 })();
 
 function showToast(msg){
@@ -46,17 +46,18 @@ function switchProfileTab(id,btn){
 }
 
 const MIN_PRICE=0.1;
+
 function updateCommission(){
-  const priceInput=document.getElementById('add-price');
+  const p=document.getElementById('add-price');
   const info=document.getElementById('commission-info');
-  let v=parseFloat(priceInput.value)||0;
+  let v=parseFloat(p.value)||0;
   if(v<MIN_PRICE){
-    priceInput.classList.add('input-error');
-    info.textContent=`Минимальная сумма: ${MIN_PRICE.toFixed(2)} TON`;
+    p.classList.add('input-error');
+    info.innerHTML=`Минимальная сумма: ${MIN_PRICE.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle">`;
   }else{
-    priceInput.classList.remove('input-error');
+    p.classList.remove('input-error');
     const after=(v*0.9).toFixed(2);
-    info.textContent=`Вы получите: ${after} TON (с учётом комиссии 10%)`;
+    info.textContent=`Вы получите: ${after} TON (с учетом комиссии 10%)`;
   }
 }
 
@@ -68,126 +69,168 @@ function publish(){
   const file=document.getElementById('add-file').files[0];
 
   if(!name||!desc||!price||!preview||!file){showToast('Заполните все поля');return;}
-  if(price<MIN_PRICE){showToast(`Мин. цена ${MIN_PRICE.toFixed(2)} TON`);return;}
+  if(price<MIN_PRICE){showToast(`Минимальная цена ${MIN_PRICE.toFixed(2)} TON`);return;}
 
-  const reader=new FileReader();
-  reader.onload=e=>{
+  const r=new FileReader();
+  r.onload=e=>{
     const id=Math.floor(Math.random()*900000)+100000;
     const item={id,name,desc,price:Number(price.toFixed(2)),img:e.target.result,file:file.name,ownerId:userId,reviews:[]};
     items.unshift(item);myItems.push(item);
+
     document.getElementById('add-name').value='';
     document.getElementById('add-desc').value='';
     document.getElementById('add-price').value='';
     document.getElementById('add-preview').value='';
     document.getElementById('add-file').value='';
-    updateCommission();
+    document.getElementById('commission-info').textContent='Вы получите: 0.00 TON (с учетом комиссии 10%)';
     showToast('Товар опубликован');
     render();
   };
-  reader.readAsDataURL(preview);
+  r.readAsDataURL(preview);
 }
 
 function withdrawRef(){
-  if(refBalance>0){balance+=refBalance;refBalance=0;showToast('Реф. баланс выведен');}
-  else showToast('Недостаточно средств');
+  if(refBalance>0){
+    balance+=refBalance;
+    refBalance=0;
+    showToast('Реферальный баланс выведен');
+  } else showToast('Недостаточно средств для вывода');
   render();
 }
 
-function calcAvg(arr){return arr&&arr.length?(arr.reduce((a,b)=>a+b,0)/arr.length):0;}
+function calcAvg(a){return a&&a.length?(a.reduce((x,y)=>x+y,0)/a.length):0;}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
-function cardHTML(item){
-  const owned=item.ownerId===userId;
-  const bought=purchases.includes(item.id);
-  const avg=calcAvg(item.reviews).toFixed(1);
-  const idLabel=`#${String(item.id).padStart(5,'0')}`;
-  let buttonsHtml='';
+function cardHTML(i){
+  const owned=i.ownerId===userId;
+  const bought=purchases.includes(i.id);
+  const avg=calcAvg(i.reviews).toFixed(1);
+  const idLabel=`#${String(i.id).padStart(5,'0')}`;
+  let buttons='';
+
   if(owned){
-    buttonsHtml=`<button class="btn btn-ghost">Мой товар</button><button class="btn btn-danger" onclick="event.stopPropagation();openDeleteModal(${item.id})">Удалить</button>`;
+    buttons=`<button class='btn btn-ghost' onclick='event.stopPropagation();'>Мой товар</button>
+             <button class='btn btn-danger' onclick='event.stopPropagation();openDeleteModal(${i.id})'>Удалить</button>`;
   }else if(bought){
-    buttonsHtml=`<button class="btn btn-ghost">Приобретено</button><button class="btn btn-ghost" onclick="event.stopPropagation();showFile(${item.id})">Файл</button>`;
+    buttons=`<button class='btn btn-ghost' onclick='event.stopPropagation();'>Приобретено</button>
+             <button class='btn btn-ghost' onclick='event.stopPropagation();showFile(${i.id})'>Получить файл</button>`;
   }else{
-    buttonsHtml=`<button class="btn btn-primary" onclick="event.stopPropagation();openModal(${item.id})">Купить за ${item.price.toFixed(2)} <img src='ton1.svg' style='width:12px;height:12px;vertical-align:middle'></button>`;
+    buttons=`<button class='btn btn-primary' onclick='event.stopPropagation();openModal(${i.id})'>
+              Купить за ${i.price.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle">
+             </button>`;
   }
-  return `<div class="card" onclick="openModal(${item.id})">
-    <div class="image-wrap"><img src="${item.img}" alt=""></div>
-    <div class="card-body">
-      <div class="item-id">${idLabel}</div>
-      <h3 class="title">${item.name}</h3>
-      <p class="desc">${item.desc}</p>
-      <div class="row-info"><div>⭐ ${avg} (${item.reviews.length})</div><div>${item.price.toFixed(2)} <img src='ton1.svg' style='width:12px;height:12px'></div></div>
-      <div class="btn-row">${buttonsHtml}</div>
+
+  return `<div class='card' onclick='openModal(${i.id})'>
+    <div class='image-wrap'><img src='${i.img}' alt='${escapeHtml(i.name)}'></div>
+    <div class='card-body'>
+      <div class='item-id'>${idLabel}</div>
+      <h3 class='title'>${escapeHtml(i.name)}</h3>
+      <p class='desc'>${escapeHtml(i.desc)}</p>
+      <div class='row-info'>
+        <div>⭐ ${avg} (${i.reviews.length})</div>
+        <div>${i.price.toFixed(2)} <img src="ton1.svg" style="width:12px;height:12px;vertical-align:middle"></div>
+      </div>
+      <div class='btn-row'>${buttons}</div>
     </div>
   </div>`;
 }
 
+function render(){
+  document.getElementById('balance').textContent=balance.toFixed(2);
+  document.getElementById('ref-balance').textContent=refBalance.toFixed(2);
+
+  // Главная
+  const grid=document.getElementById('market-grid');
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const min=parseFloat(document.getElementById('min-price').value)||0;
+  const max=parseFloat(document.getElementById('max-price').value)||999999;
+  grid.innerHTML=items
+    .filter(i=>(!q||i.name.toLowerCase().includes(q)||i.desc.toLowerCase().includes(q)) && i.price>=min && i.price<=max)
+    .map(cardHTML).join('')||'<p class="small-muted">Ничего не найдено</p>';
+
+  // Профиль
+  const search=document.getElementById('profile-search').value.toLowerCase();
+
+  const purGrid=document.getElementById('purchases-grid');
+  const purItems=items.filter(i=>purchases.includes(i.id)&&(i.name.toLowerCase().includes(search)||i.desc.toLowerCase().includes(search)));
+  purGrid.innerHTML=purItems.map(cardHTML).join('');
+  document.getElementById('purchases-empty').style.display=purItems.length?'none':'block';
+
+  const myGrid=document.getElementById('myitems-grid');
+  const myList=myItems.filter(i=>i.name.toLowerCase().includes(search)||i.desc.toLowerCase().includes(search));
+  myGrid.innerHTML=myList.map(cardHTML).join('');
+  document.getElementById('myitems-empty').style.display=myList.length?'none':'block';
+}
+
 function openModal(id){
-  const item=items.find(i=>i.id===id);if(!item)return;
-  const owned=item.ownerId===userId;const bought=purchases.includes(item.id);
-  const avg=calcAvg(item.reviews).toFixed(1);
+  const i=items.find(x=>x.id===id);
+  if(!i)return;
+  const m=document.getElementById('modal');
+  const card=document.getElementById('modal-card');
+  const avg=calcAvg(i.reviews).toFixed(1);
+  const owned=i.ownerId===userId;
+  const bought=purchases.includes(i.id);
+
   let actions='';
-  if(owned)actions=`<button class='btn btn-ghost' disabled>Мой товар</button><button class='btn btn-danger' onclick='openDeleteModal(${item.id})'>Удалить</button>`;
-  else if(bought)actions=`<button class='btn btn-ghost' disabled>Приобретено</button><button class='btn btn-ghost' onclick='showFile(${item.id})'>Скачать файл</button>`;
-  else actions=`<button class='btn btn-primary' onclick='buyItem(${item.id})'>Купить за ${item.price.toFixed(2)} TON</button>`;
-  const html=`<img src="${item.img}" alt="">
-    <h3 class='modal-title'>${item.name}</h3>
-    <p class='modal-desc'>${item.desc}</p>
-    <div class='modal-line'>⭐ ${avg} (${item.reviews.length})</div>
-    <div class='modal-actions'>${actions}</div>`;
-  document.getElementById('modal-card').innerHTML=html;
-  document.getElementById('modal').classList.add('show');
+  if(owned){
+    actions=`<button class='btn btn-ghost'>Мой товар</button>
+             <button class='btn btn-danger' onclick='openDeleteModal(${i.id})'>Удалить</button>`;
+  }else if(bought){
+    actions=`<button class='btn btn-ghost'>Приобретено</button>
+             <button class='btn btn-ghost' onclick='showFile(${i.id})'>Получить файл</button>`;
+  }else{
+    actions=`<button class='btn btn-primary' onclick='buyItem(${i.id})'>Купить за ${i.price.toFixed(2)} TON</button>`;
+  }
+
+  card.innerHTML=`
+    <img src="${i.img}" alt="">
+    <h2 class="modal-title">${escapeHtml(i.name)}</h2>
+    <p class="modal-desc">${escapeHtml(i.desc)}</p>
+    <div class="modal-line">⭐ ${avg} (${i.reviews.length})</div>
+    <div class="modal-line">${i.price.toFixed(2)} TON</div>
+    <div class="modal-actions">${actions}</div>
+    <button class='btn btn-ghost' style='width:100%;margin-top:8px' onclick='closeModal()'>Закрыть</button>
+  `;
+  m.classList.add('show');
 }
 
 function openDeleteModal(id){
-  const item=items.find(i=>i.id===id);
-  if(!item)return;
-  const html=`<h3 class='modal-title'>Удалить товар?</h3><p>${item.name}</p>
-    <div class='modal-actions'><button class='btn btn-danger' onclick='deleteItem(${id})'>Удалить</button><button class='btn btn-ghost' onclick='closeModal()'>Отмена</button></div>`;
-  document.getElementById('modal-card').innerHTML=html;
-  document.getElementById('modal').classList.add('show');
+  const m=document.getElementById('modal');
+  const card=document.getElementById('modal-card');
+  card.innerHTML=`<p>Удалить товар #${id}?</p>
+    <div class='modal-actions'>
+      <button class='btn btn-danger' onclick='deleteItem(${id})'>Удалить</button>
+      <button class='btn btn-ghost' onclick='closeModal()'>Отмена</button>
+    </div>`;
+  m.classList.add('show');
 }
+
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+
 function deleteItem(id){
   items=items.filter(i=>i.id!==id);
   myItems=myItems.filter(i=>i.id!==id);
   closeModal();showToast('Товар удалён');render();
 }
 
-function closeModal(){document.getElementById('modal').classList.remove('show');}
-document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
-
 function showFile(id){
-  const it=items.find(i=>i.id===id);
-  if(it)showToast(`Файл: ${it.file}`);
+  const i=items.find(x=>x.id===id);
+  if(i)showToast(`Файл: ${i.file}`);
 }
 
 function buyItem(id){
-  const it=items.find(i=>i.id===id);if(!it)return;
-  if(balance<it.price){showToast('Недостаточно средств');return;}
-  balance-=it.price;
-  const seller=myItems.find(i=>i.ownerId===it.ownerId);
-  if(seller)refBalance+=(it.price*0.02);
-  purchases.push(it.id);
-  closeModal();showToast('Покупка успешна');render();
+  const i=items.find(x=>x.id===id);
+  if(!i)return;
+  if(balance<i.price){showToast('Недостаточно средств');return;}
+  if(i.ownerId===userId){showToast('Нельзя купить свой товар');return;}
+  balance-=i.price;
+  const refReward=i.price*0.02; // пример 2% реферальный
+  refBalance+=refReward;
+  purchases.push(i.id);
+  closeModal();
+  showToast('Покупка успешна');
+  render();
 }
 
-function render(){
-  document.getElementById('balance').textContent=balance.toFixed(2);
-  document.getElementById('ref-balance').textContent=refBalance.toFixed(2);
-  const section=document.querySelector('.section.active').id;
-  if(section==='home'){
-    const q=document.getElementById('search-input').value.toLowerCase();
-    const min=parseFloat(document.getElementById('min-price').value)||0;
-    const max=parseFloat(document.getElementById('max-price').value)||Infinity;
-    const filtered=items.filter(i=>(i.name.toLowerCase().includes(q)||i.desc.toLowerCase().includes(q))&&i.price>=min&&i.price<=max);
-    document.getElementById('market-grid').innerHTML=filtered.map(cardHTML).join('');
-  }else if(section==='profile'){
-    const q=document.getElementById('profile-search').value.toLowerCase();
-    const filteredPurch=purchases.map(id=>items.find(i=>i.id===id)).filter(i=>i&&i.name.toLowerCase().includes(q));
-    const filteredMy=myItems.filter(i=>i.name.toLowerCase().includes(q));
-    document.getElementById('purchases-grid').innerHTML=filteredPurch.map(cardHTML).join('');
-    document.getElementById('purchases-empty').style.display=filteredPurch.length?'none':'block';
-    document.getElementById('myitems-grid').innerHTML=filteredMy.map(cardHTML).join('');
-    document.getElementById('myitems-empty').style.display=filteredMy.length?'none':'block';
-  }
-}
-
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
 render();
