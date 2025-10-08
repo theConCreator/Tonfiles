@@ -3,9 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>TonFiles Market — Demo</title>
+<title>TonFiles Market</title>
 <style>
-/* ====== ОСНОВА ====== */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{
@@ -15,12 +14,11 @@ body{
   color:#fff;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
 }
 
-/* ====== HEADER ====== */
+/* HEADER */
 header{
-  position:sticky;top:0;z-index:110;
+  position:sticky;top:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 18px;background:#0a0a0a;border-bottom:2px solid #0eff00;
 }
@@ -28,12 +26,9 @@ header img.logo{height:28px}
 header .balance{display:flex;gap:8px;align-items:center;font-weight:700}
 header .balance img{width:14px;height:14px;object-fit:contain}
 
-/* ====== MAIN ====== */
-main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
-
-/* ====== ТАБЫ ====== */
+/* TABS */
 .tabs{
-  position:fixed;left:0;right:0;bottom:0;z-index:200;
+  position:fixed;left:0;right:0;bottom:0;z-index:100;
   display:flex;background:#0a0a0a;border-top:2px solid #0eff00;
 }
 .tabs button{
@@ -41,30 +36,28 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 }
 .tabs button.active{color:#0eff00}
 
-/* ====== СЕКЦИИ ====== */
-.section{display:none}
-.section.active{display:block}
+/* MAIN */
+main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 
-/* ====== ПОИСК / ФИЛЬТРЫ ====== */
+/* SEARCH & FILTERS */
 .search-filter{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
-.filter-row{display:flex;gap:10px;flex-wrap:wrap}
-.filter-row .grow{flex:1;min-width:160px}
-.search-filter input, .search-filter button{
+.search-filter input, .search-filter select, .search-filter button{
   background:#0a0a0a;border:1px solid #0eff00;padding:8px;border-radius:8px;color:#fff;
 }
-.search-filter .apply-btn{
-  min-width:120px;background:#0eff00;color:#000;font-weight:700;cursor:pointer;
-  transition:background .15s;
+.search-filter .apply-btn, .search-filter select{
+  background:#0eff00;color:#000;font-weight:700;cursor:pointer;transition:background .15s;
 }
 .search-filter .apply-btn:hover{background:#12ff12}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap}
+.filter-row input{flex:1;min-width:120px}
 
-/* ====== GRID ====== */
+/* GRID */
 .grid{
   display:grid;gap:14px;
   grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
 }
 
-/* ====== CARD ====== */
+/* CARD */
 .card{
   background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;
   overflow:hidden;display:flex;flex-direction:column;cursor:pointer;
@@ -73,7 +66,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 .card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(14,255,0,0.06)}
 .image-wrap{height:160px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .image-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
-.card-body{padding:12px;display:flex;flex-direction:column;gap:8px;position:relative;flex:1;min-height:0}
+.card-body{padding:12px;display:flex;flex-direction:column;gap:8px;position:relative;flex:1}
 .item-id{position:absolute;right:10px;top:8px;font-size:12px;color:#6b6f73}
 .title{font-size:15px;font-weight:700;margin:0;line-height:1.2;overflow:hidden}
 .desc{font-size:13px;color:#bfc7d9;margin:0;line-height:1.2;max-height:2.4em;overflow:hidden}
@@ -84,10 +77,9 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
   display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;
 }
 .btn-primary{background:#0eff00;color:#000}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#cfe}
 .btn-danger{background:transparent;border:1px solid #ff5c5c;color:#ff9b9b}
 
-/* ====== МОДАЛКА ====== */
+/* MODAL */
 .modal{
   position:fixed;left:0;top:0;right:0;bottom:0;display:none;
   justify-content:center;align-items:center;background:rgba(0,0,0,0.75);z-index:400;
@@ -102,25 +94,26 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 .modal-desc{color:#bfc7d9;margin:0 0 10px}
 .modal-line{display:flex;justify-content:center;gap:10px;align-items:center;color:#dfe6f9;margin-bottom:10px;font-weight:700}
 .modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.stars{font-size:20px;margin:8px 0;display:flex;gap:6px;justify-content:center}
+.star{cursor:pointer;color:#555}
+.star.active{color:#0eff00}
 
-/* ====== ФОРМА ДОБАВЛЕНИЯ ====== */
+/* ADD ITEM */
 #add form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
-.form-row{display:flex;flex-direction:column;gap:6px}
 label{color:#0eff00;font-weight:700;font-size:13px}
 input[type=file]{color:#fff}
 input[type="text"],input[type="number"],textarea{
   background:#0a0a0a;border:1px solid #0eff00;padding:10px;border-radius:8px;color:#fff;font-size:14px
 }
 textarea{min-height:90px;resize:vertical}
-.input-error{border-color:#ff5c5c !important;box-shadow:0 0 6px rgba(255,0,0,0.08)}
 #commission-info{color:#9fbf9f;font-size:13px}
 #add button[type=submit]{
   background:#0eff00;color:#000;font-weight:700;border:0;border-radius:8px;padding:10px;cursor:pointer;
-  transition:background .15s;
 }
 #add button[type=submit]:hover{background:#12ff12}
+.input-error{border-color:#ff5c5c !important}
 
-/* ====== ПРОФИЛЬ ====== */
+/* PROFILE */
 .profile-box{background:#0a0a0a;border:1px solid #0eff00;padding:12px;border-radius:10px;margin-bottom:12px}
 .profile-tabs{display:flex;border-bottom:1px solid #0eff00;margin-bottom:10px;padding-bottom:6px}
 .profile-tabs button{flex:1;background:none;border:0;color:#dfe;padding:8px;font-weight:700;cursor:pointer}
@@ -129,14 +122,8 @@ textarea{min-height:90px;resize:vertical}
 .profile-search input{
   width:100%;padding:8px 10px;border-radius:8px;border:1px solid #0eff00;background:#0a0a0a;color:#fff;
 }
-.profile-search input:focus{outline:none;border-color:#0eff00;box-shadow:0 0 6px rgba(14,255,0,0.1)}
 
-/* ====== ЗВЁЗДЫ ====== */
-.stars{font-size:20px;margin:8px 0;display:flex;gap:6px;justify-content:center}
-.star{cursor:pointer;color:#555}
-.star.active{color:#0eff00}
-
-/* ====== ТОСТ ====== */
+/* TOAST */
 .toast{
   position:fixed;right:18px;bottom:84px;background:#0eff00;color:#000;border-radius:8px;padding:10px 14px;
   opacity:0;transition:opacity 1s;z-index:1000;border:1px solid rgba(0,0,0,0.2);
@@ -153,38 +140,43 @@ textarea{min-height:90px;resize:vertical}
 </header>
 
 <main>
-  <!-- ГЛАВНАЯ -->
+  <!-- HOME -->
   <section id="home" class="section active">
     <div class="search-filter">
-      <div class="filter-row">
-        <input id="search-input" class="grow" placeholder="Поиск по названию или описанию..." />
-        <button class="apply-btn" onclick="render()">Применить</button>
-      </div>
+      <input id="search-input" placeholder="Поиск по названию или описанию...">
       <div class="filter-row">
         <input id="min-price" type="number" placeholder="Мин. цена" step="0.01">
         <input id="max-price" type="number" placeholder="Макс. цена" step="0.01">
+        <input id="id-search" type="number" placeholder="ID товара">
+      </div>
+      <div class="filter-row">
+        <select id="sort-select">
+          <option value="latest">Последние</option>
+          <option value="price-asc">Цена ↑</option>
+          <option value="price-desc">Цена ↓</option>
+          <option value="best">Отзывы: лучшие</option>
+        </select>
+        <button class="apply-btn" onclick="render()">Применить</button>
       </div>
     </div>
     <div class="grid" id="market-grid"></div>
+    <p id="market-empty" style="text-align:center;color:#9fbf9f;margin-top:10px;display:none">Не найдено</p>
   </section>
 
-  <!-- ДОБАВИТЬ -->
+  <!-- ADD ITEM -->
   <section id="add" class="section">
     <form onsubmit="event.preventDefault(); publish();">
-      <div class="form-row"><label>Название</label><input id="add-name" type="text"></div>
-      <div class="form-row"><label>Описание</label><textarea id="add-desc"></textarea></div>
-      <div class="form-row">
-        <label>Цена (TON)</label>
-        <input id="add-price" type="number" step="0.01" oninput="updateCommission()">
-        <div id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</div>
-      </div>
-      <div class="form-row"><label>Превью (изображение)</label><input id="add-preview" type="file" accept="image/*"></div>
-      <div class="form-row"><label>Файл</label><input id="add-file" type="file"></div>
+      <label>Название</label><input id="add-name" type="text">
+      <label>Описание</label><textarea id="add-desc"></textarea>
+      <label>Цена (TON)</label><input id="add-price" type="number" step="0.01" oninput="updateCommission()">
+      <div id="commission-info">Вы получите: 0.00 TON (с учётом комиссии 10%)</div>
+      <label>Превью (изображение)</label><input id="add-preview" type="file" accept="image/*">
+      <label>Файл</label><input id="add-file" type="file">
       <button type="submit">Опубликовать</button>
     </form>
   </section>
 
-  <!-- ПРОФИЛЬ -->
+  <!-- PROFILE -->
   <section id="profile" class="section">
     <div class="profile-box">
       <div style="display:flex;justify-content:space-between;align-items:center">
@@ -194,7 +186,7 @@ textarea{min-height:90px;resize:vertical}
         </div>
         <div style="text-align:right">
           <div style="font-weight:800"><span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle"></div>
-          <button class="btn btn-ghost" style="margin-top:6px" onclick="withdrawRef()">Вывести</button>
+          <button class="btn btn-ghost" onclick="withdrawRef()">Вывести</button>
         </div>
       </div>
     </div>
@@ -206,15 +198,8 @@ textarea{min-height:90px;resize:vertical}
 
     <div class="profile-search"><input id="profile-search" placeholder="Поиск..." oninput="render()"></div>
 
-    <div id="purchases" class="profile-section active">
-      <div id="purchases-grid" class="grid"></div>
-      <p id="purchases-empty" class="small-muted" style="text-align:center;margin-top:10px">Пусто</p>
-    </div>
-
-    <div id="myitems" class="profile-section">
-      <div id="myitems-grid" class="grid"></div>
-      <p id="myitems-empty" class="small-muted" style="text-align:center;margin-top:10px">Пусто</p>
-    </div>
+    <div id="purchases" class="profile-section active"><div id="purchases-grid" class="grid"></div></div>
+    <div id="myitems" class="profile-section"><div id="myitems-grid" class="grid"></div></div>
   </section>
 </main>
 
@@ -233,59 +218,177 @@ let items=[
 {id:101,name:"Скрипт Telegram Bot",desc:"Полностью рабочий бот",price:15,img:"https://via.placeholder.com/600x400?text=Bot",file:"bot.zip",ownerId:2,reviews:[5,4]},
 {id:102,name:"Видеоурок по дизайну",desc:"Советы для UI/UX",price:8,img:"https://via.placeholder.com/600x400?text=Design",file:"design.mp4",ownerId:3,reviews:[5,5,4]},
 {id:103,name:"NFT шаблон",desc:"Шаблон NFT-коллекции",price:22,img:"https://via.placeholder.com/600x400?text=NFT",file:"nft.psd",ownerId:4,reviews:[4,3]},
-{id:104,name:"React сайт",desc:"Красивый адаптивный шаблон",price:18,img:"https://via.placeholder.com/600x400?text=React",file:"site.zip",ownerId:5,reviews:[]},
-{id:105,name:"Python API пример",desc:"REST API шаблон",price:12,img:"https://via.placeholder.com/600x400?text=API",file:"api.py",ownerId:6,reviews:[5]}
+{id:104,name:"React сайт",desc:"Красивый адаптивный шаблон",price:18,img:"https://via.placeholder.com/600x400?text=React",file:"site.zip",ownerId:5,reviews:[]}
 ];
-(function(){const id=Math.floor(Math.random()*900000)+100000;const it={id,name:"Мой тестовый гайд",desc:"Тестовый файл от меня",price:5.5,img:"https://via.placeholder.com/600x400?text=My+Guide",file:"guide.pdf",ownerId:userId,reviews:[5]};items.unshift(it);myItems.push(it);})();
+(function(){const it={id:100,name:"Мой тестовый файл",desc:"Тестовый файл",price:5,img:"https://via.placeholder.com/600x400?text=My+File",file:"test.zip",ownerId:userId,reviews:[5]};items.unshift(it);myItems.push(it);})();
 
-function escapeHtml(s){return s?String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])):''}
-function insertZWSP(s,n=20){return s?s.replace(/(\S{20})(?=\S)/g,'$1\u200B'):s}
-function prepareTextForHTML(s,maxLen){if(!s)return'';let t=String(s);if(maxLen&&t.length>maxLen)t=t.slice(0,maxLen)+'…';return escapeHtml(insertZWSP(t,20)).replace(/\n/g,'<br>')}
+const MIN_PRICE=0.1;
 function toMoney(n){return Number(n).toFixed(2)}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500)}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function prepareText(s,len){return escapeHtml(s.length>len?s.slice(0,len)+'…':s)}
 
-function switchTab(id,b){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b&&b.classList.add('active');render()}
-let currentProfileTab='purchases';
-function switchProfileTab(id,b){currentProfileTab=id;document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.profile-tabs button').forEach(x=>x.classList.remove('active'));b&&b.classList.add('active');render()}
+function updateCommission(){
+  const p=document.getElementById('add-price'),i=document.getElementById('commission-info');
+  let v=parseFloat(p.value)||0;
+  if(v<MIN_PRICE){p.classList.add('input-error');i.innerHTML=`Минимальная сумма: ${MIN_PRICE} <img src="ton1.svg" style="width:12px;vertical-align:middle">`;}
+  else{p.classList.remove('input-error');i.textContent=`Вы получите: ${(v*0.9).toFixed(2)} TON (с учётом комиссии 10%)`;}
+}
 
-const MIN_PRICE=0.10;
-function updateCommission(){const p=document.getElementById('add-price'),i=document.getElementById('commission-info');let v=parseFloat(p.value)||0;if(v<MIN_PRICE){p.classList.add('input-error');i.innerHTML=`Минимальная сумма: ${MIN_PRICE.toFixed(2)} <img src="ton1.svg" style="width:12px;vertical-align:middle">`}else{p.classList.remove('input-error');i.textContent=`Вы получите: ${(v*0.9).toFixed(2)} TON (с учётом комиссии 10%)`}}
+function publish(){
+  const n=document.getElementById('add-name'),d=document.getElementById('add-desc'),p=document.getElementById('add-price'),
+        pr=document.getElementById('add-preview'),f=document.getElementById('add-file');
+  if(!n.value||!d.value||!p.value||!pr.files[0]||!f.files[0])return showToast('Заполните все поля');
+  if(p.value<MIN_PRICE)return showToast('Минимальная цена 0.1 TON');
+  const r=new FileReader();
+  r.onload=e=>{
+    const id=Math.floor(Math.random()*900000)+100000;
+    const item={id,name:n.value,desc:d.value,price:+p.value,img:e.target.result,file:f.files[0].name,ownerId:userId,reviews:[]};
+    items.unshift(item);myItems.push(item);
+    n.value=d.value=p.value='';pr.value=f.value='';updateCommission();
+    showToast('Товар опубликован');render();
+  };
+  r.readAsDataURL(pr.files[0]);
+}
 
-function publish(){const n=document.getElementById('add-name'),d=document.getElementById('add-desc'),p=document.getElementById('add-price'),pr=document.getElementById('add-preview'),f=document.getElementById('add-file');if(!n.value||!d.value||!p.value||!pr.files[0]||!f.files[0])return showToast('Заполните все поля');if(p.value<MIN_PRICE)return showToast(`Минимальная цена ${MIN_PRICE.toFixed(2)} TON`);const r=new FileReader();r.onload=e=>{const id=Math.floor(Math.random()*900000)+100000;const item={id,name:n.value,desc:d.value,price:+(+p.value).toFixed(2),img:e.target.result,file:f.files[0].name,ownerId:userId,reviews:[]};items.unshift(item);myItems.push(item);n.value=d.value=p.value='';pr.value=f.value='';updateCommission();showToast('Товар опубликован');render()};r.readAsDataURL(pr.files[0])}
+function buy(id){
+  const it=items.find(x=>x.id==id);
+  if(!it)return;
+  if(it.ownerId===userId)return showToast('Это ваш товар');
+  if(balance<it.price)return showToast('Недостаточно средств');
+  balance-=it.price;purchases.push(it);refBalance+=it.price*0.02;
+  document.getElementById('balance').textContent=toMoney(balance);
+  showToast('Покупка успешна');render();
+}
 
-function buy(id){const item=items.find(x=>x.id==id);if(!item)return;const m=document.getElementById('modal');m.classList.remove('show');if(item.ownerId===userId)return showToast('Это ваш товар');if(balance<item.price)return showToast('Недостаточно средств');balance-=item.price;purchases.push(item);refBalance+=item.price*0.02;document.getElementById('balance').textContent=toMoney(balance);showToast(`Покупка успешна — ${toMoney(item.price)} TON`);render()}
-function deleteItem(id){if(!confirm('Вы уверены, что хотите удалить товар? Рейтинг будет утерян.'))return;items=items.filter(x=>x.id!=id);myItems=myItems.filter(x=>x.id!=id);render();showToast('Товар удалён')}
-function withdrawRef(){if(refBalance<=0)return showToast('Недостаточно средств');balance+=refBalance;refBalance=0;document.getElementById('balance').textContent=toMoney(balance);document.getElementById('ref-balance').textContent=toMoney(refBalance);showToast('Вывод выполнен')}
+function deleteItem(id){
+  if(!confirm('Удалить товар? Рейтинг будет утерян.'))return;
+  items=items.filter(x=>x.id!=id);myItems=myItems.filter(x=>x.id!=id);
+  render();showToast('Товар удалён');
+}
 
-function rateItem(id,val){const it=items.find(x=>x.id==id);if(!it)return;if(!it.reviews)it.reviews=[];it.reviews.push(val);ratedItems.push(id);showToast('Спасибо за оценку!');render()}
+function withdrawRef(){
+  if(refBalance<=0)return showToast('Недостаточно средств');
+  balance+=refBalance;refBalance=0;
+  document.getElementById('balance').textContent=toMoney(balance);
+  document.getElementById('ref-balance').textContent=toMoney(refBalance);
+  showToast('Вывод выполнен');
+}
 
-function render(){const s=document.getElementById('search-input').value.trim().toLowerCase(),min=parseFloat(document.getElementById('min-price').value)||0,max=parseFloat(document.getElementById('max-price').value)||Infinity;const grid=document.getElementById('market-grid');grid.innerHTML='';items.filter(x=>(x.name+x.desc).toLowerCase().includes(s)&&x.price>=min&&x.price<=max).forEach(x=>{const mine=x.ownerId===userId,bought=purchases.find(p=>p.id==x.id);const rating=x.reviews.length?(x.reviews.reduce((a,b)=>a+b,0)/x.reviews.length).toFixed(1):'—';const div=document.createElement('div');div.className='card';div.innerHTML=`<div class="image-wrap"><img src="${x.img}"></div>
-<div class="card-body"><div class="item-id">#${x.id}</div>
-<div class="title">${prepareTextForHTML(x.name,60)}</div>
-<div class="desc">${prepareTextForHTML(x.desc,60)}</div>
-<div class="row-info"><span>★ ${rating}</span><span>${x.price} <img src="ton1.svg" style="width:12px;vertical-align:middle"></span></div>
-<div class="btn-row">${
-mine?`<button class="btn btn-primary" onclick="openModal(${x.id})">Мой товар</button><button class='btn btn-danger' onclick='event.stopPropagation();deleteItem(${x.id})'>Удалить</button>`
-:bought?`<button class="btn btn-primary" onclick="openModal(${x.id})">Приобретено</button>`
-:`<button class="btn btn-primary" onclick="openModal(${x.id})">Купить за ${x.price} <img src='ton1.svg' style='width:12px;vertical-align:middle'></button>`}
-</div></div>`;div.onclick=()=>openModal(x.id);grid.append(div)});document.getElementById('ref-balance').textContent=toMoney(refBalance);renderProfile()}
+function rateItem(id,val){
+  const it=items.find(x=>x.id==id);
+  if(!purchases.find(p=>p.id==id))return showToast('Оценивать можно только после покупки');
+  if(!it.reviews)it.reviews=[];it.reviews.push(val);ratedItems.push(id);
+  showToast('Спасибо за оценку!');render();
+}
 
-function renderProfile(){['purchases','myitems'].forEach(id=>{document.getElementById(id+'-grid').innerHTML=''});const q=document.getElementById('profile-search').value.trim().toLowerCase();const arr=currentProfileTab==='purchases'?purchases:myItems;const g=document.getElementById(currentProfileTab+'-grid');arr.filter(x=>(x.name+x.desc).toLowerCase().includes(q)).forEach(x=>{const rating=x.reviews.length?(x.reviews.reduce((a,b)=>a+b,0)/x.reviews.length).toFixed(1):'—';const div=document.createElement('div');div.className='card';div.innerHTML=`<div class="image-wrap"><img src="${x.img}"></div>
-<div class="card-body"><div class="item-id">#${x.id}</div>
-<div class="title">${prepareTextForHTML(x.name,60)}</div>
-<div class="desc">${prepareTextForHTML(x.desc,60)}</div>
-<div class="row-info"><span>★ ${rating}</span><span>${x.price} <img src='ton1.svg' style='width:12px;vertical-align:middle'></span></div>
-<div class="btn-row"><button class="btn btn-primary" onclick="openModal(${x.id})">${currentProfileTab==='purchases'?'Приобретено':'Мой товар'}</button>${currentProfileTab==='myitems'?`<button class='btn btn-danger' onclick='event.stopPropagation();deleteItem(${x.id})'>Удалить</button>`:''}</div></div>`;div.onclick=()=>openModal(x.id);g.append(div)});['purchases','myitems'].forEach(id=>{document.getElementById(id+'-empty').style.display=document.getElementById(id+'-grid').children.length?'none':'block'})}
+/* === Рендер === */
+function render(){
+  const s=document.getElementById('search-input').value.toLowerCase().trim();
+  const min=parseFloat(document.getElementById('min-price').value)||0;
+  const max=parseFloat(document.getElementById('max-price').value)||Infinity;
+  const idVal=parseInt(document.getElementById('id-search').value)||null;
+  const sort=document.getElementById('sort-select').value;
 
-function openModal(id){const x=items.find(i=>i.id==id);if(!x)return;const m=document.getElementById('modal');const r=x.reviews.length?(x.reviews.reduce((a,b)=>a+b,0)/x.reviews.length).toFixed(1):'—';const mine=x.ownerId===userId,bought=purchases.find(p=>p.id==x.id);document.getElementById('modal-card').innerHTML=`<img src="${x.img}"><h3 class="modal-title">${prepareTextForHTML(x.name)}</h3>
-<p class="modal-desc">${prepareTextForHTML(x.desc)}</p>
-<div class="modal-line">★ ${r} • ${x.price} <img src="ton1.svg" style="width:14px;vertical-align:middle"></div>
-<div class="modal-actions">${
-mine?`<button class='btn btn-primary'>Мой товар</button><button class='btn btn-danger' onclick='deleteItem(${x.id})'>Удалить</button>`
-:bought?`<button class='btn btn-primary'>Приобретено</button>`
-:`<button class='btn btn-primary' onclick='buy(${x.id})'>Купить за ${x.price} <img src='ton1.svg' style='width:14px;vertical-align:middle'></button>`}
-</div>${!mine&&!bought&&!ratedItems.includes(x.id)?`<div class='stars'>${[1,2,3,4,5].map(n=>`<span class='star' onclick='rateItem(${x.id},${n})'>★</span>`).join('')}</div>`:''}`;m.classList.add('show')}
+  let arr=[...items].filter(x=>{
+    if(idVal&&x.id!=idVal)return false;
+    return (x.name+x.desc).toLowerCase().includes(s)&&x.price>=min&&x.price<=max;
+  });
+
+  if(sort==='price-asc')arr.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc')arr.sort((a,b)=>b.price-a.price);
+  else if(sort==='best')arr.sort((a,b)=>((b.reviews.reduce((x,y)=>x+y,0)/b.reviews.length||0)-(a.reviews.reduce((x,y)=>x+y,0)/a.reviews.length||0)));
+  else arr.sort((a,b)=>b.id-a.id);
+
+  const grid=document.getElementById('market-grid');
+  grid.innerHTML='';
+  arr.forEach(x=>{
+    const mine=x.ownerId===userId,bought=purchases.find(p=>p.id==x.id);
+    const rating=x.reviews.length?(x.reviews.reduce((a,b)=>a+b,0)/x.reviews.length).toFixed(1):'—';
+    const div=document.createElement('div');
+    div.className='card';
+    div.innerHTML=`<div class="image-wrap"><img src="${x.img}"></div>
+      <div class="card-body">
+        <div class="item-id">#${x.id}</div>
+        <div class="title">${prepareText(x.name,60)}</div>
+        <div class="desc">${prepareText(x.desc,60)}</div>
+        <div class="row-info"><span>★ ${rating}</span><span>${x.price} <img src="ton1.svg" style="width:12px;vertical-align:middle"></span></div>
+        <div class="btn-row">${
+          mine?`<button class="btn btn-primary" onclick="openModal(${x.id})">Мой товар</button><button class='btn btn-danger' onclick='event.stopPropagation();deleteItem(${x.id})'>Удалить</button>`:
+          bought?`<button class="btn btn-primary" onclick="openModal(${x.id})">Приобретено</button>`:
+          `<button class="btn btn-primary" onclick="openModal(${x.id})">Купить за ${x.price} <img src='ton1.svg' style='width:12px;vertical-align:middle'></button>`}
+        </div>
+      </div>`;
+    div.onclick=()=>openModal(x.id);
+    grid.append(div);
+  });
+  document.getElementById('market-empty').style.display=arr.length?'none':'block';
+  document.getElementById('ref-balance').textContent=toMoney(refBalance);
+  renderProfile();
+}
+
+function renderProfile(){
+  ['purchases','myitems'].forEach(k=>{
+    const g=document.getElementById(k+'-grid');g.innerHTML='';
+    const q=document.getElementById('profile-search').value.toLowerCase().trim();
+    const arr=(k==='purchases'?purchases:myItems).filter(x=>(x.name+x.desc).toLowerCase().includes(q));
+    arr.forEach(x=>{
+      const rating=x.reviews.length?(x.reviews.reduce((a,b)=>a+b,0)/x.reviews.length).toFixed(1):'—';
+      const div=document.createElement('div');
+      div.className='card';
+      div.innerHTML=`<div class="image-wrap"><img src="${x.img}"></div>
+        <div class="card-body">
+          <div class="item-id">#${x.id}</div>
+          <div class="title">${prepareText(x.name,60)}</div>
+          <div class="desc">${prepareText(x.desc,60)}</div>
+          <div class="row-info"><span>★ ${rating}</span><span>${x.price} <img src='ton1.svg' style='width:12px;vertical-align:middle'></span></div>
+          <div class="btn-row"><button class="btn btn-primary" onclick="openModal(${x.id})">${k==='purchases'?'Приобретено':'Мой товар'}</button>${k==='myitems'?`<button class='btn btn-danger' onclick='event.stopPropagation();deleteItem(${x.id})'>Удалить</button>`:''}</div>
+        </div>`;
+      div.onclick=()=>openModal(x.id);
+      g.append(div);
+    });
+    if(!arr.length){
+      const p=document.createElement('p');p.textContent='Пусто';p.style.textAlign='center';p.style.color='#9fbf9f';p.style.marginTop='8px';
+      g.append(p);
+    }
+  });
+}
+
+function openModal(id){
+  const x=items.find(i=>i.id==id);if(!x)return;
+  const r=x.reviews.length?(x.reviews.reduce((a,b)=>a+b,0)/x.reviews.length).toFixed(1):'—';
+  const mine=x.ownerId===userId,bought=purchases.find(p=>p.id==x.id);
+  document.getElementById('modal-card').innerHTML=
+  `<img src="${x.img}"><h3 class="modal-title">${prepareText(x.name)}</h3>
+  <p class="modal-desc">${prepareText(x.desc)}</p>
+  <div class="modal-line">★ ${r} • ${x.price} <img src="ton1.svg" style="width:14px;vertical-align:middle"></div>
+  <div class="modal-actions">${
+    mine?`<button class='btn btn-primary'>Мой товар</button><button class='btn btn-danger' onclick='deleteItem(${x.id})'>Удалить</button>`:
+    bought?`<button class='btn btn-primary'>Приобретено</button>`:
+    `<button class='btn btn-primary' onclick='buy(${x.id})'>Купить за ${x.price} <img src='ton1.svg' style='width:14px;vertical-align:middle'></button>`}
+  </div>${
+    !mine&&!bought&&!ratedItems.includes(x.id)&&purchases.find(p=>p.id==x.id)?
+      `<div class='stars'>${[1,2,3,4,5].map(n=>`<span class='star' onclick='rateItem(${x.id},${n})'>★</span>`).join('')}</div>`:''
+  }`;
+  document.getElementById('modal').classList.add('show');
+}
 window.onclick=e=>{const m=document.getElementById('modal');if(e.target===m)m.classList.remove('show')}
+
+/* TABS */
+function switchTab(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+let currentProfileTab='purchases';
+function switchProfileTab(t,btn){
+  currentProfileTab=t;
+  document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  document.querySelectorAll('.profile-tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
 render();
 </script>
 </body>
