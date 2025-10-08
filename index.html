@@ -62,8 +62,8 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 /* CARD */
 .card{
   background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;
-  overflow:hidden;display:flex;flex-direction:column;cursor:pointer;
-  transition:transform .16s,box-shadow .16s;height:320px;
+  overflow:hidden;display:flex;flex-direction:column;
+  transition:transform .16s,box-shadow .16s;height:340px;cursor:pointer;
 }
 .card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(14,255,0,0.06)}
 .image-wrap{height:160px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -73,6 +73,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 .title{font-size:15px;font-weight:700;margin:0;line-height:1.2;overflow:hidden}
 .desc{font-size:13px;color:#bfc7d9;margin:0;line-height:1.2;max-height:2.4em;overflow:hidden}
 .row-info{display:flex;justify-content:space-between;align-items:center;color:#aeb7c9;font-size:13px}
+.row-info img{width:12px;height:12px;vertical-align:middle;margin-left:4px}
 .btn-row{display:flex;gap:8px;margin-top:6px}
 .btn{
   flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;
@@ -95,6 +96,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 .modal-title{font-size:18px;margin:0 0 6px}
 .modal-desc{color:#bfc7d9;margin:0 0 10px}
 .modal-line{display:flex;justify-content:center;gap:10px;align-items:center;color:#dfe6f9;margin-bottom:10px;font-weight:700}
+.modal-line img{width:14px;height:14px;vertical-align:middle}
 .modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
 .stars{font-size:20px;margin:8px 0;display:flex;gap:6px;justify-content:center}
 .star{cursor:pointer;color:#555}
@@ -266,6 +268,19 @@ function render(){
 
   grid.innerHTML='';
   list.forEach(i=>{
+    const isMine=myItems.some(m=>m.id===i.id);
+    const isBought=purchases.some(p=>p.id===i.id);
+    const buttons=isMine?`
+      <div class='btn-row'>
+        <button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Мой товар</button>
+        <button class='btn btn-danger' onclick='confirmDelete(${i.id});event.stopPropagation()'>Удалить</button>
+      </div>`:
+      isBought?`
+      <div class='btn-row'>
+        <button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Приобретено</button>
+        <button class='btn btn-primary' onclick='downloadFile("${i.file}");event.stopPropagation()'>Файл</button>
+      </div>`:`
+      <div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Купить</button></div>`;
     grid.innerHTML+=`
     <div class="card" onclick="openModal(${i.id})">
       <div class="image-wrap"><img src="${i.img}" alt=""></div>
@@ -273,101 +288,109 @@ function render(){
         <div class="item-id">#${i.id}</div>
         <p class="title">${i.title}</p>
         <p class="desc">${i.desc}</p>
-        <div class="row-info"><span>${i.price} TON</span><span>★ ${i.rating}</span></div>
+        <div class="row-info"><span>★ ${i.rating}</span><span>${i.price}<img src="ton1.svg"></span></div>
+        ${buttons}
       </div>
     </div>`;
   });
   document.getElementById('market-empty').style.display=list.length?'none':'block';
 
   document.getElementById('purchases-grid').innerHTML=purchases.map(i=>`
-    <div class="card"><div class="image-wrap"><img src="${i.img}"></div>
-    <div class="card-body"><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>${i.price} TON</span><span>★ ${i.rating}</span></div></div></div>`).join('');
+    <div class="card" onclick="openModal(${i.id})"><div class="image-wrap"><img src="${i.img}"></div>
+    <div class="card-body"><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>★ ${i.rating}</span><span>${i.price}<img src="ton1.svg"></span></div></div></div>`).join('');
   document.getElementById('myitems-grid').innerHTML=myItems.map(i=>`
-    <div class="card"><div class="image-wrap"><img src="${i.img}"></div>
-    <div class="card-body"><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>${i.price} TON</span><span>★ ${i.rating}</span></div></div></div>`).join('');
+    <div class="card" onclick="openModal(${i.id})"><div class="image-wrap"><img src="${i.img}"></div>
+    <div class="card-body"><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>★ ${i.rating}</span><span>${i.price}<img src="ton1.svg"></span></div></div></div>`).join('');
 }
 
 function openModal(id){
   const item=items.find(x=>x.id===id);
   const bought=purchases.some(p=>p.id===id);
-  const modal=document.getElementById('modal');
-  const card=document.getElementById('modal-card');
-  card.innerHTML=`
+  const mine=myItems.some(m=>m.id===id);
+  document.getElementById('modal').classList.add('show');
+  document.getElementById('modal-card').innerHTML=`
     <img src="${item.img}">
-    <div class="modal-title">${item.title}</div>
-    <div class="modal-desc">${item.desc}</div>
-    <div class="modal-line">Цена: ${item.price} TON ★ ${item.rating}</div>
+    <h3 class="modal-title">${item.title}</h3>
+    <div class="modal-line">★ ${item.rating} • ${item.price} <img src="ton1.svg"></div>
+    <p class="modal-desc">${item.desc}</p>
     <div class="modal-actions">
-      ${bought?`<button class="btn btn-primary" onclick="downloadFile('${item.file}')">Скачать</button>
-      <div class="stars">${[1,2,3,4,5].map(n=>`<span class='star' onclick='rate(${id},${n})'>★</span>`).join('')}</div>`
-      :`<button class="btn btn-primary" onclick="buy(${id})">Купить</button>`}
-      <button class="btn btn-danger" onclick="closeModal()">Закрыть</button>
-    </div>`;
-  modal.classList.add('show');
+      ${mine?`<button class='btn btn-danger' onclick='confirmDelete(${item.id})'>Удалить</button>`:
+        bought?`<button class='btn btn-primary' onclick='downloadFile("${item.file}")'>Скачать файл</button>`:
+        `<button class='btn btn-primary' onclick='buy(${item.id})'>Купить</button>`}
+    </div>
+    ${bought?`<div class="stars">${[1,2,3,4,5].map(s=>`<span class='star' onclick='rate(${item.id},${s})'>★</span>`).join('')}</div>`:''}
+    <div class="modal-actions"><button class="btn" style="background:#222;color:#ccc" onclick="closeModal()">Закрыть</button></div>`;
+}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+function confirmDelete(id){
+  if(!confirm('Вы уверены, что хотите удалить объявление? Рейтинг и отзывы будут безвозвратно утеряны.'))return;
+  items=items.filter(i=>i.id!==id);
+  myItems=myItems.filter(i=>i.id!==id);
+  toast('Товар удалён');
+  closeModal();
+  render();
 }
 
-function closeModal(){document.getElementById('modal').classList.remove('show');}
-
 function buy(id){
-  const item=items.find(i=>i.id===id);
-  if(balance<item.price)return toast('Недостаточно средств');
+  const item=items.find(x=>x.id===id);
+  if(balance<item.price){toast('Недостаточно средств');return;}
   balance-=item.price;
+  refBalance+=(item.price*0.02);
   purchases.push(item);
   document.getElementById('balance').textContent=balance.toFixed(2);
-  refBalance+=(item.price*0.02);
-  document.getElementById('ref-balance').textContent=refBalance.toFixed(2);
-  closeModal();
-  toast('Покупка успешна');
+  toast('Покупка успешно завершена!');
   render();
 }
 
 function rate(id,stars){
-  const bought=purchases.some(p=>p.id===id);
-  if(!bought){toast('Оценивать можно только купленные товары');return;}
-  const item=items.find(i=>i.id===id);
-  item.rating=((item.rating*item.votes)+stars)/(item.votes+1);
+  const item=items.find(x=>x.id===id);
+  item.rating=(item.rating*item.votes+stars)/(item.votes+1);
   item.votes++;
-  closeModal();
   toast('Спасибо за оценку!');
+  closeModal();
   render();
 }
 
 function downloadFile(file){toast('Скачивается '+file);}
 
 function updateCommission(){
-  const p=parseFloat(document.getElementById('add-price').value)||0;
-  const r=(p*0.9).toFixed(2);
-  document.getElementById('commission-info').innerHTML=`Вы получите: ${r} TON (с учётом комиссии 10%)`;
+  const input=document.getElementById('add-price');
+  const val=parseFloat(input.value);
+  const info=document.getElementById('commission-info');
+  if(isNaN(val)||val<0.1){input.classList.add('input-error');info.innerHTML='Минимальная сумма: 0.1 <img src="ton1.svg">';return;}
+  input.classList.remove('input-error');
+  info.innerHTML=`Вы получите: ${(val*0.9).toFixed(2)} TON (с учётом комиссии 10%)`;
 }
 
 function publish(){
   const name=document.getElementById('add-name').value.trim();
   const desc=document.getElementById('add-desc').value.trim();
   const price=parseFloat(document.getElementById('add-price').value);
-  if(!name||!desc||!price){toast('Заполните все поля');return;}
-  const newItem={
-    id:items.length?Math.max(...items.map(i=>i.id))+1:1,
-    title:name,desc,price,img:'https://via.placeholder.com/400x300',file:'new.zip',seller:'me',rating:0,votes:0
+  const imgFile=document.getElementById('add-preview').files[0];
+  if(!name||!desc||!price||price<0.1||!imgFile){toast('Заполните все поля');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const newItem={id:items.length?Math.max(...items.map(i=>i.id))+1:1,
+      title:name,desc,price,img:e.target.result,file:'new.zip',seller:'me',rating:0,votes:0};
+    items.unshift(newItem);
+    myItems.unshift(newItem);
+    toast('Товар опубликован!');
+    switchTab('home',document.querySelector('.tabs button:first-child'));
+    render();
   };
-  items.unshift(newItem);
-  myItems.unshift(newItem);
-  toast('Товар опубликован!');
-  switchTab('home',document.querySelector('.tabs button:first-child'));
-  render();
+  reader.readAsDataURL(imgFile);
 }
 
 function withdrawRef(){
   if(refBalance<0.01)return toast('Недостаточно для вывода');
-  balance+=refBalance;
-  refBalance=0;
+  balance+=refBalance;refBalance=0;
   document.getElementById('balance').textContent=balance.toFixed(2);
   document.getElementById('ref-balance').textContent=refBalance.toFixed(2);
   toast('Вывод успешен');
 }
 
-function toast(text){
-  const t=document.getElementById('toast');
-  t.textContent=text;t.classList.add('show');
+function toast(txt){
+  const t=document.getElementById('toast');t.textContent=txt;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2000);
 }
 
