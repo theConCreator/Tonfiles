@@ -1,63 +1,275 @@
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:#000;color:#fff;overflow-x:hidden}
-header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#0a0a0a;border-bottom:2px solid #0eff00}
-header img.logo{height:28px}
-header .balance{display:flex;gap:8px;align-items:center;font-weight:700}
-header .balance img{width:14px;height:14px}
+body {
+  margin: 0;
+  background: #0d0d0d;
+  color: #e3e3e3;
+  font-family: "Inter", sans-serif;
+}
 
-main{max-width:1200px;margin:0 auto;padding:16px 14px 90px}
-.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:#0a0a0a;border-top:2px solid #0eff00}
-.tabs button{flex:1;padding:10px;border:0;background:none;color:#9aa;font-weight:700;cursor:pointer}
-.tabs button.active{color:#0eff00}
-.section{display:none}
-.section.active{display:block}
+header {
+  background: #111;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #1a1a1a;
+}
 
-/* Фильтры */
-.search-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.search-filter input{background:#0a0a0a;border:1px solid #0eff00;padding:8px;border-radius:8px;color:#fff;flex:1;min-width:140px}
+h1 {
+  color: #00ff99;
+  font-weight: 600;
+  font-size: 20px;
+}
 
-/* Карточки */
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
-.card{background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
-.card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(14,255,0,0.06)}
-.image-wrap{height:150px;background:#111;display:flex;align-items:center;justify-content:center}
-.image-wrap img{width:100%;height:100%;object-fit:cover}
-.card-body{padding:12px;position:relative;display:flex;flex-direction:column;gap:8px}
-.item-id{position:absolute;top:8px;right:10px;font-size:12px;color:#666}
-.title{font-size:15px;font-weight:700}
-.desc{font-size:13px;color:#bbb;height:2.4em;overflow:hidden;text-overflow:ellipsis}
-.row-info{display:flex;justify-content:space-between;align-items:center;color:#aaa;font-size:13px}
-.btn-row{display:flex;gap:8px;margin-top:6px}
-.btn{flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-primary{background:#0eff00;color:#000}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#cfe}
-.btn-danger{background:transparent;border:1px solid #ff5c5c;color:#ff9b9b}
+.tabs button {
+  background: none;
+  color: #aaa;
+  border: none;
+  margin: 0 6px;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+.tabs button.active, .tabs button:hover {
+  background: #00ff99;
+  color: #000;
+}
 
-/* Модалка */
-.modal{position:fixed;left:0;top:0;right:0;bottom:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,0.8);z-index:400}
-.modal.show{display:flex}
-.modal-card{width:95%;max-width:520px;background:#0a0a0a;border:1px solid #0eff00;border-radius:12px;padding:16px}
-.modal-card img{width:100%;max-height:260px;object-fit:cover;border-radius:8px;margin-bottom:12px}
-.modal-title{font-size:18px;margin:0 0 6px}
-.modal-desc{color:#bfc;margin:0 0 10px}
-.modal-line{display:flex;justify-content:center;gap:10px;color:#dfe;font-weight:700;margin-bottom:10px}
-.modal-actions{display:flex;gap:10px;margin-top:8px}
+.section {
+  display: none;
+  padding: 16px;
+}
+.section.active {
+  display: block;
+}
 
-/* Форма добавления */
-#add form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
-label{color:#0eff00;font-weight:700;font-size:13px}
-input,textarea{background:#0a0a0a;border:1px solid #0eff00;padding:10px;border-radius:8px;color:#fff;font-size:14px}
-textarea{min-height:90px;resize:vertical}
-.input-error{border-color:#ff5c5c !important}
-#commission-info{color:#9fbf9f;font-size:13px}
+.filters {
+  margin-bottom: 16px;
+}
+.filter-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.filters input, .filters button {
+  flex: 1;
+  padding: 8px 10px;
+  background: #111;
+  border: 1px solid #222;
+  color: #fff;
+  border-radius: 6px;
+}
+.filters button {
+  background: #00ff99;
+  color: #000;
+  font-weight: 500;
+}
 
-/* Профиль */
-.profile-box{background:#0a0a0a;border:1px solid #0eff00;padding:12px;border-radius:10px;margin-bottom:12px}
-.profile-tabs{display:flex;border-bottom:1px solid #0eff00;margin-bottom:10px;padding-bottom:6px}
-.profile-tabs button{flex:1;background:none;border:0;color:#dfe;padding:8px;font-weight:700;cursor:pointer}
-.profile-tabs button.active{color:#0eff00}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+  gap: 16px;
+}
 
-/* Toast */
-.toast{position:fixed;right:18px;bottom:84px;background:#0a0a0a;border:1px solid #0eff00;padding:10px 14px;border-radius:8px;opacity:0;transition:opacity .25s;z-index:1000}
-.toast.show{opacity:1}
-.small-muted{font-size:13px;color:#9fbf9f}
+.card {
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.card:hover { transform: translateY(-3px); }
+
+.image-wrap {
+  height: 180px;
+  background: #222;
+}
+.image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-body {
+  padding: 10px;
+}
+.title {
+  margin: 6px 0 2px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.desc {
+  font-size: 13px;
+  color: #aaa;
+  min-height: 30px;
+}
+.item-id {
+  font-size: 12px;
+  color: #555;
+}
+.row-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin: 6px 0;
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 6px 10px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.btn-primary {
+  background: #00ff99;
+  color: #000;
+}
+.btn-primary:hover { background: #00cc77; }
+.btn-ghost {
+  background: #0d0d0d;
+  color: #00ff99;
+  border: 1px solid #00ff99;
+}
+.btn-danger {
+  background: #ff3b3b;
+  color: #fff;
+}
+.btn-danger:hover { background: #ff5050; }
+
+.add-form {
+  max-width: 400px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.add-form input, .add-form textarea {
+  background: #111;
+  color: #fff;
+  border: 1px solid #222;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.file-upload {
+  display: block;
+  background: #111;
+  color: #00ff99;
+  border: 1px solid #00ff99;
+  text-align: center;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.file-upload input { display: none; }
+
+.input-error {
+  border-color: #ff3b3b !important;
+}
+#commission-info {
+  font-size: 13px;
+  color: #888;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.ref-block {
+  background: #111;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #222;
+}
+.ref-info {
+  color: #00ff99;
+  font-size: 12px;
+  margin: 2px 0 6px;
+}
+.profile-tabs {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+.profile-tabs button {
+  flex: 1;
+  background: #111;
+  color: #aaa;
+  border: 1px solid #222;
+  padding: 8px;
+  border-radius: 6px;
+}
+.profile-tabs button.active {
+  background: #00ff99;
+  color: #000;
+}
+#profile-search {
+  margin: 10px 0;
+  width: 100%;
+  background: #111;
+  border: 1px solid #222;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  margin-top: 10px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;left:0;
+  width: 100%;height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+.modal.show { display: flex; }
+.modal-card {
+  background: #111;
+  color: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+}
+.modal-card img {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.modal-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 4px;
+}
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+#toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: #00ff99;
+  color: #000;
+  padding: 10px 16px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+#toast.show { opacity: 1; }
