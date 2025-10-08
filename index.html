@@ -1,63 +1,59 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TonFiles Market</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TonFiles Market — Demo</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>TonFiles</h1>
-    <nav class="tabs">
-      <button class="active" onclick="switchTab('market', this)">Маркет</button>
-      <button onclick="switchTab('add', this)">Добавить</button>
-      <button onclick="switchTab('profile', this)">Профиль</button>
-    </nav>
-  </header>
 
-  <!-- Маркет -->
-  <section id="market" class="section active">
-    <div class="filters">
-      <div class="filter-row">
-        <input type="text" id="search-input" placeholder="Поиск..." oninput="render()">
-        <button onclick="render()">Применить</button>
-      </div>
-      <div class="filter-row">
-        <input type="number" id="min-price" placeholder="Мин цена" oninput="render()">
-        <input type="number" id="max-price" placeholder="Макс цена" oninput="render()">
-      </div>
+<header>
+  <img class="logo" src="tonfiles.svg" alt="TONFiles">
+  <div class="balance"><span id="balance">1000.00</span><img src="ton1.svg" alt="TON"></div>
+</header>
+
+<main>
+  <!-- Главная -->
+  <section id="home" class="section active">
+    <div class="search-filter">
+      <input id="search-input" placeholder="Поиск по названию или описанию..." />
+      <input id="min-price" type="number" placeholder="Мин. цена" step="0.01" style="max-width:160px" />
+      <input id="max-price" type="number" placeholder="Макс. цена" step="0.01" style="max-width:160px" />
+      <button class="btn btn-ghost" onclick="render()" style="min-width:120px">Применить</button>
     </div>
-    <div id="market-grid" class="grid"></div>
+
+    <div class="grid" id="market-grid"></div>
   </section>
 
-  <!-- Добавление -->
+  <!-- Добавить -->
   <section id="add" class="section">
-    <div class="add-form">
-      <input id="add-name" placeholder="Название товара">
-      <textarea id="add-desc" placeholder="Описание"></textarea>
-      <input type="number" id="add-price" placeholder="Цена TON" oninput="updateCommission()">
-      <p id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</p>
-      <label class="file-upload">
-        Загрузить превью
-        <input type="file" id="add-preview" accept="image/*">
-      </label>
-      <label class="file-upload">
-        Загрузить файл
-        <input type="file" id="add-file">
-      </label>
-      <button class="btn btn-primary" onclick="publish()">Опубликовать</button>
-    </div>
+    <form onsubmit="event.preventDefault(); publish();">
+      <div class="form-row"><label for="add-name">Название</label><input id="add-name" type="text" /></div>
+      <div class="form-row"><label for="add-desc">Описание</label><textarea id="add-desc"></textarea></div>
+      <div class="form-row">
+        <label for="add-price">Цена (TON)</label>
+        <input id="add-price" type="number" step="0.01" oninput="updateCommission()" />
+        <div id="commission-info">Вы получите: 0.00 TON (с учетом комиссии 10%)</div>
+      </div>
+      <div class="form-row"><label>Загрузка файлов — превью (изображение)</label><input id="add-preview" type="file" accept="image/*" /></div>
+      <div class="form-row"><label>Загрузка файла — конечный файл</label><input id="add-file" type="file" /></div>
+      <button class="btn btn-primary" type="submit">Опубликовать</button>
+    </form>
   </section>
 
   <!-- Профиль -->
   <section id="profile" class="section">
-    <div class="profile-header">
-      <p>Баланс: <span id="balance">0.00</span> TON</p>
-      <div class="ref-block">
-        <p>Реф. баланс: <span id="ref-balance">0.00</span> TON</p>
-        <p class="ref-info">2% от трат рефералов</p>
-        <button onclick="withdrawRef()">Вывести</button>
+    <div class="profile-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:800">Реферальная программа</div>
+          <div class="small-muted">2% от трат рефералов</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:800"><span id="ref-balance">0.00</span> <img src="ton1.svg" style="width:14px;height:14px;vertical-align:middle" /></div>
+          <button class="btn btn-ghost" style="margin-top:6px" onclick="withdrawRef()">Вывести</button>
+        </div>
       </div>
     </div>
 
@@ -66,26 +62,35 @@
       <button onclick="switchProfileTab('myitems', this)">Мои товары</button>
     </div>
 
-    <input type="text" id="profile-search" placeholder="Поиск покупок..." oninput="render()">
+    <div class="profile-search"><input id="profile-search" placeholder="Поиск..." oninput="render()" /></div>
 
     <div id="purchases" class="profile-section active">
       <div id="purchases-grid" class="grid"></div>
-      <p id="purchases-empty" class="empty">Пусто</p>
+      <p id="purchases-empty" class="small-muted" style="text-align:center;margin-top:10px">Пусто</p>
     </div>
+
     <div id="myitems" class="profile-section">
       <div id="myitems-grid" class="grid"></div>
-      <p id="myitems-empty" class="empty">Пусто</p>
+      <p id="myitems-empty" class="small-muted" style="text-align:center;margin-top:10px">Пусто</p>
     </div>
   </section>
+</main>
 
-  <!-- Модалка -->
-  <div id="modal" class="modal">
-    <div class="modal-card" id="modal-card"></div>
-  </div>
+<!-- Навигация -->
+<div class="tabs">
+  <button class="active" onclick="switchTab('home', this)">Главная</button>
+  <button onclick="switchTab('add', this)">Добавить</button>
+  <button onclick="switchTab('profile', this)">Профиль</button>
+</div>
 
-  <!-- Тост -->
-  <div id="toast"></div>
+<!-- Модал -->
+<div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-card" id="modal-card"></div>
+</div>
 
-  <script src="app.js"></script>
+<!-- Тост -->
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
 </body>
 </html>
