@@ -47,7 +47,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 100px}
 .modal-line{display:flex;justify-content:center;gap:10px;align-items:center;color:#dfe6f9;margin-bottom:10px;font-weight:700}
 .modal-line img{width:14px;height:14px;vertical-align:middle}
 .modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-.stars{font-size:20px;margin:8px 0;display:flex;gap:6px;justify-content:center}
+.stars{font-size:22px;margin:8px 0;display:flex;gap:6px;justify-content:center}
 .star{cursor:pointer;color:#555}
 .star.active{color:#0eff00}
 #add form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
@@ -142,7 +142,7 @@ let items=[
 {id:1,title:"TON кошелек",desc:"Безопасный кошелёк для TON",price:3.5,img:"https://via.placeholder.com/400x300",file:"wallet.zip",seller:"user1",rating:4.8,votes:120},
 {id:2,title:"TON бот",desc:"Telegram бот для TON сети",price:7.2,img:"https://via.placeholder.com/400x300",file:"bot.zip",seller:"user2",rating:4.9,votes:85},
 ];
-let purchases=[],myItems=[];
+let purchases=[],myItems=[],userRatings={};
 
 function switchTab(id,btn){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");render();}
 function switchProfileTab(id,btn){document.querySelectorAll(".profile-section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.querySelectorAll(".profile-tabs button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");render();}
@@ -167,8 +167,8 @@ function render(){
     const isBought=purchases.some(p=>p.id===i.id);
     const buttons=isMine?`<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Мой товар</button><button class='btn btn-danger' onclick='confirmDelete(${i.id});event.stopPropagation()'>Удалить</button></div>`:
       isBought?`<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Приобретено</button><button class='btn btn-primary' onclick='downloadFile("${i.file}");event.stopPropagation()'>Файл</button></div>`:
-      `<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Купить</button></div>`;
-    grid.innerHTML+=`<div class="card" onclick="openModal(${i.id})"><div class="image-wrap"><img src="${i.img}"></div><div class="card-body"><div class="item-id">#${i.id}</div><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>★ ${i.rating}</span><span>${i.price}<img src="ton1.svg"></span></div>${buttons}</div></div>`;
+      `<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Купить • ${i.price} TON</button></div>`;
+    grid.innerHTML+=`<div class="card" onclick="openModal(${i.id})"><div class="image-wrap"><img src="${i.img}"></div><div class="card-body"><div class="item-id">#${i.id}</div><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>★ ${i.rating.toFixed(1)} (${i.votes})</span><span>${i.price}<img src="ton1.svg"></span></div>${buttons}</div></div>`;
   });
   document.getElementById("market-empty").style.display=list.length?"none":"block";
 
@@ -182,17 +182,19 @@ function cardHTML(i){
   const isBought=purchases.some(p=>p.id===i.id);
   const buttons=isMine?`<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Мой товар</button><button class='btn btn-danger' onclick='confirmDelete(${i.id});event.stopPropagation()'>Удалить</button></div>`:
     isBought?`<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Приобретено</button><button class='btn btn-primary' onclick='downloadFile("${i.file}");event.stopPropagation()'>Файл</button></div>`:
-    `<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Купить</button></div>`;
-  return `<div class="card" onclick="openModal(${i.id})"><div class="image-wrap"><img src="${i.img}"></div><div class="card-body"><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>★ ${i.rating}</span><span>${i.price}<img src="ton1.svg"></span></div>${buttons}</div></div>`;
+    `<div class='btn-row'><button class='btn btn-primary' onclick='openModal(${i.id});event.stopPropagation()'>Купить • ${i.price} TON</button></div>`;
+  return `<div class="card" onclick="openModal(${i.id})"><div class="image-wrap"><img src="${i.img}"></div><div class="card-body"><p class="title">${i.title}</p><p class="desc">${i.desc}</p><div class="row-info"><span>★ ${i.rating.toFixed(1)} (${i.votes})</span><span>${i.price}<img src="ton1.svg"></span></div>${buttons}</div></div>`;
 }
 
 function openModal(id){
   const i=items.find(x=>x.id===id);
   const bought=purchases.some(p=>p.id===id);
   const mine=myItems.some(m=>m.id===id);
+  const userRating=userRatings[id]||0;
   document.getElementById("modal").classList.add("show");
-  document.getElementById("modal-card").innerHTML=`<img src="${i.img}"><h3 class="modal-title">${i.title}</h3><div class="modal-line">★ ${i.rating} • ${i.price} <img src="ton1.svg"></div><p class="modal-desc">${i.desc}</p><div class="modal-actions">${mine?`<button class='btn btn-danger' onclick='confirmDelete(${i.id})'>Удалить</button>`:bought?`<button class='btn btn-primary' onclick='downloadFile("${i.file}")'>Скачать файл</button>`:`<button class='btn btn-primary' onclick='buy(${i.id})'>Купить</button>`}</div>${bought?`<div class='stars'>${[1,2,3,4,5].map(s=>`<span class='star' onclick='rate(${i.id},${s})'>★</span>`).join('')}</div>`:''}<div class="modal-actions"><button class="btn" style="background:#222;color:#ccc" onclick="closeModal()">Закрыть</button></div>`;
+  document.getElementById("modal-card").innerHTML=`<img src="${i.img}"><h3 class="modal-title">${i.title}</h3><div class="modal-line">★ ${i.rating.toFixed(1)} (${i.votes}) • ${i.price} <img src="ton1.svg"></div><p class="modal-desc">${i.desc}</p><div class="modal-actions">${mine?`<button class='btn btn-danger' onclick='confirmDelete(${i.id})'>Удалить</button>`:bought?`<button class='btn btn-primary' onclick='downloadFile("${i.file}")'>Скачать файл</button><div class='stars'>${[1,2,3,4,5].map(s=>`<span class='star ${userRating>=s?"active":""}' onclick='setRating(${i.id},${s})'>★</span>`).join('')}</div>`:`<button class='btn btn-primary' onclick='buy(${i.id})'>Купить • ${i.price} TON</button>`}<button class='btn' style='background:#222;color:#ccc' onclick='closeModal()'>Закрыть</button></div>`;
 }
+
 function closeModal(){document.getElementById("modal").classList.remove("show");}
 
 function confirmDelete(id){if(!confirm("Удалить объявление?"))return;items=items.filter(i=>i.id!==id);myItems=myItems.filter(i=>i.id!==id);toast("Товар удалён");closeModal();render();}
@@ -204,13 +206,24 @@ function buy(id){
   document.getElementById("balance").textContent=balance.toFixed(2);
   toast("Покупка успешна!");
   render();
-  openModal(id); // обновляем окно на купленный товар
+  openModal(id);
 }
 
-function rate(id,stars){
+function setRating(id,stars){
   const i=items.find(x=>x.id===id);
-  i.rating=(i.rating*i.votes+stars)/(i.votes+1);i.votes++;
-  toast("Спасибо за оценку!");closeModal();render();
+  const prev=userRatings[id];
+  if(prev){
+    // изменить оценку
+    i.rating=((i.rating*i.votes - prev + stars)/i.votes);
+  }else{
+    i.rating=((i.rating*i.votes + stars)/(i.votes+1));
+    i.votes++;
+  }
+  i.rating=parseFloat(i.rating.toFixed(1));
+  userRatings[id]=stars;
+  toast("Оценка обновлена!");
+  openModal(id);
+  render();
 }
 
 function downloadFile(f){toast("Скачивается "+f);}
@@ -225,13 +238,7 @@ function publish(){
     const newItem={id:items.length?Math.max(...items.map(i=>i.id))+1:1,title:name,desc,price,img:e.target.result,file:file.name,seller:"me",rating:0,votes:0};
     items.unshift(newItem);myItems.unshift(newItem);
     toast("Товар опубликован!");
-    // Очистка формы
-    document.getElementById("add-name").value="";
-    document.getElementById("add-desc").value="";
-    document.getElementById("add-price").value="";
-    document.getElementById("add-preview").value="";
-    document.getElementById("add-file").value="";
-    document.getElementById("commission-info").innerHTML="Вы получите: 0.00 TON (с учётом комиссии 10%)";
+    document.getElementById("add-name").value="";document.getElementById("add-desc").value="";document.getElementById("add-price").value="";document.getElementById("add-preview").value="";document.getElementById("add-file").value="";document.getElementById("commission-info").innerHTML="Вы получите: 0.00 TON (с учётом комиссии 10%)";
     switchTab("home",document.querySelector(".tabs button:first-child"));render();
   };
   r.readAsDataURL(imgF);
