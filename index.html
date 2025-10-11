@@ -6,11 +6,12 @@
 <title>TONFiles Market</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:"Inter",Arial,sans-serif;background:#000;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;background:#0b0b0b;padding:12px 20px;border-bottom:2px solid #36ff12;box-shadow:0 0 10px rgba(54,255,18,0.1)}
+body{margin:0;font-family:"Inter",Arial,sans-serif;background:#000;color:#fff;overflow-x:hidden}
+header{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;background:#0b0b0b;padding:12px 20px;border-bottom:2px solid #36ff12;box-shadow:0 0 10px rgba(54,255,18,0.2)}
 header img.logo{height:30px}
 header .balance{display:flex;align-items:center;gap:6px;font-weight:700}
-header .balance img{width:1em;height:1em;vertical-align:middle}
+.ton-icon{height:1em;width:auto;vertical-align:middle;transform:translateY(-1px)}
+
 .tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0b0b0b;border-top:2px solid #36ff12;z-index:10}
 .tabs button{flex:1;padding:12px 8px;background:none;border:0;color:#aaa;font-weight:700;cursor:pointer;transition:color .2s}
 .tabs button.active{color:#36ff12}
@@ -19,7 +20,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 90px}
 /* Карточки */
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
 .card{background:#0b0b0b;border:1px solid #1a1a1a;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:transform .2s,border .2s,box-shadow .2s}
-.card:hover{transform:translateY(-3px);border-color:#36ff12;box-shadow:0 0 15px rgba(54,255,18,0.1)}
+.card:hover{transform:translateY(-3px);border-color:#36ff12;box-shadow:0 0 15px rgba(54,255,18,0.15)}
 .image-wrap{height:160px;display:flex;justify-content:center;align-items:center;background:#111}
 .image-wrap img{width:100%;height:100%;object-fit:cover}
 .card-body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1;justify-content:space-between;position:relative}
@@ -27,22 +28,22 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 90px}
 .title{font-size:15px;font-weight:700;margin:0}
 .desc{font-size:13px;color:#bfc7d9;margin:0;line-height:1.3;max-height:2.6em;overflow:hidden}
 .row-info{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#ccc}
-.row-info img{width:1em;height:1em;vertical-align:middle}
+.row-info img.ton-icon{height:1em}
 .btn-row{display:flex;gap:8px;margin-top:8px}
-.btn{flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+.btn{flex:1;padding:8px;border-radius:8px;border:0;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s}
 .btn:hover{opacity:.9}
 .btn-primary{background:#36ff12;color:#000}
 .btn-danger{background:transparent;border:1px solid #ff5c5c;color:#ff9b9b}
 
 /* Модалка товара */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;z-index:100}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:100}
 .modal.show{display:flex}
-.modal-card{background:#0b0b0b;border:1px solid #36ff12;border-radius:14px;padding:16px;width:95%;max-width:520px;box-shadow:0 0 20px rgba(54,255,18,0.1)}
+.modal-card{background:#0b0b0b;border:1px solid #36ff12;border-radius:14px;padding:16px;width:95%;max-width:520px;box-shadow:0 0 20px rgba(54,255,18,0.15)}
 .modal-card img{width:100%;max-height:260px;object-fit:cover;border-radius:10px;margin-bottom:12px}
 .modal-title{font-size:18px;margin:0 0 6px}
 .modal-desc{color:#bfc7d9;margin:0 0 10px}
 .modal-line{display:flex;justify-content:center;gap:10px;align-items:center;color:#dfe6f9;margin-bottom:10px;font-weight:700}
-.modal-line img{width:1em;height:1em;vertical-align:middle}
+.modal-line img.ton-icon{height:1em}
 .modal-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
 .stars{font-size:22px;margin:8px 0;display:flex;gap:6px;justify-content:center}
 .star{cursor:pointer;color:#555}
@@ -72,7 +73,7 @@ main{max-width:1200px;margin:0 auto;padding:16px 14px 90px}
 <body>
 <header>
   <img class="logo" src="tonfiles.svg" alt="TONFiles">
-  <div class="balance"><span id="balance">1000.00</span> <img src="ton1.svg"></div>
+  <div class="balance"><span id="balance">1000.00</span> <img class="ton-icon" src="ton1.svg" alt="TON"></div>
 </header>
 
 <main>
@@ -114,7 +115,7 @@ function switchTab(id,btn){
   if(id==="profile")renderProfile(user,"self");
 }
 
-/* ========== РЕНДЕР РЫНКА ========== */
+/* Рендер рынка */
 function renderMarket(){
   const grid=document.getElementById("market-grid");
   const s=document.getElementById("search").value.toLowerCase();
@@ -122,7 +123,9 @@ function renderMarket(){
   grid.innerHTML="";
   list.forEach(i=>{
     const isMine=i.seller==="self";
-    const buttons=isMine?`<div class="btn-row"><button class="btn btn-primary" onclick="openModal(${i.id});event.stopPropagation()">Мой товар</button><button class="btn btn-danger" onclick="confirmDelete(${i.id});event.stopPropagation()">Удалить</button></div>`:`<div class="btn-row"><button class="btn btn-primary" onclick="openModal(${i.id});event.stopPropagation()">Купить • ${i.price} <img src='ton1.svg'></button></div>`;
+    const buttons=isMine
+    ?`<div class="btn-row"><button class="btn btn-primary" onclick="openModal(${i.id});event.stopPropagation()">Мой товар</button><button class="btn btn-danger" onclick="confirmDelete(${i.id});event.stopPropagation()">Удалить</button></div>`
+    :`<div class="btn-row"><button class="btn btn-primary" onclick="openModal(${i.id});event.stopPropagation()">Купить • ${i.price} <img class='ton-icon' src='ton1.svg'></button></div>`;
     grid.innerHTML+=`
     <div class="card" onclick="openModal(${i.id})">
       <div class="image-wrap"><img src="${i.img}"></div>
@@ -130,33 +133,33 @@ function renderMarket(){
         <div class="item-id">#${i.id}</div>
         <p class="title">${i.title}</p>
         <p class="desc">${i.desc}</p>
-        <div class="row-info"><span>★ ${i.rating.toFixed(1)} (${i.votes})</span><span>${i.price}<img src="ton1.svg"></span></div>
+        <div class="row-info"><span>★ ${i.rating.toFixed(1)} (${i.votes})</span><span>${i.price}<img class='ton-icon' src="ton1.svg"></span></div>
         ${buttons}
       </div>
     </div>`;
   });
 }
 
-/* ========== МОДАЛКА ТОВАРА ========== */
+/* Модалка товара */
 function openModal(id){
   const i=items.find(x=>x.id===id);
   document.getElementById("modal").classList.add("show");
   document.getElementById("modal-card").innerHTML=`
   <img src="${i.img}">
   <h3 class="modal-title">${i.title}</h3>
-  <div class="modal-line">★ ${i.rating.toFixed(1)} (${i.votes}) • ${i.price} <img src="ton1.svg"></div>
+  <div class="modal-line">★ ${i.rating.toFixed(1)} (${i.votes}) • ${i.price} <img class='ton-icon' src="ton1.svg"></div>
   <p class="modal-desc">${i.desc}</p>
   <div class="modal-actions">
-    <button class="btn btn-primary" onclick="buy(${i.id})">Купить за ${i.price} <img src='ton1.svg'></button>
+    <button class="btn btn-primary" onclick="buy(${i.id})">Купить за ${i.price} <img class='ton-icon' src='ton1.svg'></button>
     <button class="btn btn-primary" onclick="viewSeller('${i.seller}')">Продавец</button>
   </div>`;
 }
 document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")e.target.classList.remove("show")};
 
-/* ========== ПОКУПКА ========== */
+/* Покупка */
 function buy(id){toast("Покупка оформлена (демо)")}
 
-/* ========== ПРОФИЛЬ ========== */
+/* Профиль */
 function renderProfile(u,key){
   const cont=document.getElementById("profile-view");
   const isSelf=(key==="self");
@@ -180,12 +183,12 @@ function renderProfile(u,key){
         <div class="item-id">#${i.id}</div>
         <p class="title">${i.title}</p>
         <p class="desc">${i.desc}</p>
-        <div class="row-info"><span>★ ${i.rating.toFixed(1)} (${i.votes})</span><span>${i.price}<img src="ton1.svg"></span></div>
+        <div class="row-info"><span>★ ${i.rating.toFixed(1)} (${i.votes})</span><span>${i.price}<img class='ton-icon' src="ton1.svg"></span></div>
       </div>
     </div>`).join('')}</div>`;
 }
 
-/* ========== ПРОСМОТР ПРОДАВЦА ========== */
+/* Просмотр продавца */
 function viewSeller(key){
   document.getElementById("modal").classList.remove("show");
   switchTab("profile",document.querySelectorAll(".tabs button")[1]);
@@ -193,7 +196,7 @@ function viewSeller(key){
   renderProfile(seller,key);
 }
 
-/* ========== РЕДАКТИРОВАНИЕ ПРОФИЛЯ ========== */
+/* Редактирование профиля */
 function openProfileEdit(){
   document.getElementById("profile-modal").classList.add("show");
   document.getElementById("profile-modal-card").innerHTML=`
@@ -219,15 +222,15 @@ function saveProfile(){
   toast("Профиль обновлён");
 }
 
-/* ========== УДАЛЕНИЕ ========== */
+/* Удаление */
 function confirmDelete(id){
   if(confirm("Удалить товар? Действие необратимо.")){items=items.filter(i=>i.id!==id);renderMarket();toast("Товар удалён");}
 }
 
-/* ========== УВЕДОМЛЕНИЯ ========== */
+/* Уведомления */
 function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);}
 
-/* INIT */
+/* Инициализация */
 renderMarket();
 </script>
 </body>
